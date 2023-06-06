@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Peek</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="controls">
+      <div class="dropdown">
+        <button class="dropbtn" id="dropbtn">
+          <img id="selectedImage" src="openai-logo.png" alt="OpenAI" width="20" height="20">
+        </button>
+        <div class="dropdown-content" id="dropdownContent">
+          <a href="#" data-value="https://chat.openai.com">
+            <img src="openai-logo.png" alt="OpenAI" width="20" height="20">
+            ChatGPT
+          </a>
+          <a href="#" data-value="https://bard.google.com">
+            <img src="google-logo.png" alt="Google" width="20" height="20">
+            Bard
+          </a>
+        </div>
+      </div>      
+      <input type="text" id="urlInput" placeholder="chat.openai.com" />
+    </div>    
+      </div>
+    
+      <webview id="webview" src="https://chat.openai.com" allowpopups></webview>
+    <script src="scripts.js"></script>
+  </body>
+</html>

@@ -31,7 +31,12 @@ body {
     }
     #urlInput
     {
-    color:#c7c7c77d;
+    color:#adadad7d;
+    }
+    #urlInput:focus{
+      outline: none;
+      color:rgb(225, 225, 225);
+      transition: color 0.3s ease;
     }
   }
   
@@ -39,9 +44,14 @@ body {
     #controls {
       background: radial-gradient(circle at 24.1% 68.8%, rgb(200, 200, 200) 0%, rgb(255, 255, 255) 99.4%);
     }
-    #urlinput
+    #urlInput
     {
-    color:#2d2d2d7c;
+    color:#434343a4;
+    }
+    #urlInput:focus{
+      outline: none;
+      color:rgb(39, 39, 39);
+      transition: color 0.3s ease; /* Smooth out the transition */
     }
   }
   
@@ -72,7 +82,6 @@ body {
     display: inline-block;
     border: none;
     outline: none;
-    background-color: transparent;
   }
   
   .dropdown-content {

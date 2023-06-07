@@ -14,7 +14,6 @@ window.addEventListener('message', (event) => {
   }
 });
 
-
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
   const url = e.target.closest('a').dataset.value;

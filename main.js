@@ -5,6 +5,7 @@ const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 const sharp = require('sharp');
 const { dialog } = require('electron');
+const { clipboard } = require('electron');
 
 let mainWindow;
 let tray;
@@ -73,44 +74,46 @@ function createWindow() {
     
       // After saving the screenshot, round the corners and composite it on the background
       sharp(image.toPNG())
-        .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
+    .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
+    .composite([{
+      input: mask,
+      blend: 'dest-in'
+    }])
+    .toBuffer()
+    .then(roundedImageBuffer => {
+      sharp(background)
         .composite([{
-          input: mask,
+          input: borderMask,
           blend: 'dest-in'
+        }, {
+          input: roundedImageBuffer,
+          top: padding,
+          left: padding,
+          blend: 'over'
         }])
         .toBuffer()
-        .then(roundedImageBuffer => {
-          sharp(background)
-            .composite([{
-              input: borderMask,
-              blend: 'dest-in'
-            }, {
-              input: roundedImageBuffer,
-              top: padding,
-              left: padding,
-              blend: 'over'
-            }])
-            .toBuffer()
-            .then(finalImageBuffer => {
-              dialog.showSaveDialog(mainWindow, {
-                title: 'Save screenshot',
-                defaultPath: 'screenshot.png',
-                filters: [{ name: 'Images', extensions: ['png'] }]
-              }).then(result => {
-                if (!result.canceled) {
-                  fs.writeFile(result.filePath, finalImageBuffer, err => {
-                    if (err) throw err;
-                    console.log('Screenshot saved.');
-                  });
-                }
-              }).catch(err => {
-                console.log(err);
+        .then(finalImageBuffer => {
+          // Write the image to the clipboard
+          clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
+
+          dialog.showSaveDialog(mainWindow, {
+            title: 'Save screenshot',
+            defaultPath: 'screenshot.png',
+            filters: [{ name: 'Images', extensions: ['png'] }]
+          }).then(result => {
+            if (!result.canceled) {
+              fs.writeFile(result.filePath, finalImageBuffer, err => {
+                if (err) throw err;
+                console.log('Screenshot saved.');
               });
-            });
+            }
+          }).catch(err => {
+            console.log(err);
+          });
         });
     });
-    
-    });
+});
+});
 
   });
   mainWindow.on('blur', () => {

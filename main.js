@@ -34,7 +34,7 @@ function createWindow() {
   });
   function processImage(image, callback) {
     const dimensions = image.getSize();
-    const padding = 100; // adjust this to change the size of the border
+    const padding = 60; // adjust this to change the size of the border
     const outerWidth = dimensions.width + 2 * padding;
     const outerHeight = dimensions.height + 2 * padding;
   

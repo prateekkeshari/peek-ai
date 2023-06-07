@@ -88,8 +88,8 @@ body {
     -webkit-app-region: no-drag;
     display: none;
     position: absolute; /* Set position to absolute */
-    top: 0.2px; /* Adjust as needed */
-    left: 2px; /* Adjust as needed */
+    top: 0.05px; /* Adjust as needed */
+    left: 0.4px; /* Adjust as needed */
     background-color: #f8f8f8;
     min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);

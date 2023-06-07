@@ -1,7 +1,9 @@
 const { app, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
+const sharp = require('sharp');
 
 let mainWindow;
 let tray;
@@ -88,6 +90,8 @@ app.on('ready', () => {
   const image = nativeImage.createFromPath(appIconPath);
   app.dock.setIcon(image);
 });
+
+
 app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
@@ -107,6 +111,69 @@ app.whenReady().then(() => {
       document.getElementById('urlInput').focus();
     `);
   });
+// Register the Command+S global shortcut for screenshot
+globalShortcut.register('CommandOrControl+;', () => {
+  // When the user presses Command+S, capture a screenshot of the webview
+  mainWindow.webContents.capturePage().then(image => {
+    const dimensions = image.getSize();
+    const padding = 40; // adjust this to change the size of the border
+    const outerWidth = dimensions.width + 2 * padding;
+    const outerHeight = dimensions.height + 2 * padding;
+  
+    fs.writeFile('screenshot.png', image.toPNG(), err => {
+      if (err) throw err
+      console.log('Screenshot saved.')
+
+      //gradient
+      const background = Buffer.from(
+        `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="10%" stop-color="#CE9FFC"/>
+              <stop offset="100%" stop-color="#7367F0"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
+        </svg>`
+      );
+      // Create a mask for rounding the corners of the screenshot
+      const mask = Buffer.from(
+        `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="12" ry="12"/></svg>`
+      );
+  
+      // Create a mask for rounding the corners of the border
+      const borderMask = Buffer.from(
+        `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="10" ry="10"/></svg>`
+      );
+  
+      // After saving the screenshot, round the corners and composite it on the background
+      sharp('screenshot.png')
+        .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
+        .composite([{
+          input: mask,
+          blend: 'dest-in'
+        }])
+        .toBuffer()
+        .then(roundedImageBuffer => {
+          sharp(background)
+            .composite([{
+              input: borderMask,
+              blend: 'dest-in'
+            }, {
+              input: roundedImageBuffer,
+              top: padding,
+              left: padding,
+              blend: 'over'
+            }])
+            .toFile('rounded-screenshot.png', (err, info) => {
+              if (err) throw err
+              console.log('Rounded screenshot saved.')
+            });
+        });
+    })
+  });  
+});
+
   autoUpdater.on('update-available', () => {
     mainWindow.webContents.send('update_available');
   });

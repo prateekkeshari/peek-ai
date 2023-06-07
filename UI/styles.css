@@ -91,7 +91,7 @@ body {
     top: 0.2px; /* Adjust as needed */
     left: 2px; /* Adjust as needed */
     background-color: #f8f8f8;
-    min-width: 120px;
+    min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     border-radius: 10px; /* Add border-radius */

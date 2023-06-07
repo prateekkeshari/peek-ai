@@ -32,7 +32,62 @@ function createWindow() {
     alwaysOnTop: true, // floating window
 
   });
+  function processImage(image, callback) {
+    const dimensions = image.getSize();
+    const padding = 100; // adjust this to change the size of the border
+    const outerWidth = dimensions.width + 2 * padding;
+    const outerHeight = dimensions.height + 2 * padding;
+  
+    // Create a new image with the background color
+    const background = Buffer.from(
+      `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="10%" stop-color="#CE9FFC"/>
+            <stop offset="100%" stop-color="#7367F0"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
+      </svg>`
+    );
+  
+    // Create a mask for rounding the corners of the screenshot
+    const mask = Buffer.from(
+      `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="15" ry="15"/></svg>`
+    );
+  
+    // Create a mask for rounding the corners of the border
+    const borderMask = Buffer.from(
+      `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="12" ry="12"/></svg>`
+    );
+  
+    // After saving the screenshot, round the corners and composite it on the background
+    sharp(image.toPNG())
+      .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
+      .composite([{
+        input: mask,
+        blend: 'dest-in'
+      }])
+      .toBuffer()
+      .then(roundedImageBuffer => {
+        sharp(background)
+          .composite([{
+            input: borderMask,
+            blend: 'dest-in'
+          }, {
+            input: roundedImageBuffer,
+            top: padding,
+            left: padding,
+            blend: 'over'
+          }])
+          .toBuffer()
+          .then(finalImageBuffer => {
+            callback(finalImageBuffer);
+          });
+      });
+  }
   mainWindow.on('focus', () => {
+
     // Link selector, register the Command+L shortcut
     globalShortcut.register('CommandOrControl+L', () => {
       // When the user presses Command+L, focus the URL input field
@@ -40,62 +95,12 @@ function createWindow() {
         document.getElementById('urlInput').focus();
       `);
     });
-    // Screenshot, register the Command+S shortcut
-    globalShortcut.register('CommandOrControl+S', () => {
+    // saved the screenshot
+    globalShortcut.register('CommandOrControl+Shift+S', () => {
       // When the user presses Command+S, capture a screenshot of the webview
-    mainWindow.webContents.capturePage().then(image => {
-      const dimensions = image.getSize();
-      const padding = 40; // adjust this to change the size of the border
-      const outerWidth = dimensions.width + 2 * padding;
-      const outerHeight = dimensions.height + 2 * padding;
-    
-      // Create a new image with the background color
-      const background = Buffer.from(
-        `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="10%" stop-color="#CE9FFC"/>
-              <stop offset="100%" stop-color="#7367F0"/>
-            </linearGradient>
-          </defs>
-          <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
-        </svg>`
-      );
-    
-      // Create a mask for rounding the corners of the screenshot
-      const mask = Buffer.from(
-        `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="12" ry="12"/></svg>`
-      );
-    
-      // Create a mask for rounding the corners of the border
-      const borderMask = Buffer.from(
-        `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="10" ry="10"/></svg>`
-      );
-    
-      // After saving the screenshot, round the corners and composite it on the background
-      sharp(image.toPNG())
-    .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
-    .composite([{
-      input: mask,
-      blend: 'dest-in'
-    }])
-    .toBuffer()
-    .then(roundedImageBuffer => {
-      sharp(background)
-        .composite([{
-          input: borderMask,
-          blend: 'dest-in'
-        }, {
-          input: roundedImageBuffer,
-          top: padding,
-          left: padding,
-          blend: 'over'
-        }])
-        .toBuffer()
-        .then(finalImageBuffer => {
-          // Write the image to the clipboard
-          clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
-
+      mainWindow.webContents.capturePage().then(image => {
+        processImage(image, finalImageBuffer => {
+          // Save the image
           dialog.showSaveDialog(mainWindow, {
             title: 'Save screenshot',
             defaultPath: 'screenshot.png',
@@ -111,14 +116,34 @@ function createWindow() {
             console.log(err);
           });
         });
+      });
     });
-});
-});
+
+    // copy the screenshot to clipboard 
+    globalShortcut.register('CommandOrControl+S', () => {
+      // When the user presses Command+S, capture a screenshot of the webview
+      mainWindow.webContents.capturePage().then(image => {
+        processImage(image, finalImageBuffer => {
+         // Copy the image to the clipboard
+    clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
+    // Show a dialog box to confirm that the image has been copied
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'Peek',
+      message: 'Image copied to clipboard 📸',
+      buttons: ['OK']
+    });
+    console.log('Clipboard saved.');
+    });
+    });
+    });
 
   });
+   // unregister the shortcuts
   mainWindow.on('blur', () => {
-    // When the window loses focus, unregister the Command+L shortcut
+    // When the window loses focus, unregister the shortcuts
     globalShortcut.unregister('CommandOrControl+L');
+    globalShortcut.unregister('CommandOrControl+Shift+S');
     globalShortcut.unregister('CommandOrControl+S');
   });
 
@@ -149,7 +174,6 @@ function showWindow() {
   mainWindow.show();
 }
 
-
 app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
   if (contents.getType() === 'webview') {
     contents.on('new-window', (newWindowEvent, url) => {
@@ -168,7 +192,6 @@ app.on('ready', () => {
   const image = nativeImage.createFromPath(appIconPath);
   app.dock.setIcon(image);
 });
-
 
 app.whenReady().then(() => {
   createWindow();

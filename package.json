@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "electron-context-menu": "^3.6.1",
+    "electron-localshortcut": "^3.2.1",
     "electron-updater": "^4.6.5",
     "sharp": "^0.32.1"
   },

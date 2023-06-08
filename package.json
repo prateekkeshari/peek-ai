@@ -1,7 +1,7 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple mac MenuBar bar to peek at a browser",
   "main": "main.js",
   "scripts": {

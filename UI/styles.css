@@ -117,7 +117,7 @@ body {
   }
   
   .dropdown-content a:hover {
-    background-color: rgb(232, 220, 240);
+    background-color: rgb(235, 234, 235);
     cursor: pointer; /* Change cursor on hover */
     border-radius: 10px;
     filter: blur(0); /* Remove the blur */

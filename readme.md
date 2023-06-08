@@ -1,36 +1,48 @@
 # Peek
 
-A simple MacOS app that displays a web page in a borderless window that can be shown or hidden from the system tray. 
+Peek is a MacOS Menu Bar application that allows you to interact with multiple AI chatbots in one place. It provides a seamless and intuitive user interface for interacting with AI chatbots like OpenAI's ChatGPT, Google's Bard, and Perplexity AI.
 
-## Use cases
-- Use it for chat.openai.com - a nice, always-on window without the need to use your OpenAI API key.
-- Use it to quickly look up something on the internet
-- Use it for testing web pages or web applications in a separate window without interfering with other browser windows.
-- Display a dashboard or analytics page for easy monitoring of key metrics.
-- Use it for research to keep multiple webpages open and easily accessible.
+## Features
+
+- **Multiple AI Chatbots**: Peek supports multiple AI chatbots. You can easily switch between different chatbots using the dropdown menu.
+- **Floating Window**: Use `⌘+J` to toggle the window and it'll always be on top. 
+
+- **Beautiful Screenshot**: You can take screenshot of your chat using the `⌘ +Shift+S` shortcut. The screenshot will be saved to your local machine.
+
+- **Clipboard Screenshot**: You can copy screenshot of your current view to your clipboard using the `⌘ +S` shortcut.
+
+- **Auto-Updater**: Peek automatically checks for updates and notifies you when an update is available.
+
+- **Custom Menu**: Peek provides a custom menu with options to check for updates, hide the app, quit the app, and more.
+
+- **Tray Icon**: Peek sits in your system tray for easy access.
 
 ## Installation
 
-1. Clone or download the repository.
-2. Install dependencies by running `npm install`.
-3. Start the app by running `npm start`.
+To install Peek, download the latest release from the [Releases](https://github.com/prateekkeshari/peek-ai/releases) page.
 
 ## Usage
 
-When the app is running, you can show or hide the window by clicking on the app icon in the system tray. The window will display a web page with a URL that 
-you can enter in the text input field.
+After installing Peek, you can launch the app from your Applications folder on MacOS. 
+To switch between different chatbots, click on the dropdown menu at the top of the app and select the chatbot you want to use.
+To take a screenshot of your chat, press `⌘l+Shift+S`. The screenshot will be saved to your local machine.
+To copy a screenshot to your clipboard, press `⌘+S`.
 
-## Development
+## Use Cases
 
-To modify the app, you can edit the files in the `UI` directory. The `index.html` file contains the HTML code for the app, the `styles.css` file contains the CSS code, and the `scripts.js` file contains the JavaScript code. The `preload.js` file contains code that runs in the app's renderer process and has access 
-to Node.js APIs.
+Peek is great for anyone who uses AI chatbots, whether you're a developer, a writer, a student, or just someone who likes to chat with AI. Here are a few ways you could use Peek:
 
-To run the app in development mode, run `npm run dev`. This will start the app with the DevTools window open for debugging.
+- **Developers**: Use Peek to test your chatbot's responses and take screenshots for documentation.
+- **Writers**: Use Peek to chat with AI and get ideas for your writing.
+- **Students**: Use Peek to get help with your homework from AI.
+- **Everyone**: Use Peek to have fun chatting with AI and see what kind of funny or interesting responses you can get.
 
-## What's Coming Next
--  [ ] Implement resizable window functionality to allow users to adjust the size of the window to their liking.
--  [ ] Add a "frequently visited sites" feature to allow users to quickly access their most frequently visited websites.
--  [ ] Add a toggle for the address bar to allow users to hide or show the address bar as needed.
+We hope you enjoy using Peek!
+
+## Contributing
+
+Contributions are welcome! Please open an issue if you encounter a bug or have a feature request.
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+
+Peek is licensed under the MIT License. See [LICENSE](LICENSE) for more information.

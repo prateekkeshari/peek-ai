@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
+const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
@@ -6,6 +6,7 @@ const { autoUpdater } = require('electron-updater');
 const sharp = require('sharp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
+
 
 let mainWindow;
 let tray;
@@ -34,7 +35,7 @@ function createWindow() {
   });
   function processImage(image, callback) {
     const dimensions = image.getSize();
-    const padding = 60; // adjust this to change the size of the border
+    const padding = 40; // adjust this to change the size of the border
     const outerWidth = dimensions.width + 2 * padding;
     const outerHeight = dimensions.height + 2 * padding;
   
@@ -191,6 +192,118 @@ app.on('ready', () => {
   const appIconPath = path.join(__dirname, 'peek-dock.png');
   const image = nativeImage.createFromPath(appIconPath);
   app.dock.setIcon(image);
+
+  // Create a custom menu
+  const menu = new Menu();
+
+  menu.append(new MenuItem({
+    label: app.getName(),
+    submenu: [
+      {
+        role: 'about'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Check for Updates...',
+        click: () => {
+          ipcMain.emit('check_for_update');
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'hide'
+      },
+      {
+        role: 'hideothers'
+      },
+      {
+        role: 'unhide'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'quit'
+      }
+    ]
+  }));
+
+  // Add the File menu
+  menu.append(new MenuItem({
+    label: 'File',
+    submenu: [
+      { role: 'close' }
+    ]
+  }));
+
+  // Add the Edit menu
+  menu.append(new MenuItem({
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' }
+    ]
+  }));
+
+  // Add the View menu
+  menu.append(new MenuItem({
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { role: 'toggledevtools' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  }));
+
+  // Add the Window menu
+  menu.append(new MenuItem({
+    label: 'Window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      { type: 'separator' },
+      { role: 'front' }
+    ]
+  }));
+
+  // Add the Help menu
+  menu.append(new MenuItem({
+    label: 'Help',
+    submenu: [
+      {
+        label: 'Release Notes',
+        click: async () => {
+          await shell.openExternal('https://github.com/prateekkeshari/peek-ai/releases');
+        }
+      },
+     
+      { type: 'separator' },
+      {
+        label: 'Share feedback',
+        click: async () => {
+          await shell.openExternal('mailto:hi@prateek.de');
+        }
+      }
+      
+    ]
+  }));
+
+  // Set the custom menu as the application menu
+  Menu.setApplicationMenu(menu);
 });
 
 app.whenReady().then(() => {
@@ -261,4 +374,8 @@ app.on('will-quit', () => {
 
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
+});
+
+ipcMain.on('check_for_update', () => {
+  autoUpdater.checkForUpdatesAndNotify();
 });

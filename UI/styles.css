@@ -31,7 +31,7 @@ body {
     }
     #urlInput
     {
-    color:#adadad7d;
+    color:#dededec5;
     }
     #urlInput:focus{
       outline: none;
@@ -107,7 +107,7 @@ body {
     text-decoration: none;
     display: flex; /* Change to flex */
     align-items: center; /* Align items vertically */
-    filter: blur(2px); /* Apply a blur */
+    filter: blur(1.7px); /* Apply a blur */
     transition: filter 0.3s ease; /* Smooth out the transition */
   }
   
@@ -117,7 +117,7 @@ body {
   }
   
   .dropdown-content a:hover {
-    background-color: rgb(249, 241, 230);
+    background-color: rgb(232, 220, 240);
     cursor: pointer; /* Change cursor on hover */
     border-radius: 10px;
     filter: blur(0); /* Remove the blur */

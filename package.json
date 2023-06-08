@@ -1,11 +1,12 @@
 {
   "name": "peek",
-  "version": "1.0.0",
+  "productName": "Peek",
+  "version": "1.0.2",
   "description": "A simple mac MenuBar bar to peek at a browser",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder --dir",
+    "pack": "build --dir",
     "dist": "electron-builder"
   },
   "keywords": [
@@ -27,32 +28,19 @@
     "electron-builder": "^24.4.0"
   },
   "build": {
-    "appId": "com.example.peek",
+    "appId": "de.prateek.peek",
     "productName": "Peek",
     "directories": {
       "buildResources": "build"
     },
     "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "gatekeeperAssess": false,
+      "category": "public.app-category.developer-tools",
       "icon": "peek-dock.icns",
-      "category": "public.app-category.utilities",
-      "target": [
-        "pkg",
-        "zip"
-      ]
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
+      "target": "zip"
     },
     "win": {
       "target": "nsis"
@@ -66,7 +54,7 @@
     },
     "publish": {
       "provider": "github",
-      "repo": "peek",
+      "repo": "peek-ai",
       "owner": "prateekkeshari",
       "releaseType": "draft"
     }

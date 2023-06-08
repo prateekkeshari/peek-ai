@@ -312,12 +312,14 @@ app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify();
   tray = new Tray(path.join(__dirname, 'peek.png'));
   tray.on('click', () => {
-    if (mainWindow.isVisible()) {
+    if (mainWindow === null) {
+      createWindow();
+    } else if (mainWindow.isVisible()) {
       mainWindow.hide();
     } else {
       showWindow();
     }
-  });
+  });  
 
   // Register the Command+L global shortcut
   globalShortcut.register('CommandOrControl+L', () => {

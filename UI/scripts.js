@@ -1,16 +1,16 @@
 const webview = document.getElementById('webview');
 const urlInput = document.getElementById('urlInput');
 
-window.addEventListener('message', (event) => {
-  if (event.data === 'update_available') {
-    // Notify the user that an update is available
-    alert('An update is available. Downloading...');
-  } else if (event.data === 'update_downloaded') {
-    // Prompt the user to restart the app and apply the update
-    if (confirm('Update downloaded. Restart the app to apply the update?')) {
-      // Send a message to the main process to restart the app
-      window.postMessage('restart_app', '*');
-    }
+window.myIpcRenderer.on('update_available', () => {
+  // Notify the user that an update is available
+  alert('An update is available. Downloading...');
+});
+
+window.myIpcRenderer.on('update_downloaded', () => {
+  // Prompt the user to restart the app and apply the update
+  if (confirm('Update downloaded. Restart the app to apply the update?')) {
+    // Send a message to the main process to restart the app
+    window.myIpcRenderer.send('install_update');
   }
 });
 

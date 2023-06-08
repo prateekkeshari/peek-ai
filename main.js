@@ -17,8 +17,6 @@ function createWindow() {
     height: 650,
     minWidth: 450, // Set the minimum width
     minHeight: 600, // Set the minimum height
-    maxWidth: 800, // Set the maximum width
-    maxHeight: 1000, // Set the maximum height
     show: true,
     frame:false,
     transparent:true,
@@ -128,10 +126,29 @@ function createWindow() {
          // Copy the image to the clipboard
     clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
     // Show a dialog box to confirm that the image has been copied
+    const detail = [
+      'The question is: where do you paste it?',
+      'I think the screenshot looks beautiful!',
+      'That is a master shot!',
+      'Totally worth capturing. Paste it away!',
+      'Now, where will this masterpiece end up?',
+      'A moment frozen in time, ready to be pasted!',
+      'Your screenshot is ready for its debut. Paste it!',
+      'That\'s one for the scrapbook!',
+      'A picture is worth a thousand words, and this one\'s on your clipboard!',
+      'Your screenshot is ready to make its mark!',
+      'That\'s a screenshot worth sharing!',
+      'Your screenshot is ready to see the world!',
+      'A moment captured, ready to be pasted!',
+      'Your screenshot is ready for the spotlight!',
+      'Your screenshot is ready to be pasted into fame!'
+    ];    
+    const randomDetail=detail[Math.floor(Math.random() * detail.length)];
     dialog.showMessageBox(mainWindow, {
       type: 'info',
       title: 'Peek',
-      message: 'Image copied to clipboard 📸',
+      message: 'Screenshot copied to clipboard!',
+      detail: randomDetail,
       buttons: ['OK']
     });
     console.log('Clipboard saved.');
@@ -381,4 +398,8 @@ ipcMain.on('restart_app', () => {
 
 ipcMain.on('check_for_update', () => {
   autoUpdater.checkForUpdatesAndNotify();
+});
+
+ipcMain.on('install_update', () => {
+  autoUpdater.quitAndInstall();
 });

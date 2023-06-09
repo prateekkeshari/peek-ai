@@ -3,3 +3,4 @@ dist/
 node_modules/
 build/
 notarize.txt
+preload.js

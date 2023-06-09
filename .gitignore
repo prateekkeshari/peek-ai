@@ -4,3 +4,4 @@ node_modules/
 build/
 notarize.txt
 preload.js
+.electron-main.js

@@ -206,7 +206,7 @@ app.on('ready', () => {
   app.setName('Peek');
   
   // Set the Dock icon
-  const appIconPath = path.join(__dirname, 'peek-dock.png');
+  const appIconPath = path.join(__dirname, '/icons/peek-dock.png');
   const image = nativeImage.createFromPath(appIconPath);
   app.dock.setIcon(image);
 
@@ -332,7 +332,7 @@ app.on('ready', () => {
 app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
-  tray = new Tray(path.join(__dirname, 'peek.png'));
+  tray = new Tray(path.join(__dirname, '/icons/peek.png'));
   tray.on('click', () => {
     if (mainWindow === null) {
       createWindow();

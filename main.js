@@ -33,7 +33,7 @@ function createWindow() {
   });
   function processImage(image, callback) {
     const dimensions = image.getSize();
-    const padding = 40; // adjust this to change the size of the border
+    const padding = 65; // adjust this to change the size of the border
     const outerWidth = dimensions.width + 2 * padding;
     const outerHeight = dimensions.height + 2 * padding;
   
@@ -315,8 +315,13 @@ app.on('ready', () => {
         click: async () => {
           await shell.openExternal('mailto:hi@prateek.de');
         }
-      }
-      
+      },
+      {
+        label: 'Follow on Twitter',
+        click: async () => {
+          await shell.openExternal('https://twitter.com/prkeshari');
+        }
+      },
     ]
   }));
 

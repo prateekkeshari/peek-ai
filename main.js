@@ -7,7 +7,6 @@ const sharp = require('sharp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
 
-
 let mainWindow;
 let tray;
 
@@ -21,15 +20,16 @@ function createWindow() {
     frame:false,
     transparent:true,
     fullscreenable: false,
+    backgroundColor: "#FF5533",
     resizable: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
+      devTools:false,
     },
     alwaysOnTop: true, // floating window
-
   });
   function processImage(image, callback) {
     const dimensions = image.getSize();
@@ -277,7 +277,6 @@ app.on('ready', () => {
     submenu: [
       { role: 'reload' },
       { role: 'forcereload' },
-      { role: 'toggledevtools' },
       { type: 'separator' },
       { role: 'resetzoom' },
       { role: 'zoomin' },

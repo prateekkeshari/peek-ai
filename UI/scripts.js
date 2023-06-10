@@ -1,5 +1,13 @@
 const webview = document.getElementById('webview');
-const urlInput = document.getElementById('urlInput');
+const serviceName = document.getElementById('serviceName');
+
+document.getElementById('dropdownContent').addEventListener('click', function(e) {
+  e.preventDefault();
+  const url = e.target.closest('a').dataset.value;
+  document.getElementById('selectedImage').src = e.target.closest('a').querySelector('img').src;
+  serviceName.textContent = e.target.closest('a').textContent.trim();
+  webview.loadURL(url);
+});
 
 window.myIpcRenderer.on('update_available', () => {
   // Notify the user that an update is available
@@ -21,23 +29,6 @@ document.getElementById('dropdownContent').addEventListener('click', function(e)
   webview.loadURL(url);
 });
 
-function extractDomain(url) {
-  const domain = url.replace(/(https?:\/\/)?(www\.)?/, '').split('/')[0];
-  return domain;
-}
-
-urlInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    let url = urlInput.value;
-    if (url) {
-      if (!/^https?:\/\//i.test(url)) {
-        url = `http://${url}`;
-      }
-      webview.loadURL(url);
-    }
-  }
-});
-
 function resizeWebview() {
   const controlsHeight = document.getElementById('controls').offsetHeight;
   const windowHeight = document.documentElement.clientHeight;
@@ -46,19 +37,3 @@ function resizeWebview() {
 
 window.addEventListener('resize', resizeWebview);
 resizeWebview();
-
-webview.addEventListener('did-start-loading', () => {
-  const fullUrl = webview.getURL();
-  const domain = extractDomain(fullUrl);
-  urlInput.value = domain;
-});
-
-urlInput.addEventListener('focus', () => {
-  urlInput.value = webview.getURL();
-});
-
-urlInput.addEventListener('blur', () => {
-  const fullUrl = webview.getURL();
-  const domain = extractDomain(fullUrl);
-  urlInput.value = domain;
-});

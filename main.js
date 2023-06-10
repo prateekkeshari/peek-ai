@@ -16,9 +16,9 @@ function createWindow() {
     height: 650,
     minWidth: 450, // Set the minimum width
     minHeight: 600, // Set the minimum height
-    show: true,
-    frame:false,
-    transparent:true,
+    show: false, // Don't show the window immediately
+    frame: false,
+    transparent: true,
     fullscreenable: false,
     backgroundColor: "#FF5533",
     resizable: true,
@@ -27,9 +27,27 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:false,
+      devTools: false,
     },
     alwaysOnTop: true, // floating window
+  });
+
+  // Wait for the window to be ready
+  mainWindow.once('ready-to-show', () => {
+    // Get the bounds of the tray icon
+    const trayBounds = tray.getBounds();
+
+    // Calculate the window position
+    const windowPosition = {
+      x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
+      y: Math.round(trayBounds.y + trayBounds.height)
+    };
+
+    // Set the window position
+    mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+
+    // Show the window
+    mainWindow.show();
   });
   function processImage(image, callback) {
     const dimensions = image.getSize();
@@ -85,6 +103,22 @@ function createWindow() {
           });
       });
   }
+  fs.readFile('shortcut.txt', 'utf8', (err, data) => {
+    let shortcut;
+    if (err) {
+      console.log('Error reading shortcut.txt:', err);
+      shortcut = 'CmdOrControl+J'; // Default shortcut
+    } else {
+      shortcut = data;
+    }
+    globalShortcut.register(shortcut, () => {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        showWindow();
+      }
+    });
+  });  
   mainWindow.on('focus', () => {
 
     // Link selector, register the Command+L shortcut
@@ -257,19 +291,43 @@ app.on('ready', () => {
     ]
   }));
 
-  // Add the Edit menu
-  menu.append(new MenuItem({
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'selectall' }
-    ]
-  }));
+ // Add the Edit menu
+menu.append(new MenuItem({
+  label: 'Edit',
+  submenu: [
+    { role: 'undo' },
+    { role: 'redo' },
+    { type: 'separator' },
+    { role: 'cut' },
+    { role: 'copy' },
+    { role: 'paste' },
+    { role: 'selectall' },
+    { type: 'separator' },
+    {
+      label: 'Set Toggle Window Shortcut...',
+      click: () => {
+        shortcutWindow = new BrowserWindow({
+          width: 400,
+          height: 400,
+          frame: true,
+          show:true,
+          maximizable:false,
+          minimizable:false,
+          movable:true,
+          closable:true,
+          titleBarStyle:"hidden",
+          resizable:false,
+          webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+          }
+        });
+        shortcutWindow.loadFile('shortcut.html');
+      }
+    }    
+  ]
+}));
 
   // Add the View menu
   menu.append(new MenuItem({
@@ -406,4 +464,22 @@ ipcMain.on('check_for_update', () => {
 
 ipcMain.on('install_update', () => {
   autoUpdater.quitAndInstall();
+});
+
+ipcMain.on('set_shortcut', (event, shortcut) => {
+  // Unregister the old shortcut
+  globalShortcut.unregister('CmdOrControl+J');
+  // Register the new shortcut
+  globalShortcut.register(shortcut, () => {
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      showWindow();
+    }
+  });
+  // Persist the new shortcut
+  fs.writeFile('shortcut.txt', shortcut, err => {
+    if (err) throw err;
+    console.log('Shortcut saved.');
+  });
 });

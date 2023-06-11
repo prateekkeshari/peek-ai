@@ -9,18 +9,17 @@ document.getElementById('dropdownContent').addEventListener('click', function(e)
   webview.loadURL(url);
 });
 
-window.myIpcRenderer.on('update_available', () => {
-  // Notify the user that an update is available
-  alert('An update is available. Downloading...');
+window.myIpcRenderer.on('update_available', (event, newVersion) => {
+  // Notify the main process that an update is available
+  window.myIpcRenderer.send('prompt_update', newVersion);
 });
 
-window.myIpcRenderer.on('update_downloaded', () => {
-  // Prompt the user to restart the app and apply the update
-  if (confirm('Update downloaded. Restart the app to apply the update?')) {
-    // Send a message to the main process to restart the app
-    window.myIpcRenderer.send('install_update');
-  }
+
+window.myIpcRenderer.on('download_update', () => {
+  // Download the update
+  window.myIpcRenderer.send('start_download');
 });
+
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();

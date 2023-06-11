@@ -9,6 +9,132 @@ const { clipboard } = require('electron');
 
 let mainWindow;
 let tray;
+let icon;
+function toggleWindow() {
+  if (mainWindow.isVisible()) {
+    mainWindow.hide();
+  } else {
+    mainWindow.show();
+  }
+}
+
+
+function processImage(image, callback) {
+  const dimensions = image.getSize();
+  const padding = 65; // adjust this to change the size of the border
+  const outerWidth = dimensions.width + 2 * padding;
+  const outerHeight = dimensions.height + 2 * padding;
+
+  // Create a new image with the background color
+  const background = Buffer.from(
+    `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="10%" stop-color="#CE9FFC"/>
+          <stop offset="100%" stop-color="#7367F0"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
+    </svg>`
+  );
+
+  // Create a mask for rounding the corners of the screenshot
+  const mask = Buffer.from(
+    `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="15" ry="15"/></svg>`
+  );
+
+  // Create a mask for rounding the corners of the border
+  const borderMask = Buffer.from(
+    `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="12" ry="12"/></svg>`
+  );
+
+  // After saving the screenshot, round the corners and composite it on the background
+  sharp(image.toPNG())
+    .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
+    .composite([{
+      input: mask,
+      blend: 'dest-in'
+    }])
+    .toBuffer()
+    .then(roundedImageBuffer => {
+      sharp(background)
+        .composite([{
+          input: borderMask,
+          blend: 'dest-in'
+        }, {
+          input: roundedImageBuffer,
+          top: padding,
+          left: padding,
+          blend: 'over'
+        }])
+        .toBuffer()
+        .then(finalImageBuffer => {
+          callback(finalImageBuffer);
+        });
+    });
+}
+
+function screenshotToClipboard() {
+  // When the user presses Command+S, capture a screenshot of the webview
+  mainWindow.webContents.capturePage().then(image => {
+    processImage(image, finalImageBuffer => {
+      // Copy the image to the clipboard
+      clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
+      // Show a dialog box to confirm that the image has been copied
+      const detail = [
+        'The question is: where do you paste it?',
+        'I think the screenshot looks beautiful!',
+        'That is a master shot!',
+        'Totally worth capturing. Paste it away!',
+        'Now, where will this masterpiece end up?',
+        'A moment frozen in time, ready to be pasted!',
+        'Your screenshot is ready for its debut. Paste it!',
+        'That\'s one for the scrapbook!',
+        'A picture is worth a thousand words, and this one\'s on your clipboard!',
+        'Your screenshot is ready to make its mark!',
+        'That\'s a screenshot worth sharing!',
+        'Your screenshot is ready to see the world!',
+        'A moment captured, ready to be pasted!',
+        'Your screenshot is ready for the spotlight!',
+        'Your screenshot is ready to be pasted into fame!'
+      ];    
+      const randomDetail=detail[Math.floor(Math.random() * detail.length)];
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Peek',
+        message: 'Screenshot copied to clipboard!',
+        detail: randomDetail,
+        buttons: ['OK'],
+        icon: icon
+      });
+      console.log('Clipboard saved.');
+    });
+  });
+}
+
+function saveScreenshot() {
+  // When the user presses Command+S, capture a screenshot of the webview
+  mainWindow.webContents.capturePage().then(image => {
+    processImage(image, finalImageBuffer => {
+      // Save the image
+      dialog.showSaveDialog(mainWindow, {
+        title: 'Save screenshot',
+        defaultPath: 'screenshot.png',
+        filters: [{ name: 'Images', extensions: ['png'] }]
+      }).then(result => {
+        if (!result.canceled) {
+          fs.writeFile(result.filePath, finalImageBuffer, err => {
+            if (err) throw err;
+            console.log('Screenshot saved.');
+          });
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+    });
+  });
+}
+
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -16,24 +142,22 @@ function createWindow() {
     height: 650,
     minWidth: 450, // Set the minimum width
     minHeight: 600, // Set the minimum height
-    show: false, // Don't show the window immediately
-    frame: false,
-    transparent: true,
+    show: false,
+    frame:false,
+    transparent:true,
     fullscreenable: false,
-    backgroundColor: "#FF5533",
     resizable: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools: false,
+      devTools:false,
     },
     alwaysOnTop: true, // floating window
   });
-
-  // Wait for the window to be ready
-  mainWindow.once('ready-to-show', () => {
+   // Wait for the window to be ready
+   mainWindow.once('ready-to-show', () => {
     // Get the bounds of the tray icon
     const trayBounds = tray.getBounds();
 
@@ -49,152 +173,17 @@ function createWindow() {
     // Show the window
     mainWindow.show();
   });
-  function processImage(image, callback) {
-    const dimensions = image.getSize();
-    const padding = 65; // adjust this to change the size of the border
-    const outerWidth = dimensions.width + 2 * padding;
-    const outerHeight = dimensions.height + 2 * padding;
-  
-    // Create a new image with the background color
-    const background = Buffer.from(
-      `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="10%" stop-color="#CE9FFC"/>
-            <stop offset="100%" stop-color="#7367F0"/>
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
-      </svg>`
-    );
-  
-    // Create a mask for rounding the corners of the screenshot
-    const mask = Buffer.from(
-      `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="15" ry="15"/></svg>`
-    );
-  
-    // Create a mask for rounding the corners of the border
-    const borderMask = Buffer.from(
-      `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="12" ry="12"/></svg>`
-    );
-  
-    // After saving the screenshot, round the corners and composite it on the background
-    sharp(image.toPNG())
-      .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
-      .composite([{
-        input: mask,
-        blend: 'dest-in'
-      }])
-      .toBuffer()
-      .then(roundedImageBuffer => {
-        sharp(background)
-          .composite([{
-            input: borderMask,
-            blend: 'dest-in'
-          }, {
-            input: roundedImageBuffer,
-            top: padding,
-            left: padding,
-            blend: 'over'
-          }])
-          .toBuffer()
-          .then(finalImageBuffer => {
-            callback(finalImageBuffer);
-          });
-      });
-  }
-  fs.readFile('shortcut.txt', 'utf8', (err, data) => {
-    let shortcut;
-    if (err) {
-      console.log('Error reading shortcut.txt:', err);
-      shortcut = 'CmdOrControl+J'; // Default shortcut
-    } else {
-      shortcut = data;
-    }
-    globalShortcut.register(shortcut, () => {
-      if (mainWindow.isVisible()) {
-        mainWindow.hide();
-      } else {
-        showWindow();
-      }
-    });
-  });  
   mainWindow.on('focus', () => {
-
-    // Link selector, register the Command+L shortcut
-    globalShortcut.register('CommandOrControl+L', () => {
-      // When the user presses Command+L, focus the URL input field
-      mainWindow.webContents.executeJavaScript(`
-        document.getElementById('urlInput').focus();
-      `);
-    });
     // saved the screenshot
-    globalShortcut.register('CommandOrControl+Shift+S', () => {
-      // When the user presses Command+S, capture a screenshot of the webview
-      mainWindow.webContents.capturePage().then(image => {
-        processImage(image, finalImageBuffer => {
-          // Save the image
-          dialog.showSaveDialog(mainWindow, {
-            title: 'Save screenshot',
-            defaultPath: 'screenshot.png',
-            filters: [{ name: 'Images', extensions: ['png'] }]
-          }).then(result => {
-            if (!result.canceled) {
-              fs.writeFile(result.filePath, finalImageBuffer, err => {
-                if (err) throw err;
-                console.log('Screenshot saved.');
-              });
-            }
-          }).catch(err => {
-            console.log(err);
-          });
-        });
-      });
-    });
+    globalShortcut.register('CommandOrControl+Shift+S', saveScreenshot);
 
     // copy the screenshot to clipboard 
-    globalShortcut.register('CommandOrControl+S', () => {
-      // When the user presses Command+S, capture a screenshot of the webview
-      mainWindow.webContents.capturePage().then(image => {
-        processImage(image, finalImageBuffer => {
-         // Copy the image to the clipboard
-    clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
-    // Show a dialog box to confirm that the image has been copied
-    const detail = [
-      'The question is: where do you paste it?',
-      'I think the screenshot looks beautiful!',
-      'That is a master shot!',
-      'Totally worth capturing. Paste it away!',
-      'Now, where will this masterpiece end up?',
-      'A moment frozen in time, ready to be pasted!',
-      'Your screenshot is ready for its debut. Paste it!',
-      'That\'s one for the scrapbook!',
-      'A picture is worth a thousand words, and this one\'s on your clipboard!',
-      'Your screenshot is ready to make its mark!',
-      'That\'s a screenshot worth sharing!',
-      'Your screenshot is ready to see the world!',
-      'A moment captured, ready to be pasted!',
-      'Your screenshot is ready for the spotlight!',
-      'Your screenshot is ready to be pasted into fame!'
-    ];    
-    const randomDetail=detail[Math.floor(Math.random() * detail.length)];
-    dialog.showMessageBox(mainWindow, {
-      type: 'info',
-      title: 'Peek',
-      message: 'Screenshot copied to clipboard!',
-      detail: randomDetail,
-      buttons: ['OK']
-    });
-    console.log('Clipboard saved.');
-    });
-    });
-    });
-
+    globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
   });
-   // unregister the shortcuts
+
+  // unregister the shortcuts
   mainWindow.on('blur', () => {
     // When the window loses focus, unregister the shortcuts
-    globalShortcut.unregister('CommandOrControl+L');
     globalShortcut.unregister('CommandOrControl+Shift+S');
     globalShortcut.unregister('CommandOrControl+S');
   });
@@ -240,9 +229,9 @@ app.on('ready', () => {
   app.setName('Peek');
   
   // Set the Dock icon
-  const appIconPath = path.join(__dirname, '/icons/peek-dock.png');
-  const image = nativeImage.createFromPath(appIconPath);
-  app.dock.setIcon(image);
+  const iconPath = path.join(__dirname, '/icons/peek-dock.png');
+  icon = nativeImage.createFromPath(iconPath);
+  app.dock.setIcon(icon);
 
   // Create a custom menu
   const menu = new Menu();
@@ -291,56 +280,45 @@ app.on('ready', () => {
     ]
   }));
 
- // Add the Edit menu
-menu.append(new MenuItem({
-  label: 'Edit',
-  submenu: [
-    { role: 'undo' },
-    { role: 'redo' },
-    { type: 'separator' },
-    { role: 'cut' },
-    { role: 'copy' },
-    { role: 'paste' },
-    { role: 'selectall' },
-    { type: 'separator' },
-    {
-      label: 'Set Toggle Window Shortcut...',
-      click: () => {
-        shortcutWindow = new BrowserWindow({
-          width: 400,
-          height: 400,
-          frame: true,
-          show:true,
-          maximizable:false,
-          minimizable:false,
-          movable:true,
-          closable:true,
-          titleBarStyle:"hidden",
-          resizable:false,
-          webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
-            preload: path.join(__dirname, 'preload.js')
-          }
-        });
-        shortcutWindow.loadFile('shortcut.html');
-      }
-    }    
-  ]
-}));
+  // Add the Edit menu
+  menu.append(new MenuItem({
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'selectall' }
+    ]
+  }));
 
   // Add the View menu
   menu.append(new MenuItem({
-    label: 'View',
+    label: 'Shortcuts',
     submenu: [
+      { 
+        label: 'Toggle Window', 
+        accelerator: 'CmdOrCtrl+J',
+        click: toggleWindow
+      },
+      { 
+        label: 'Screenshot to Clipboard', 
+        accelerator: 'CmdOrCtrl+S',
+        click: screenshotToClipboard
+      },
+      { 
+        label: 'Save Screenshot', 
+        accelerator: 'CmdOrCtrl+Shift+S',
+        click: saveScreenshot
+      },
+      { type: 'separator' },
       { role: 'reload' },
       { role: 'forcereload' },
       { type: 'separator' },
-      { role: 'resetzoom' },
       { role: 'zoomin' },
       { role: 'zoomout' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' }
     ]
   }));
 
@@ -386,9 +364,36 @@ menu.append(new MenuItem({
   Menu.setApplicationMenu(menu);
 });
 
+let updateInterval;
+
 app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
+
+  // Set autoInstallOnAppQuit to true to apply updates silently
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  // Listen for the 'error' event and handle it
+  autoUpdater.on('error', (error) => {
+    console.error('There was a problem updating the application');
+    console.error(error);
+    // Optionally, you could notify the user that there was a problem
+  });
+
+  // Listen for the 'download-progress' event and handle it
+  autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    console.log(log_message);
+    // Optionally, you could display a progress bar or some other form of feedback
+  });
+
+  // Check for updates every 24 hours
+  updateInterval = setInterval(() => {
+    autoUpdater.checkForUpdatesAndNotify();
+  }, 24 * 60 * 60 * 1000);
+
   tray = new Tray(path.join(__dirname, '/icons/peek.png'));
   tray.on('click', () => {
     if (mainWindow === null) {
@@ -399,7 +404,6 @@ app.whenReady().then(() => {
       showWindow();
     }
   });  
-
   // Register the Command+L global shortcut
   globalShortcut.register('CommandOrControl+L', () => {
     // When the user presses Command+L, focus the URL input field
@@ -411,9 +415,9 @@ app.whenReady().then(() => {
 
 
 
-  autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('update_available');
-  });
+autoUpdater.on('update-available', (info) => {
+  mainWindow.webContents.send('update_available', info.version);
+});
   
   autoUpdater.on('update-downloaded', () => {
     mainWindow.webContents.send('update_downloaded');
@@ -427,15 +431,15 @@ app.whenReady().then(() => {
     });
   });
   // Register the global shortcut
-globalShortcut.register('CmdOrCtrl+J', () => {
-  if (mainWindow.isVisible()) {
-    mainWindow.hide(); // Hide the app window when the shortcut is pressed again
-  } else {
-    showWindow();
-  }
-});
+// Use the toggleWindow function in the globalShortcut.register call
+globalShortcut.register('CmdOrCtrl+J', toggleWindow);
 
 });
+
+app.on('before-quit', () => {
+  clearInterval(updateInterval);
+});
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -444,10 +448,13 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (mainWindow === null) {
+  if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  } else {
+    mainWindow.show();
   }
 });
+
 
 app.on('will-quit', () => {
   // Unregister the global shortcut
@@ -459,27 +466,47 @@ ipcMain.on('restart_app', () => {
 });
 
 ipcMain.on('check_for_update', () => {
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates().then((updateCheckResult) => {
+    if (updateCheckResult.updateAvailable) {
+      mainWindow.webContents.send('update_available');
+    } else {
+      const options = {
+        type: 'info',
+        buttons: ['OK'],
+        defaultId: 0,
+        title: 'No Update Available',
+        message: `You are up to date 🙌🏼`,
+        icon: path.join(__dirname, 'icon/peek-dock.png') // replace with the path to your icon
+      };
+
+      dialog.showMessageBox(options);
+    }
+  });
 });
+
+
 
 ipcMain.on('install_update', () => {
   autoUpdater.quitAndInstall();
 });
 
-ipcMain.on('set_shortcut', (event, shortcut) => {
-  // Unregister the old shortcut
-  globalShortcut.unregister('CmdOrControl+J');
-  // Register the new shortcut
-  globalShortcut.register(shortcut, () => {
-    if (mainWindow.isVisible()) {
-      mainWindow.hide();
-    } else {
-      showWindow();
+ipcMain.on('prompt_update', (event, newVersion) => {
+  const currentVersion = app.getVersion();
+  const options = {
+    type: 'question',
+    buttons: ['Download now', 'Remind me later'],
+    defaultId: 0,
+    title: 'Update available',
+    message: `A new version (${newVersion}) is available. You are currently using version ${currentVersion}. Would you like to download the new version now?`
+  };
+
+  dialog.showMessageBox(options).then((response) => {
+    if (response.response === 0) {
+      // User chose to download the update now
+      event.sender.send('download_update');
     }
   });
-  // Persist the new shortcut
-  fs.writeFile('shortcut.txt', shortcut, err => {
-    if (err) throw err;
-    console.log('Shortcut saved.');
-  });
+});
+ipcMain.on('start_download', () => {
+  autoUpdater.downloadUpdate();
 });

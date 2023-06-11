@@ -1,7 +1,7 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {
@@ -39,7 +39,7 @@
       "entitlementsInherit": "build/entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.developer-tools",
-      "icon": "/icons/peek-dock.icns",
+      "icon": "icons/peek-dock.icns",
       "target": "zip"
     },
     "win": {

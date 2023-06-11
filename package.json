@@ -1,7 +1,7 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {

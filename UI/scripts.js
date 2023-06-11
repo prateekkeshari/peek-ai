@@ -14,12 +14,18 @@ window.myIpcRenderer.on('update_available', (event, newVersion) => {
   window.myIpcRenderer.send('prompt_update', newVersion);
 });
 
+window.myIpcRenderer.on('update_downloaded', () => {
+  // Prompt the user to install the update
+  const response = confirm('The update has been downloaded. Would you like to install it now?');
+  if (response) {
+    window.myIpcRenderer.send('install_update');
+  }
+});
 
 window.myIpcRenderer.on('download_update', () => {
   // Download the update
   window.myIpcRenderer.send('start_download');
 });
-
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();

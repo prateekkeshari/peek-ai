@@ -403,17 +403,7 @@ app.whenReady().then(() => {
     } else {
       showWindow();
     }
-  });  
-  // Register the Command+L global shortcut
-  globalShortcut.register('CommandOrControl+L', () => {
-    // When the user presses Command+L, focus the URL input field
-    mainWindow.webContents.executeJavaScript(`
-      document.getElementById('urlInput').focus();
-    `);
-  });
-// Register the Command+S global shortcut for screenshot
-
-
+  }); 
 
 autoUpdater.on('update-available', (info) => {
   mainWindow.webContents.send('update_available', info.version);

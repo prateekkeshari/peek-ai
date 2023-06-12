@@ -1,129 +1,129 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: white;
-  }
-  
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: rgba(0, 0, 0, 0.9); /* Set a dark background color */
-    }
-  }
-  
-  @media (prefers-color-scheme: light) {
-    body {
-      background-color: rgba(255, 255, 255, 0.9); /* Set a light background color */
-    }
-  }
-  
-  #controls {
-    -webkit-app-region: drag;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border: none;
-  }
-  
-  @media (prefers-color-scheme: dark) {
-    #controls {
-      background: rgb(0, 0, 0);
-    }
-    #serviceName
-    {
-      color: #e4e4e4a4;
-    }
-  }
-  
-  @media (prefers-color-scheme: light) {
-    #controls {
-      background: rgb(255, 255, 255);
-    }
-    #serviceName
-    {
-      color: #151515a4;
-    }
-  }
-
-  #serviceName {
-    flex-grow: 0.1;
-    padding: 2px;
-    font-size: 14px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background-color: transparent;
-    border-radius: 6px;
-    cursor: default;
-  }
-  
-  #webview {
-    flex-grow: 1; /* Add this line */
-    margin-top: 0;
-  }
-
-  .dropdown {
-    -webkit-app-region: no-drag;
-    position: relative;
-    display: inline-block;
-    border: none;
-    outline: none;
-  }
-  
-  .dropdown-content {
-    -webkit-app-region: no-drag;
-    display: none;
-    position: absolute; /* Set position to absolute */
-    top: 0.05px; /* Adjust as needed */
-    left: 0.4px; /* Adjust as needed */
-    background-color: #f8f8f8;
-    min-width: 150px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    border-radius: 10px; /* Add border-radius */
-    opacity: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: white;
 }
-  
-  .dropdown-content a {
-    font-size:14px;
-    font-weight:400;
-    -webkit-app-region: no-drag;
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: flex; /* Change to flex */
-    align-items: center; /* Align items vertically */
-    filter: blur(1.7px); /* Apply a blur */
-    transition: filter 0.3s ease; /* Smooth out the transition */
-  }
-  
-  .dropdown-content a img {
-    margin-top: 2px; /* Add margin to the right of the image */
-    margin-right: 8px; /* Add margin to the right of the image */
-  }
-  
-  .dropdown-content a:hover {
-    background-color: rgb(235, 234, 235);
-    cursor: pointer; /* Change cursor on hover */
-    border-radius: 10px;
-    filter: blur(0); /* Remove the blur */
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-    cursor: pointer;
-  }
-  
-  .dropbtn {
-    background-color: transparent; /* Make the button transparent */
-    border: none; /* Remove the border */
-    cursor: pointer; /* Change cursor */
-  }
 
-  button {
-    padding: 2px 4px;
-    border: none;
-    background: none;
-    font: inherit;
-    cursor: pointer;
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: rgba(0, 0, 0, 0.9); /* Set a dark background color */
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: rgba(255, 255, 255, 0.9); /* Set a light background color */
+  }
+}
+
+#controls {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  #controls {
+    background: rgb(0, 0, 0);
+  }
+  #serviceName
+  {
+    color: #e4e4e4a4;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  #controls {
+    background: rgb(255, 255, 255);
+  }
+  #serviceName
+  {
+    color: #151515a4;
+  }
+}
+
+#serviceName {
+  flex-grow: 0.1;
+  padding: 2px;
+  font-size: 14px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: transparent;
+  border-radius: 6px;
+  cursor: default;
+}
+
+#webview {
+  flex-grow: 1; /* Add this line */
+  margin-top: 0;
+}
+
+.dropdown {
+  -webkit-app-region: no-drag;
+  position: relative;
+  display: inline-block;
+  border: none;
+  outline: none;
+}
+
+.dropdown-content {
+  -webkit-app-region: no-drag;
+  display: none;
+  position: absolute; /* Set position to absolute */
+  top: 0.05px; /* Adjust as needed */
+  left: 0.4px; /* Adjust as needed */
+  background-color: #f8f8f8;
+  min-width: 150px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 10px; /* Add border-radius */
+  opacity: 0;
+}
+
+.dropdown-content a {
+  font-size:14px;
+  font-weight:400;
+  -webkit-app-region: no-drag;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: flex; /* Change to flex */
+  align-items: center; /* Align items vertically */
+  filter: blur(1.7px); /* Apply a blur */
+  transition: filter 0.3s ease; /* Smooth out the transition */
+}
+
+.dropdown-content a img {
+  margin-top: 2px; /* Add margin to the right of the image */
+  margin-right: 8px; /* Add margin to the right of the image */
+}
+
+.dropdown-content a:hover {
+  background-color: rgb(235, 234, 235);
+  cursor: pointer; /* Change cursor on hover */
+  border-radius: 10px;
+  filter: blur(0); /* Remove the blur */
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  cursor: pointer;
+}
+
+.dropbtn {
+  background-color: transparent; /* Make the button transparent */
+  border: none; /* Remove the border */
+  cursor: pointer; /* Change cursor */
+}
+
+button {
+  padding: 2px 4px;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
 }

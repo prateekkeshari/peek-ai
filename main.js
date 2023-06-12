@@ -6,10 +6,12 @@ const { autoUpdater } = require('electron-updater');
 const sharp = require('sharp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
-
 let mainWindow;
 let tray;
 let icon;
+let manualUpdateCheck = false;
+let reminderTimeout;
+let userChoseToDownloadUpdate = false;
 function toggleWindow() {
   if (mainWindow.isVisible()) {
     mainWindow.hide();
@@ -362,13 +364,18 @@ app.on('ready', () => {
 
   // Set the custom menu as the application menu
   Menu.setApplicationMenu(menu);
+
+ipcMain.on('check_for_update', () => {
+  manualUpdateCheck = true;
+  autoUpdater.checkForUpdates();
+});
 });
 
 let updateInterval;
 
 app.whenReady().then(() => {
   createWindow();
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkForUpdates();
 
   // Set autoInstallOnAppQuit to true to apply updates silently
   autoUpdater.autoInstallOnAppQuit = true;
@@ -379,16 +386,6 @@ app.whenReady().then(() => {
     console.error(error);
     // Optionally, you could notify the user that there was a problem
   });
-
-  // Listen for the 'download-progress' event and handle it
-  autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    console.log(log_message);
-    // Optionally, you could display a progress bar or some other form of feedback
-  });
-
   // Check for updates every 24 hours
   updateInterval = setInterval(() => {
     autoUpdater.checkForUpdatesAndNotify();
@@ -404,14 +401,6 @@ app.whenReady().then(() => {
       showWindow();
     }
   }); 
-
-autoUpdater.on('update-available', (info) => {
-  mainWindow.webContents.send('update_available', info.version);
-});
-  
-  autoUpdater.on('update-downloaded', () => {
-    mainWindow.webContents.send('update_downloaded');
-  });
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.on('ipc-message', (event, channel) => {
@@ -451,52 +440,76 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll();
 });
 
-ipcMain.on('restart_app', () => {
-  autoUpdater.quitAndInstall();
+autoUpdater.on('update-available', (info) => {
+  mainWindow.webContents.send('update_available', info.version);
 });
 
-ipcMain.on('check_for_update', () => {
-  autoUpdater.checkForUpdates().then((updateCheckResult) => {
-    if (updateCheckResult.updateAvailable) {
-      mainWindow.webContents.send('update_available');
-    } else {
-      const options = {
-        type: 'info',
-        buttons: ['OK'],
-        defaultId: 0,
-        title: 'No Update Available',
-        message: `You are up to date 🙌🏼`,
-        icon: path.join(__dirname, 'icon/peek-dock.png') // replace with the path to your icon
-      };
+autoUpdater.on('update-not-available', () => {
+  if (manualUpdateCheck) {
+    const options = {
+      type: 'info',
+      buttons: ['OK'],
+      defaultId: 0,
+      title: 'No Update Available',
+      message: `You are up to date 🙌🏼`,
+      icon: path.join(__dirname, 'icon/peek-dock.png') // replace with the path to your icon
+    };
 
-      dialog.showMessageBox(options);
-    }
-  });
+    dialog.showMessageBox(options);
+    manualUpdateCheck = false;
+  }
 });
 
-
-
-ipcMain.on('install_update', () => {
-  autoUpdater.quitAndInstall();
-});
-
-ipcMain.on('prompt_update', (event, newVersion) => {
-  const currentVersion = app.getVersion();
+ipcMain.on('update_available', (event, newVersion) => {
   const options = {
     type: 'question',
     buttons: ['Download now', 'Remind me later'],
     defaultId: 0,
     title: 'Update available',
-    message: `A new version (${newVersion}) is available. You are currently using version ${currentVersion}. Would you like to download the new version now?`
+    message: `A new version (${newVersion}) is available. You are currently using version ${app.getVersion()}. Would you like to download the new version now?`
   };
 
-  dialog.showMessageBox(options).then((response) => {
+  dialog.showMessageBox(mainWindow, options).then((response) => {
     if (response.response === 0) {
       // User chose to download the update now
-      event.sender.send('download_update');
+      userChoseToDownloadUpdate = true;
+      autoUpdater.downloadUpdate();
+    } else {
+      // User chose to remind later, set a reminder to check for updates in 2 hours
+      reminderTimeout = setTimeout(() => {
+        autoUpdater.checkForUpdates();
+      }, 2 * 60 * 60 * 1000 ); // 2 hours
     }
   });
 });
-ipcMain.on('start_download', () => {
-  autoUpdater.downloadUpdate();
+
+autoUpdater.on('update-downloaded', (info) => {
+  if (userChoseToDownloadUpdate) {
+    mainWindow.webContents.send('update_downloaded', info.version);
+  }
+});
+
+
+ipcMain.on('update_downloaded', (event) => {
+  // Clear any existing reminder
+  if (reminderTimeout) {
+    clearTimeout(reminderTimeout);
+  }
+  // Wait for 3 seconds before showing the "Install now or Install later" dialog
+  setTimeout(() => {
+    const options = {
+      type: 'question',
+      buttons: ['Install & Restart'],
+      defaultId: 0,
+      title: 'Update downloaded',
+      message: `An updated version has been downloaded! Restart to install.`
+    };
+
+    dialog.showMessageBox(mainWindow, options).then((response) => {
+      if (response.response === 0) {
+        // User chose to install the update now
+        autoUpdater.quitAndInstall();
+      }
+    });
+  }, 3000);
 });

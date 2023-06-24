@@ -1,5 +1,6 @@
 const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
 const path = require('path');
+const log = require('electron-log');
 const url = require('url');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
@@ -382,6 +383,7 @@ app.whenReady().then(() => {
 
   // Listen for the 'error' event and handle it
   autoUpdater.on('error', (error) => {
+    log.error('Error in auto-updater', error);
     console.error('There was a problem updating the application');
     console.error(error);
     // Optionally, you could notify the user that there was a problem
@@ -441,6 +443,7 @@ app.on('will-quit', () => {
 });
 
 autoUpdater.on('update-available', (info) => {
+  log.info('Update available', info);
   mainWindow.webContents.send('update_available', info.version);
 });
 
@@ -484,6 +487,7 @@ ipcMain.on('update_available', (event, newVersion) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
+  log.info('Update downloaded', info);
   if (userChoseToDownloadUpdate) {
     mainWindow.webContents.send('update_downloaded', info.version);
   }

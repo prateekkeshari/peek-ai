@@ -490,8 +490,13 @@ autoUpdater.on('update-downloaded', (info) => {
   log.info('Update downloaded', info);
   if (userChoseToDownloadUpdate) {
     mainWindow.webContents.send('update_downloaded', info.version);
+    // Add a delay before quitting and installing
+    setTimeout(() => {
+      autoUpdater.quitAndInstall();
+    }, 5000); // delay for 5 seconds
   }
 });
+
 
 
 ipcMain.on('update_downloaded', (event) => {

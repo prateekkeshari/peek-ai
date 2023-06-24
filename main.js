@@ -441,6 +441,18 @@ autoUpdater.on('update-available', (info) => {
   mainWindow.webContents.send('update_available', info.version);
 });
 
+autoUpdater.on('update-not-available', () => {
+  if (manualUpdateCheck) {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'No Updates',
+      message: 'You are on the latest version!'
+    });
+    manualUpdateCheck = false;
+  }
+});
+
+
 let updateDownloaded = false;
 autoUpdater.on('update-available', (info) => {
   dialog.showMessageBox({

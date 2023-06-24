@@ -379,7 +379,7 @@ app.whenReady().then(() => {
   autoUpdater.checkForUpdates();
 
   // Set autoInstallOnAppQuit to true to apply updates silently
-  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.autoInstallOnAppQuit = false;
 
   // Listen for the 'error' event and handle it
   autoUpdater.on('error', (error) => {
@@ -447,29 +447,13 @@ autoUpdater.on('update-available', (info) => {
   mainWindow.webContents.send('update_available', info.version);
 });
 
-autoUpdater.on('update-not-available', () => {
-  if (manualUpdateCheck) {
-    const options = {
-      type: 'info',
-      buttons: ['OK'],
-      defaultId: 0,
-      title: 'No Update Available',
-      message: `You are up to date 🙌🏼`,
-      icon: path.join(__dirname, 'icon/peek-dock.png') // replace with the path to your icon
-    };
-
-    dialog.showMessageBox(options);
-    manualUpdateCheck = false;
-  }
-});
-
-ipcMain.on('update_available', (event, newVersion) => {
+autoUpdater.on('update-available', (info) => {
   const options = {
     type: 'question',
     buttons: ['Download now', 'Remind me later'],
     defaultId: 0,
     title: 'Update available',
-    message: `A new version (${newVersion}) is available. You are currently using version ${app.getVersion()}. Would you like to download the new version now?`
+    message: `A new version (${info.version}) is available. You are currently using version ${app.getVersion()}. Would you like to download the new version now?`
   };
 
   dialog.showMessageBox(mainWindow, options).then((response) => {
@@ -489,36 +473,33 @@ ipcMain.on('update_available', (event, newVersion) => {
 autoUpdater.on('update-downloaded', (info) => {
   log.info('Update downloaded', info);
   if (userChoseToDownloadUpdate) {
-    mainWindow.webContents.send('update_downloaded', info.version);
-    // Add a delay before quitting and installing
+    // Clear any existing reminder
+    if (reminderTimeout) {
+      clearTimeout(reminderTimeout);
+    }
+    // Wait for 3 seconds before showing the "Install now or Install later" dialog
     setTimeout(() => {
-      autoUpdater.quitAndInstall();
-    }, 5000); // delay for 5 seconds
+      const options = {
+        type: 'question',
+        buttons: ['Install & Restart'],
+        defaultId: 0,
+        title: 'Update downloaded',
+        message: `An updated version has been downloaded! Restart to install.`
+      };
+
+      dialog.showMessageBox(mainWindow, options).then((response) => {
+        if (response.response === 0) {
+          // User chose to install the update now
+          console.log('User chose to install the update. Calling quitAndInstall()...');
+          setImmediate(() => {
+            autoUpdater.quitAndInstall();
+            console.log('Called quitAndInstall()');
+          });
+        }
+      });
+    }, 3000);
   }
 });
 
 
 
-ipcMain.on('update_downloaded', (event) => {
-  // Clear any existing reminder
-  if (reminderTimeout) {
-    clearTimeout(reminderTimeout);
-  }
-  // Wait for 3 seconds before showing the "Install now or Install later" dialog
-  setTimeout(() => {
-    const options = {
-      type: 'question',
-      buttons: ['Install & Restart'],
-      defaultId: 0,
-      title: 'Update downloaded',
-      message: `An updated version has been downloaded! Restart to install.`
-    };
-
-    dialog.showMessageBox(mainWindow, options).then((response) => {
-      if (response.response === 0) {
-        // User chose to install the update now
-        autoUpdater.quitAndInstall();
-      }
-    });
-  }, 3000);
-});

@@ -9,15 +9,6 @@ document.getElementById('dropdownContent').addEventListener('click', function(e)
   webview.loadURL(url);
 });
 
-// Add the new event handlers here
-window.myIpcRenderer.on('update_available', (event, newVersion) => {
-  window.myIpcRenderer.send('update_available', newVersion);
-});
-
-window.myIpcRenderer.on('update_downloaded', () => {
-  window.myIpcRenderer.send('update_downloaded');
-});
-
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
   const url = e.target.closest('a').dataset.value;

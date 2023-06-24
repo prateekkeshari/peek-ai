@@ -391,7 +391,7 @@ app.whenReady().then(() => {
   // Check for updates every 24 hours
   updateInterval = setInterval(() => {
     autoUpdater.checkForUpdatesAndNotify();
-  }, 24 * 60 * 60 * 1000);
+  }, 24 * 60* 60* 1000);
 
   tray = new Tray(path.join(__dirname, '/icons/peek.png'));
   tray.on('click', () => {
@@ -417,11 +417,6 @@ globalShortcut.register('CmdOrCtrl+J', toggleWindow);
 
 });
 
-app.on('before-quit', () => {
-  clearInterval(updateInterval);
-});
-
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -436,7 +431,6 @@ app.on('activate', () => {
   }
 });
 
-
 app.on('will-quit', () => {
   // Unregister the global shortcut
   globalShortcut.unregisterAll();
@@ -447,59 +441,36 @@ autoUpdater.on('update-available', (info) => {
   mainWindow.webContents.send('update_available', info.version);
 });
 
+let updateDownloaded = false;
 autoUpdater.on('update-available', (info) => {
-  const options = {
-    type: 'question',
-    buttons: ['Download now', 'Remind me later'],
-    defaultId: 0,
-    title: 'Update available',
-    message: `A new version (${info.version}) is available. You are currently using version ${app.getVersion()}. Would you like to download the new version now?`
-  };
-
-  dialog.showMessageBox(mainWindow, options).then((response) => {
-    if (response.response === 0) {
-      // User chose to download the update now
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update available ⚡',
+    message: `Hello there! A new version (${info.version}) of Peek is available.`,
+    buttons: ['Remind me later', 'Install & Restart']
+  }).then((result) => {
+    if (result.response === 1) {
       userChoseToDownloadUpdate = true;
       autoUpdater.downloadUpdate();
     } else {
-      // User chose to remind later, set a reminder to check for updates in 2 hours
+      // If "Remind me later" was clicked, set a reminder to check for updates
+      if (reminderTimeout) {
+        clearTimeout(reminderTimeout);
+      }
       reminderTimeout = setTimeout(() => {
         autoUpdater.checkForUpdates();
-      }, 2 * 60 * 60 * 1000 ); // 2 hours
+      }, 24 * 60 * 60 * 1000); // 24 hours
     }
   });
 });
 
-autoUpdater.on('update-downloaded', (info) => {
-  log.info('Update downloaded', info);
-  if (userChoseToDownloadUpdate) {
-    // Clear any existing reminder
-    if (reminderTimeout) {
-      clearTimeout(reminderTimeout);
-    }
-    // Wait for 3 seconds before showing the "Install now or Install later" dialog
-    setTimeout(() => {
-      const options = {
-        type: 'question',
-        buttons: ['Install & Restart'],
-        defaultId: 0,
-        title: 'Update downloaded',
-        message: `An updated version has been downloaded! Restart to install.`
-      };
-
-      dialog.showMessageBox(mainWindow, options).then((response) => {
-        if (response.response === 0) {
-          // User chose to install the update now
-          console.log('User chose to install the update. Calling quitAndInstall()...');
-          setImmediate(() => {
-            autoUpdater.quitAndInstall();
-            console.log('Called quitAndInstall()');
-          });
-        }
-      });
-    }, 3000);
+autoUpdater.on('update-downloaded', () => {
+  updateDownloaded = true;
+  if (updateDownloaded && userChoseToDownloadUpdate) {
+    setImmediate(() => autoUpdater.quitAndInstall());
   }
 });
 
-
-
+app.on('before-quit', () => {
+  clearInterval(updateInterval);
+});

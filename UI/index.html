@@ -12,28 +12,34 @@
           <img id="selectedImage" src="openai-logo.png" alt="OpenAI" width="20" height="20">
         </button>
         <div class="dropdown-content" id="dropdownContent">
-          <a href="#" data-value="https://chat.openai.com">
+          <a href="#" data-value="https://chat.openai.com" data-id="openai">
             <img src="openai-logo.png" alt="OpenAI" width="20" height="20">
             ChatGPT
           </a>
-          <a href="#" data-value="https://bard.google.com">
+          <a href="#" data-value="https://bard.google.com" data-id="google">
             <img src="google-logo.png" alt="Google" width="20" height="20">
             Bard
           </a>
-          <a href="#" data-value="https://heypi.com/talk">
+          <a href="#" data-value="https://heypi.com/talk" data-id="pi">
             <img src="pi-logo.jpeg" alt="Pi by Inflection AI" width="20" height="20">
             Pi
           </a>
-          <a href="#" data-value="https://www.perplexity.ai/">
+          <a href="#" data-value="https://www.perplexity.ai/" data-id="perplexity">
             <img src="perplexity-logo.png" alt="Perplexity" width="20" height="20">
             Perplexity AI
-          </a>
+          </a>          
         </div>
       </div>      
       <span id="serviceName">ChatGPT</span>
     </div>    
       </div>
-      <webview id="webview" src="https://chat.openai.com" allowpopups></webview>
+      <div id="webviews">
+        <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>
+        <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>
+        <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
+        <webview id="webview-perplexity" src="https://www.perplexity.ai/" useragent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1" allowpopups style="display: none;"></webview>
+      </div>
+      
     <script src="scripts.js"></script>
   </body>
 </html>

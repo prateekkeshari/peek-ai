@@ -55,11 +55,6 @@ body {
   cursor: default;
 }
 
-#webview {
-  flex-grow: 1; /* Add this line */
-  margin-top: 0;
-}
-
 .dropdown {
   -webkit-app-region: no-drag;
   position: relative;

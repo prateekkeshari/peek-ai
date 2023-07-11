@@ -33,8 +33,8 @@ function processImage(image, callback) {
     `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="10%" stop-color="#CE9FFC"/>
-          <stop offset="100%" stop-color="#7367F0"/>
+          <stop offset="10%" stop-color="#FF5533"/>
+          <stop offset="100%" stop-color="#FF5533"/>
         </linearGradient>
       </defs>
       <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>

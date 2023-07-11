@@ -4,7 +4,8 @@ const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
   'pi': document.getElementById('webview-pi'),
-  'perplexity': document.getElementById('webview-perplexity')
+  'perplexity': document.getElementById('webview-perplexity'),
+  'claude': document.getElementById('webview-claude')
 };
 
 let controlsHeight;

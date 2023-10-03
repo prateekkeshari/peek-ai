@@ -7,9 +7,27 @@ const { autoUpdater } = require('electron-updater');
 const sharp = require('sharp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
+const Store = require('electron-store');
+const store = new Store();
+
+// Add the ipcMain listener here
+ipcMain.on('electron-store-get-data', (event, key) => {
+  event.returnValue = store.get(key);
+});
+
+ipcMain.on('change-dock-icon-visibility', (event, shouldHide) => {
+  console.log('Received message:', shouldHide);
+  if (shouldHide) {
+    app.dock.hide();
+  } else {
+    app.dock.show();
+  }
+});
+
 let mainWindow;
 let tray;
 let icon;
+let settingsWindow;
 let manualUpdateCheck = false;
 let reminderTimeout;
 let userChoseToDownloadUpdate = false;
@@ -20,7 +38,41 @@ function toggleWindow() {
     mainWindow.show();
   }
 }
+ipcMain.on('toggle-always-on-top', (event, shouldStayOnTop) => {
+  console.log("Received IPC message: ", shouldStayOnTop);  // Debugging statement
+  mainWindow.setAlwaysOnTop(shouldStayOnTop);
+});
 
+
+function createSettingsWindow() {
+  if (settingsWindow) {
+    settingsWindow.focus();
+    return;
+  }
+
+  settingsWindow = new BrowserWindow({
+    width: 500,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
+      devTools:true,
+    },
+  });
+
+  settingsWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, 'settings.html'),
+      protocol: 'file:',
+      slashes: true,
+    })
+  );
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null;
+  });
+}
 
 function processImage(image, callback) {
   const dimensions = image.getSize();
@@ -243,6 +295,13 @@ app.on('ready', () => {
     label: app.getName(),
     submenu: [
       {
+        label: 'Toggle Developer Tools',
+        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click(item, focusedWindow) {
+          if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+        }
+      },
+      {
         role: 'about'
       },
       {
@@ -275,11 +334,15 @@ app.on('ready', () => {
     ]
   }));
 
-  // Add the File menu
   menu.append(new MenuItem({
     label: 'File',
     submenu: [
-      { role: 'close' }
+      { role: 'close' },
+      { type: 'separator' },
+      {
+        label: 'Preferences',
+        click: createSettingsWindow,
+      }
     ]
   }));
 
@@ -311,6 +374,7 @@ app.on('ready', () => {
         accelerator: 'CmdOrCtrl+S',
         click: screenshotToClipboard
       },
+      
       { 
         label: 'Save Screenshot', 
         accelerator: 'CmdOrCtrl+Shift+S',
@@ -485,4 +549,8 @@ autoUpdater.on('update-downloaded', () => {
 
 app.on('before-quit', () => {
   clearInterval(updateInterval);
+});
+
+ipcMain.on('open-settings-window', () => {
+  createSettingsWindow();
 });

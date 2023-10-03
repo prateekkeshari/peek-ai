@@ -11,50 +11,79 @@ let controlsHeight;
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
-  const url = e.target.closest('a').dataset.value;
-  document.getElementById('selectedImage').src = e.target.closest('a').querySelector('img').src;
-  serviceName.textContent = e.target.closest('a').textContent.trim();
+  const clickedElement = e.target.closest('a');
+  const id = clickedElement.getAttribute('id');
+
+  if (id === 'settingsDropdown') {
+    toggleConfigPanel();
+    return;
+  }
+
+  const url = clickedElement.dataset.value;
+  document.getElementById('selectedImage').src = clickedElement.querySelector('img').src;
+  serviceName.textContent = clickedElement.textContent.trim();
 
   // Hide all webviews
   for (let id in webviews) {
     webviews[id].style.display = 'none';
   }
-  const webviewId = e.target.closest('a').dataset.id; // Use the data-id attribute as the webviewId
+  
+  const webviewId = clickedElement.dataset.id;
   const webview = webviews[webviewId];
-
-
   webview.style.display = 'flex';
 
-  // Load the URL if it hasn't been loaded yet
   if (!webview.getURL()) {
     webview.loadURL(url);
   }
 
-  // Update the height of the webviews
   resizeWebview();
 });
+
+function toggleConfigPanel() {
+  if (configPanel.classList.contains('hidden')) {
+    configPanel.classList.remove('hidden');
+  } else {
+    configPanel.classList.add('hidden');
+  }
+}
 
 function resizeWebview() {
   const windowHeight = document.documentElement.clientHeight;
   
-  // If controlsHeight is not defined, calculate it
   if (!controlsHeight) {
     controlsHeight = document.getElementById('controls').offsetHeight;
   }
   
-  console.log('controlsHeight:', controlsHeight);
-  
-  // Resize all webviews
   for (let id in webviews) {
     webviews[id].style.height = `${windowHeight - controlsHeight}px`;
-    console.log('webview height:', webviews[id].style.height);
   }
 }
 
 window.addEventListener('resize', () => {
-  // Reset controlsHeight so it can be recalculated
   controlsHeight = null;
   resizeWebview();
 });
 
-resizeWebview();
+const alwaysOnCheckbox = document.getElementById('alwaysOn');
+
+loadSettings();
+
+alwaysOnCheckbox.addEventListener('change', function() {
+  console.log("Checkbox changed: ", this.checked);
+  myIpcRenderer.send('toggle-always-on-top', this.checked);
+});
+
+function saveSettings() {
+  const settings = {
+    alwaysOn: alwaysOnCheckbox.checked
+  };
+  localStorage.setItem('settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+  const savedSettings = localStorage.getItem('settings');
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    alwaysOnCheckbox.checked = settings.alwaysOn;
+  }
+}

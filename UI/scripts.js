@@ -107,3 +107,46 @@ function loadSettings() {
     }
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // ... Existing code ...
+
+  const expandButton = document.getElementById('expandChatbots');
+  const chatbotPanel = document.getElementById('chatbotPanel');
+
+  expandButton.addEventListener('click', function() {
+    chatbotPanel.classList.toggle('hidden');
+  });
+});
+$(document).ready(function() {
+  $('#expandChatbots').click(function() {
+    if ($('#chatbotPanel').hasClass('hidden')) {
+      // If the panel is hidden, show the down chevron
+      $('.expand-icon').html('&#9660;');
+    } else {
+      // If the panel is visible, show the up chevron
+      $('.expand-icon').html('&#9650;');
+    }
+  });
+});
+
+$(document).ready(function() {
+  // Add a change event listener to each checkbox
+  $('.checkbox-item input[type="checkbox"]').change(function() {
+    // Get the data-id of the bot
+    var botId = $(this).data('id');
+
+    if ($(this).is(':checked')) {
+      // If the checkbox is checked, show the bot in the dropdown
+      $('#dropdownContent a[data-id="' + botId + '"]').show();
+    } else {
+      // If the checkbox is unchecked, hide the bot from the dropdown
+      $('#dropdownContent a[data-id="' + botId + '"]').hide();
+    }
+  });
+});
+
+$('#closeButton').click(function() {
+  // Close the settings panel
+  $('#configPanel').addClass('hidden');
+});

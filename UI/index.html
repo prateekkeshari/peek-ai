@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <title>Peek</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
   </head>
   <body>
     <div id="controls">
@@ -28,38 +32,81 @@
             <img src="perplexity-logo.png" alt="Perplexity" width="20" height="20">
             Perplexity AI
           </a>
-          <hr> <!-- Optional separator -->
-          <a href="#" id="settingsDropdown">Settings</a>
+          <div class="divider-drop"></div>
+            <a href="#" id="settingsDropdown">
+              <span class="settingsWrapper">
+                <i class="fas fa-cog"></i> <!-- Font Awesome Cog Icon -->
+                Settings
+              </span>
+            </a>
+            
         </div>
       </div>      
       <span id="serviceName">ChatGPT</span>
     </div>
 
     <div id="configPanel" class="hidden">
+      <div class="settings-main">
       <div class="settingsPanel">
-      <span class="settingsLabel">Settings</span>
-      <span class="settingsSublabel">Change the configuration of Peek</span>
+        <span class="settingsLabel">Settings</span>
+        <span class="settingsSublabel">Change the configuration of Peek</span>
+    </div>
+    <button id="closeButton">
+      <i class="fas fa-times"></i> <!-- Font Awesome Close Icon -->
+    </button>
     </div>
       <div class="divider"></div>
 
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Floating window</span>
-          <span class="config-sublabel">Disable so that the app is not always on top</span>
+          <span class="config-sublabel">Disable to prevent Peek from staying on top</span>
         </div>
-        <div class="toggle-button" id="alwaysOnToggle"></div>
+        <div class="toggle-button active" id="alwaysOnToggle"></div>
       </div>
+      
     
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Hide dock icon</span>
-          <span class="config-sublabel">Remove the Peek icon from your dock</span>
+          <span class="config-sublabel">Toggle to remove Peek's icon from the dock</span>
         </div>
         <div class="toggle-button" id="hideDockToggle"></div>
       </div>
+      <div class="divider"></div>
+      
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Chatbots</span>
+          <span class="config-sublabel">Select to add or remove a chatbot</span>
+        </div>
+        <div class="expand-container">
+          <button class="expand-button" id="expandChatbots">
+            <span class="expand-text">Your bots</span>
+            <span class="expand-icon">&#9660;</span>
+          </button>
+          <div class="expansion-panel hidden" id="chatbotPanel">
+            <div class="checkbox-item">
+              <input type="checkbox" id="ChatGPT" name="ChatGPT" data-id="openai" checked>
+              <label for="ChatGPT">ChatGPT</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Bard" name="Bard" data-id="google" checked>
+              <label for="Bard">Bard</label>
+           </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
+              <label for="Pi">Pi</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Perplexity" name="Perplexity" data-id="perplexity" checked>
+              <label for="Perplexity">Perplexity</label>
+            </div>
+        </div>
+      </div>     
+
     </div>    
-    
-  
+   </div>
 
     <div id="webviews">
       <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>

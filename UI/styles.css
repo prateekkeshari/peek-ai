@@ -1,3 +1,4 @@
+/* Reset styles */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
@@ -17,6 +18,7 @@ body {
   }
 }
 
+/* Header styles */
 #controls {
   -webkit-app-region: drag;
   display: flex;
@@ -29,8 +31,7 @@ body {
   #controls {
     background: rgb(0, 0, 0);
   }
-  #serviceName
-  {
+  #serviceName {
     color: #e4e4e4a4;
   }
 }
@@ -39,8 +40,7 @@ body {
   #controls {
     background: rgb(255, 255, 255);
   }
-  #serviceName
-  {
+  #serviceName {
     color: #151515a4;
   }
 }
@@ -55,6 +55,7 @@ body {
   cursor: default;
 }
 
+/* Dropdown styles */
 .dropdown {
   -webkit-app-region: no-drag;
   position: relative;
@@ -66,14 +67,14 @@ body {
 .dropdown-content {
   -webkit-app-region: no-drag;
   display: none;
-  position: absolute; /* Set position to absolute */
-  top: 0.05px; /* Adjust as needed */
-  left: 0.4px; /* Adjust as needed */
+  position: absolute;
+  top: 0.05px;
+  left: 0.4px;
   background-color: #f8f8f8;
   min-width: 150px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  border-radius: 10px; /* Add border-radius */
+  border-radius: 10px;
   opacity: 0;
 }
 
@@ -84,22 +85,22 @@ body {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
-  display: flex; /* Change to flex */
-  align-items: center; /* Align items vertically */
-  filter: blur(1.7px); /* Apply a blur */
-  transition: filter 0.3s ease; /* Smooth out the transition */
+  display: flex;
+  align-items: center;
+  filter: blur(1.7px);
+  transition: filter 0.3s ease;
 }
 
 .dropdown-content a img {
-  margin-top: 2px; /* Add margin to the right of the image */
-  margin-right: 8px; /* Add margin to the right of the image */
+  margin-top: 2px;
+  margin-right: 8px;
 }
 
 .dropdown-content a:hover {
   background-color: rgb(235, 234, 235);
-  cursor: pointer; /* Change cursor on hover */
+  cursor: pointer;
   border-radius: 10px;
-  filter: blur(0); /* Remove the blur */
+  filter: blur(0);
 }
 
 .dropdown:hover .dropdown-content {
@@ -109,10 +110,11 @@ body {
   cursor: pointer;
 }
 
+/* Button styles */
 .dropbtn {
-  background-color: transparent; /* Make the button transparent */
-  border: none; /* Remove the border */
-  cursor: pointer; /* Change cursor */
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 button {
@@ -133,16 +135,74 @@ button {
   cursor: pointer;
   margin-left: 20px;
 }
-/* ... existing styles ... */
 
+/* Config panel styles */
 #configPanel {
-  background-color: #151515;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.settingsPanel
-{
+@media (prefers-color-scheme: dark) {
+  #configPanel {
+    background-color: #0A0A0B; /* Dark background color */
+    color: #FAFAFA; /* Dark text color */
+  }
+  .settingsLabel,
+  .config-label, .expand-button {
+    color: #FAFAFA; /* Label color */
+  }
+  .settingsSublabel,
+  .config-sublabel {
+    color: #83838A; /* Sub-label color */
+  }
+  .toggle-button.active:before {
+    background-color: #000000; /* White color for circle inside the toggle */
+  }
+  .toggle-button {
+    background-color: #27272A;
+  }
+  .toggle-button.active {
+    background-color: #FAFAFA; /* Toggle active background color */
+  }
+  .toggle-button:before {
+    background-color: #0A0A0B; /* Toggle inactive background color */
+  }
+  .expand-button:hover {
+    color: #bcbcbc;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  #configPanel {
+    background-color: #FFFFFF; /* Light background color */
+    color: #0A0A0B; /* Light text color */
+  }
+  .settingsLabel,
+  .config-label {
+    color: #0A0A0B; /* Label color */
+  }
+  .settingsSublabel,
+  .config-sublabel {
+    color: #97979E; /* Sub-label color */
+  }
+  .toggle-button.active:before {
+    background-color: white; /* White color for circle inside the toggle */
+  }
+  .toggle-button {
+    background-color: #FAFAFA;
+  }
+  .toggle-button.active {
+    background-color: #0f0f0f; /* Toggle active background color */
+  }
+  .toggle-button:before {
+    background-color: #f8f8f8; /* Toggle inactive background color */
+  }
+  .expand-button:hover {
+    color: #767676;
+  }
+}
+
+.settingsPanel {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -150,27 +210,43 @@ button {
   width: 100%;
 }
 
-.settingsLabel{
+.settingsLabel {
   font-size: 16px;
-  color: #f8f8f8;
   font-weight: 500;
   margin-bottom: 5px;
 }
 
-.settingsSublabel
-{
+.settingsSublabel {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 5px;
 }
 
-.divider
-{
+.divider {
   border: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 20px 0;
+  margin: 15px 0;
 }
+
+@media (prefers-color-scheme: dark) {
+  .divider {
+    background-color: #1d1d1d;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .divider {
+    background-color: #e4e4e4;
+  }
+}
+
+
+.divider-drop {
+  border: 0;
+  height: 1px;
+  margin: 5px 0;
+  background-color: #e4e4e4;
+}
+
 /* Ensure toggle buttons remain the same size regardless of text wrapping */
 .config-item {
   display: flex;
@@ -179,8 +255,8 @@ button {
   flex-wrap: nowrap; /* Prevent flex items from wrapping */
   margin-bottom: 20px;
 }
-.config-text
-{
+
+.config-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -188,30 +264,41 @@ button {
   width: 100%;
 }
 
-.config-label, .config-sublabel {
+.config-label,
+.config-sublabel {
   margin-bottom: 2px;
 }
 
 .config-label {
   font-size: 16px;
-  color: #f8f8f8;
   font-weight: 500;
   margin-bottom: 5px;
 }
 
 .config-sublabel {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
 }
 
+/* Toggle button styles */
 .toggle-button {
   position: relative;
   width: 50px;
   height: 24px;
-  background: #656565;
   border-radius: 17px;
   cursor: pointer;
   margin-left: 20px;
+  background-color: #cacaca;
+}
+
+@media (prefers-color-scheme: dark) {
+  .toggle-button {
+    background-color: #27272A;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .toggle-button {
+    background-color: #d6d6d6;
+  }
 }
 
 .toggle-button:before {
@@ -222,16 +309,158 @@ button {
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  background-color: rgba(0, 0, 0, 0.5); /* Black with lower opacity */
   border-radius: 50%;
-  transition: left 0.3s ease-in-out, background-color 0.3s ease-in-out;
-}
-
-.toggle-button.active {
-  background-color: #ffffff; /* White background */
+  transition: left 0.3s ease-in-out 0s, background-color 0.3s ease-in-out 0s;
 }
 
 .toggle-button.active:before {
   left: 20px;
-  background-color: rgba(0, 0, 0, 1); /* Black with full opacity */
+}
+
+/* Existing styles for expandable panels */
+.expand-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+expand-text
+{
+  font-size: 16px;
+  font-weight: 500;
+}
+.expand-button {
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.expand-icon {
+  margin-left: 10px;
+}
+
+.expand-button::after {
+  margin-left: 5px;
+  padding-left: 50px;
+}
+
+/* Styles for expansion panels */
+.expansion-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.expansion-panel input[type="checkbox"],
+.expansion-panel label {
+  margin-bottom: 5px;
+}
+
+.expansion-panel.hidden {
+  max-height: 0;
+}
+
+.expansion-panel:not(.hidden) {
+  max-height: 300px; /* Adjust as needed */
+}
+
+/* Styles for checkboxes */
+.config-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-item input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ccc;
+}
+
+.checkbox-item input[type="checkbox"]:checked::before {
+  background-color: #f8f8f8;
+}
+
+.checkbox-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000;
+}
+
+.checkbox-item label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+#closeButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #closeButton {
+    color: #FAFAFA;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  #closeButton {
+    color: #0A0A0B;
+  }
+}
+
+.settings-main{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+}
+.settingsWrapper i.fas.fa-cog {
+  margin-right: 8px; /* adjust the spacing here */
 }

@@ -27,14 +27,14 @@ document.getElementById('dropdownContent').addEventListener('click', function(e)
   document.getElementById('selectedImage').src = clickedElement.querySelector('img').src;
   serviceName.textContent = clickedElement.textContent.trim();
 
-  // Hide all webviews
-  for (let id in webviews) {
-    webviews[id].style.display = 'none';
-  }
-  
-  const webviewId = clickedElement.dataset.id;
-  const webview = webviews[webviewId];
-  webview.style.display = 'flex';
+// Hide all webviews
+for (let id in webviews) {
+  webviews[id].style.display = 'none'; // Change this line
+}
+
+const webviewId = clickedElement.dataset.id;
+const webview = webviews[webviewId];
+webview.style.display = 'flex'; // Change this line // Add this line
 
   if (!webview.getURL()) {
     webview.loadURL(url);
@@ -54,14 +54,14 @@ function toggleConfigPanel() {
 function resizeWebview() {
   const windowHeight = document.documentElement.clientHeight;
   
-  if (!controlsHeight) {
-    controlsHeight = document.getElementById('controls').offsetHeight;
-  }
+  // Recalculate the controls height
+  controlsHeight = document.getElementById('controls').offsetHeight;
   
   for (let id in webviews) {
     webviews[id].style.height = `${windowHeight - controlsHeight}px`;
   }
-}
+  }
+  
 
 window.addEventListener('resize', () => {
   controlsHeight = null;

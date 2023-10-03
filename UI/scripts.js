@@ -6,7 +6,10 @@ const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
   'pi': document.getElementById('webview-pi'),
-  'perplexity': document.getElementById('webview-perplexity')
+  'perplexity': document.getElementById('webview-perplexity'),
+  'claude': document.getElementById('webview-claude'),
+  'bing': document.getElementById('webview-bing'),
+  'labs': document.getElementById('webview-labs'),
 };
 let controlsHeight;
 
@@ -150,3 +153,9 @@ $('#closeButton').click(function() {
   // Close the settings panel
   $('#configPanel').addClass('hidden');
 });
+
+$('.bot-item').click(function() {
+  $('.bot-item.selected').removeClass('selected');
+  $(this).addClass('selected');
+});
+

@@ -30,8 +30,24 @@
           </a>
           <a href="#" data-value="https://www.perplexity.ai/" data-id="perplexity">
             <img src="perplexity-logo.png" alt="Perplexity" width="20" height="20">
-            Perplexity AI
+            Perplexity
           </a>
+
+          <a href="#" data-value="https://claude.ai/" data-id="claude">
+            <img src="claude-logo.png" alt="Claude" width="20" height="20">
+            Claude
+          </a>
+
+          <a href="#" data-value="https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx" data-id="bing">
+            <img src="bing.png" alt="bing" width="20" height="20">
+            Bing
+          </a>
+
+          <a href="#" data-value="https://labs.perplexity.ai/" data-id="labs">
+            <img src="labs.png" alt="labs" width="20" height="20">
+            Labs
+          </a>
+
           <div class="divider-drop"></div>
             <a href="#" id="settingsDropdown">
               <span class="settingsWrapper">
@@ -102,6 +118,18 @@
               <input type="checkbox" id="Perplexity" name="Perplexity" data-id="perplexity" checked>
               <label for="Perplexity">Perplexity</label>
             </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Claude" name="Claude" data-id="claude" checked>
+              <label for="Claude">Claude</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Bing" name="Bing" data-id="bing" checked>
+              <label for="Bing">Bing</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
+              <label for="Labs">Labs</label>
+              </div>
         </div>
       </div>     
 
@@ -113,6 +141,9 @@
       <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>
       <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
       <webview id="webview-perplexity" src="https://www.perplexity.ai/" useragent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1" allowpopups style="display: none;"></webview>
+      <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
+      <webview id="webview-bing" src="https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx" allowpopups style="display: none;"></webview>
+      <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
     </div>
       
     <script src="scripts.js"></script>

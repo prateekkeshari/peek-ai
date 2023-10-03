@@ -322,7 +322,6 @@ button {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  height: 100%;
 }
 
 expand-text
@@ -360,6 +359,8 @@ expand-text
   transition: max-height 0.3s ease-in-out;
   width: 100%;
   margin-top: 20px;
+  white-space: nowrap;
+  overflow: auto;
 }
 
 .expansion-panel input[type="checkbox"],
@@ -387,6 +388,8 @@ expand-text
 .checkbox-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 5px;
 }
 
 .checkbox-item input[type="checkbox"] {
@@ -430,9 +433,12 @@ expand-text
 }
 
 .checkbox-item label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
+  padding: 5px 0;
   margin-left: 10px;
+  white-space: nowrap; /* Add this line */
+
 }
 
 #closeButton {
@@ -464,3 +470,4 @@ expand-text
 .settingsWrapper i.fas.fa-cog {
   margin-right: 8px; /* adjust the spacing here */
 }
+

@@ -1,4 +1,6 @@
 const serviceName = document.getElementById('serviceName');
+const alwaysOnCheckbox = document.getElementById('alwaysOn');
+const hideDockCheckbox = document.getElementById('hideDock'); // New line
 
 const webviews = {
   'openai': document.getElementById('webview-openai'),
@@ -6,7 +8,6 @@ const webviews = {
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity')
 };
-
 let controlsHeight;
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
@@ -64,18 +65,32 @@ window.addEventListener('resize', () => {
   resizeWebview();
 });
 
-const alwaysOnCheckbox = document.getElementById('alwaysOn');
-
+// Load settings
 loadSettings();
+// Attach click event to toggle-buttons
+document.querySelectorAll('.toggle-button').forEach(button => {
+  button.addEventListener('click', function() {
+    this.classList.toggle('active');
+    const isActive = this.classList.contains('active');
 
-alwaysOnCheckbox.addEventListener('change', function() {
-  console.log("Checkbox changed: ", this.checked);
-  myIpcRenderer.send('toggle-always-on-top', this.checked);
+    if (this.id === 'alwaysOnToggle') {
+      console.log('Always-On Floating Window: ', isActive);
+      myIpcRenderer.send('toggle-always-on-top', isActive);
+    }
+
+    if (this.id === 'hideDockToggle') {
+      console.log('Hide Dock Icon: ', isActive);
+      myIpcRenderer.send('toggle-dock-icon', isActive);
+    }
+
+    saveSettings();
+  });
 });
 
 function saveSettings() {
   const settings = {
-    alwaysOn: alwaysOnCheckbox.checked
+    alwaysOn: document.getElementById('alwaysOnToggle').classList.contains('active'),
+    hideDock: document.getElementById('hideDockToggle').classList.contains('active')
   };
   localStorage.setItem('settings', JSON.stringify(settings));
 }
@@ -84,6 +99,11 @@ function loadSettings() {
   const savedSettings = localStorage.getItem('settings');
   if (savedSettings) {
     const settings = JSON.parse(savedSettings);
-    alwaysOnCheckbox.checked = settings.alwaysOn;
+    if (settings.alwaysOn) {
+      document.getElementById('alwaysOnToggle').classList.add('active');
+    }
+    if (settings.hideDock) {
+      document.getElementById('hideDockToggle').classList.add('active');
+    }
   }
 }

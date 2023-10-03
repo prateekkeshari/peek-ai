@@ -43,6 +43,13 @@ ipcMain.on('toggle-always-on-top', (event, shouldStayOnTop) => {
   mainWindow.setAlwaysOnTop(shouldStayOnTop);
 });
 
+ipcMain.on('toggle-dock-icon', (event, shouldHide) => {
+  if (shouldHide) {
+    app.dock.hide();
+  } else {
+    app.dock.show();
+  }
+});
 
 function createSettingsWindow() {
   if (settingsWindow) {

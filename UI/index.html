@@ -36,12 +36,29 @@
     </div>
 
     <div id="configPanel" class="hidden">
-      <h2>Configuration Panel</h2>
-      <div class="config-item">
-        <label for="alwaysOn">Always-On Floating Window</label>
-        <input type="checkbox" id="alwaysOn">
-      </div>
+      <div class="settingsPanel">
+      <span class="settingsLabel">Settings</span>
+      <span class="settingsSublabel">Change the configuration of Peek</span>
     </div>
+      <div class="divider"></div>
+
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Floating window</span>
+          <span class="config-sublabel">Don't want the window to be always on top of your apps? Change it here</span>
+        </div>
+        <div class="toggle-button" id="alwaysOnToggle"></div>
+      </div>
+    
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Hide dock icon</span>
+          <span class="config-sublabel">Toggle this to remove the Peek icon from your dock</span>
+        </div>
+        <div class="toggle-button" id="hideDockToggle"></div>
+      </div>
+    </div>    
+    
   
 
     <div id="webviews">

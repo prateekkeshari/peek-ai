@@ -39,8 +39,9 @@ function toggleWindow() {
   }
 }
 ipcMain.on('toggle-always-on-top', (event, shouldStayOnTop) => {
-  console.log("Received IPC message: ", shouldStayOnTop);  // Debugging statement
+  console.log("undefinedeceived IPC message: ", shouldStayOnTop);
   mainWindow.setAlwaysOnTop(shouldStayOnTop);
+  store.set('alwaysOnTop', shouldStayOnTop);
 });
 
 ipcMain.on('toggle-dock-icon', (event, shouldHide) => {
@@ -49,6 +50,10 @@ ipcMain.on('toggle-dock-icon', (event, shouldHide) => {
   } else {
     app.dock.show();
   }
+});
+
+ipcMain.on('change-bot-selection', (event, selectedBots) => {
+  store.set('selectedBots', selectedBots);
 });
 
 function createSettingsWindow() {
@@ -199,6 +204,9 @@ function saveScreenshot() {
 
 
 function createWindow() {
+  // Load the setting
+  const alwaysOnTop = store.get('alwaysOnTop', false); // Default to false if the setting hasn't been saved yet
+  console.log('Always on top setting:', alwaysOnTop); // Debugging statement
   mainWindow = new BrowserWindow({
     width: 400,
     height: 650,
@@ -216,7 +224,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       devTools:false,
     },
-    alwaysOnTop: true, // floating window
+    alwaysOnTop: alwaysOnTop,
   });
    // Wait for the window to be ready
    mainWindow.once('ready-to-show', () => {
@@ -261,6 +269,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+  // Apply the setting
+  mainWindow.setAlwaysOnTop(alwaysOnTop);
 }
 
 let windowPosition = null;
@@ -448,7 +458,6 @@ let updateInterval;
 app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdates();
-
   // Set autoInstallOnAppQuit to true to apply updates silently
   autoUpdater.autoInstallOnAppQuit = false;
 
@@ -556,6 +565,7 @@ autoUpdater.on('update-downloaded', () => {
 
 app.on('before-quit', () => {
   clearInterval(updateInterval);
+
 });
 
 ipcMain.on('open-settings-window', () => {

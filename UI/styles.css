@@ -17,17 +17,6 @@ body {
     background-color: rgba(255, 255, 255, 0.9); /* Set a light background color */
   }
 }
-
-#webviews webview {
-  width: 100%;
-  height: 100%;
-  display: none; 
-  box-sizing: border-box;
-}
-
-#webviews webview:first-child {
-  display: flex; 
-}
 /* Header styles */
 #controls {
   -webkit-app-region: drag;

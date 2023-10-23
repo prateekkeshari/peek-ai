@@ -10,9 +10,15 @@ const { clipboard } = require('electron');
 const Store = require('electron-store');
 const store = new Store();
 
-// Add the ipcMain listener here
-ipcMain.on('electron-store-get-data', (event, key) => {
-  event.returnValue = store.get(key);
+// Listen to save settings from renderer process
+ipcMain.on('save-settings', (event, settings) => {
+  store.set('appSettings', settings);
+});
+
+// Listen to load settings from renderer process
+ipcMain.on('load-settings', (event) => {
+  const settings = store.get('appSettings');
+  event.returnValue = settings;
 });
 
 ipcMain.on('change-dock-icon-visibility', (event, shouldHide) => {
@@ -205,9 +211,11 @@ function saveScreenshot() {
 
 function createWindow() {
   // Load the setting
-  const alwaysOnTop = store.get('alwaysOnTop', false); // Default to false if the setting hasn't been saved yet
-  console.log('Always on top setting:', alwaysOnTop); // Debugging statement
-  mainWindow = new BrowserWindow({
+  // Inside createWindow() function
+  const appSettings = store.get('appSettings', {}); // Existing line
+  const alwaysOnTop = (typeof appSettings.alwaysOn !== 'undefined') ? appSettings.alwaysOn : true;
+  const selectedBots = store.get('selectedBots', []); // New line
+    mainWindow = new BrowserWindow({
     width: 400,
     height: 650,
     minWidth: 450, // Set the minimum width
@@ -226,6 +234,8 @@ function createWindow() {
     },
     alwaysOnTop: alwaysOnTop,
   });
+
+  mainWindow.setAlwaysOnTop(alwaysOnTop);
    // Wait for the window to be ready
    mainWindow.once('ready-to-show', () => {
     // Get the bounds of the tray icon
@@ -239,8 +249,9 @@ function createWindow() {
 
     // Set the window position
     mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-
-    // Show the window
+    ipcMain.on('get-selected-bots', (event) => {
+      event.returnValue = selectedBots;
+    });
     mainWindow.show();
   });
   mainWindow.on('focus', () => {
@@ -250,6 +261,12 @@ function createWindow() {
     // copy the screenshot to clipboard 
     globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
   });
+  // If there are other settings like 'hideDock', apply them here
+  if (appSettings.hideDock) {
+    app.dock.hide();
+  } else {
+    app.dock.show();
+  }
 
   // unregister the shortcuts
   mainWindow.on('blur', () => {

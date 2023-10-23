@@ -112,7 +112,7 @@ function loadSettings() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // ... Existing code ...
+
 
   const expandButton = document.getElementById('expandChatbots');
   const chatbotPanel = document.getElementById('chatbotPanel');
@@ -147,13 +147,6 @@ $(document).ready(function() {
       $('#dropdownContent a[data-id="' + botId + '"]').hide();
     }
   });
-   // Get the current selection of bots
-   const selectedBots = $('.checkbox-item input[type="checkbox"]:checked').map(function() {
-    return this.getAttribute('data-id');
-  }).get();
-
-  // Send the selection to the main process
-  myIpcRenderer.send('change-bot-selection', selectedBots);
 });
 
 $('#closeButton').click(function() {
@@ -164,16 +157,4 @@ $('#closeButton').click(function() {
 $('.bot-item').click(function() {
   $('.bot-item.selected').removeClass('selected');
   $(this).addClass('selected');
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-  const alwaysOnTop = myIpcRenderer.sendSync('electron-store-get-data', 'alwaysOnTop') || false;
-  const alwaysOnTopToggle = document.getElementById('alwaysOnToggle'); // Corrected ID
-  alwaysOnTopToggle.classList.toggle('active', alwaysOnTop);
-  const selectedBots = myIpcRenderer.sendSync('electron-store-get-data', 'selectedBots');
-  console.log('Loaded selected bots:', selectedBots); // Debugging statement
-  $('.checkbox-item input[type="checkbox"]').each(function() {
-    const botId = this.getAttribute('data-id');
-    this.checked = selectedBots.includes(botId);
-  });
 });

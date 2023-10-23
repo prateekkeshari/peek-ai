@@ -471,3 +471,15 @@ expand-text
   margin-right: 8px; /* adjust the spacing here */
 }
 
+.save-button {
+  background-color: #000000; /* Green */
+  border-radius: 10px;
+  color: white;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}

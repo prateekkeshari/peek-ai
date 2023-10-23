@@ -7,33 +7,9 @@ const { autoUpdater } = require('electron-updater');
 const sharp = require('sharp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
-const Store = require('electron-store');
-const store = new Store();
-
-// Listen to save settings from renderer process
-ipcMain.on('save-settings', (event, settings) => {
-  store.set('appSettings', settings);
-});
-
-// Listen to load settings from renderer process
-ipcMain.on('load-settings', (event) => {
-  const settings = store.get('appSettings');
-  event.returnValue = settings;
-});
-
-ipcMain.on('change-dock-icon-visibility', (event, shouldHide) => {
-  console.log('Received message:', shouldHide);
-  if (shouldHide) {
-    app.dock.hide();
-  } else {
-    app.dock.show();
-  }
-});
-
 let mainWindow;
 let tray;
 let icon;
-let settingsWindow;
 let manualUpdateCheck = false;
 let reminderTimeout;
 let userChoseToDownloadUpdate = false;
@@ -43,53 +19,6 @@ function toggleWindow() {
   } else {
     mainWindow.show();
   }
-}
-ipcMain.on('toggle-always-on-top', (event, shouldStayOnTop) => {
-  console.log("undefinedeceived IPC message: ", shouldStayOnTop);
-  mainWindow.setAlwaysOnTop(shouldStayOnTop);
-  store.set('alwaysOnTop', shouldStayOnTop);
-});
-
-ipcMain.on('toggle-dock-icon', (event, shouldHide) => {
-  if (shouldHide) {
-    app.dock.hide();
-  } else {
-    app.dock.show();
-  }
-});
-
-ipcMain.on('change-bot-selection', (event, selectedBots) => {
-  store.set('selectedBots', selectedBots);
-});
-
-function createSettingsWindow() {
-  if (settingsWindow) {
-    settingsWindow.focus();
-    return;
-  }
-
-  settingsWindow = new BrowserWindow({
-    width: 500,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-      devTools:true,
-    },
-  });
-
-  settingsWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, 'settings.html'),
-      protocol: 'file:',
-      slashes: true,
-    })
-  );
-
-  settingsWindow.on('closed', () => {
-    settingsWindow = null;
-  });
 }
 
 function processImage(image, callback) {
@@ -210,12 +139,9 @@ function saveScreenshot() {
 
 
 function createWindow() {
-  // Load the setting
-  // Inside createWindow() function
-  const appSettings = store.get('appSettings', {}); // Existing line
-  const alwaysOnTop = (typeof appSettings.alwaysOn !== 'undefined') ? appSettings.alwaysOn : true;
-  const selectedBots = store.get('selectedBots', []); // New line
-    mainWindow = new BrowserWindow({
+  const preferences = loadPreferences();
+
+  mainWindow = new BrowserWindow({
     width: 400,
     height: 650,
     minWidth: 450, // Set the minimum width
@@ -232,10 +158,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       devTools:false,
     },
-    alwaysOnTop: alwaysOnTop,
+    alwaysOnTop: preferences.alwaysOnTop,
   });
-
-  mainWindow.setAlwaysOnTop(alwaysOnTop);
    // Wait for the window to be ready
    mainWindow.once('ready-to-show', () => {
     // Get the bounds of the tray icon
@@ -249,9 +173,8 @@ function createWindow() {
 
     // Set the window position
     mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-    ipcMain.on('get-selected-bots', (event) => {
-      event.returnValue = selectedBots;
-    });
+
+    // Show the window
     mainWindow.show();
   });
   mainWindow.on('focus', () => {
@@ -261,12 +184,6 @@ function createWindow() {
     // copy the screenshot to clipboard 
     globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
   });
-  // If there are other settings like 'hideDock', apply them here
-  if (appSettings.hideDock) {
-    app.dock.hide();
-  } else {
-    app.dock.show();
-  }
 
   // unregister the shortcuts
   mainWindow.on('blur', () => {
@@ -286,8 +203,6 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-  // Apply the setting
-  mainWindow.setAlwaysOnTop(alwaysOnTop);
 }
 
 let windowPosition = null;
@@ -316,7 +231,11 @@ app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
 app.on('ready', () => {
   // Set the app name
   app.setName('Peek');
-  
+  const preferences = loadPreferences();
+if (preferences.hideDockIcon) {
+  app.dock.hide();
+}
+
   // Set the Dock icon
   const iconPath = path.join(__dirname, '/icons/peek-dock.png');
   icon = nativeImage.createFromPath(iconPath);
@@ -328,13 +247,6 @@ app.on('ready', () => {
   menu.append(new MenuItem({
     label: app.getName(),
     submenu: [
-      {
-        label: 'Toggle Developer Tools',
-        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-        click(item, focusedWindow) {
-          if (focusedWindow) focusedWindow.webContents.toggleDevTools();
-        }
-      },
       {
         role: 'about'
       },
@@ -368,15 +280,11 @@ app.on('ready', () => {
     ]
   }));
 
+  // Add the File menu
   menu.append(new MenuItem({
     label: 'File',
     submenu: [
-      { role: 'close' },
-      { type: 'separator' },
-      {
-        label: 'Preferences',
-        click: createSettingsWindow,
-      }
+      { role: 'close' }
     ]
   }));
 
@@ -408,7 +316,6 @@ app.on('ready', () => {
         accelerator: 'CmdOrCtrl+S',
         click: screenshotToClipboard
       },
-      
       { 
         label: 'Save Screenshot', 
         accelerator: 'CmdOrCtrl+Shift+S',
@@ -469,12 +376,37 @@ ipcMain.on('check_for_update', () => {
   autoUpdater.checkForUpdates();
 });
 });
+ipcMain.on('request-preferences', (event) => {
+  // Load preferences from a file or default values
+  const preferences = loadPreferences();
+  event.sender.send('load-preferences', preferences);
+});
+ipcMain.on('save-preferences', (event, preferences) => {
+  // Save preferences to a file
+  savePreferences(preferences);
+
+  // Update "Always On Top" setting
+  if(preferences.alwaysOnTop !== undefined) {
+    mainWindow.setAlwaysOnTop(preferences.alwaysOnTop);
+  }
+
+  // Update "Hide Dock Icon" setting (macOS only)
+  if(preferences.hideDockIcon !== undefined) {
+    if(preferences.hideDockIcon) {
+      app.dock.hide();
+    } else {
+      app.dock.show();
+    }
+  }
+});
+
 
 let updateInterval;
 
 app.whenReady().then(() => {
   createWindow();
   autoUpdater.checkForUpdates();
+
   // Set autoInstallOnAppQuit to true to apply updates silently
   autoUpdater.autoInstallOnAppQuit = false;
 
@@ -582,9 +514,28 @@ autoUpdater.on('update-downloaded', () => {
 
 app.on('before-quit', () => {
   clearInterval(updateInterval);
-
 });
 
-ipcMain.on('open-settings-window', () => {
-  createSettingsWindow();
-});
+function loadPreferences() {
+  const filePath = path.join(__dirname, 'preferences.json');
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    // Provide default values if file doesn't exist or can't be read
+    return {
+      alwaysOnTop: true,
+      hideDockIcon: false,
+      enabledChatbots: ['openai', 'google']
+    };
+  }
+}
+
+function savePreferences(preferences) {
+  const filePath = path.join(__dirname, 'preferences.json');
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(preferences, null, 2), 'utf8');
+  } catch (err) {
+    console.error("Couldn't save preferences: ", err);
+  }
+}

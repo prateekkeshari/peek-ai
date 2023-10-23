@@ -1,6 +1,4 @@
 const serviceName = document.getElementById('serviceName');
-const alwaysOnCheckbox = document.getElementById('alwaysOn');
-const hideDockCheckbox = document.getElementById('hideDock'); // New line
 
 const webviews = {
   'openai': document.getElementById('webview-openai'),
@@ -8,153 +6,175 @@ const webviews = {
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
-  'bing': document.getElementById('webview-bing'),
   'labs': document.getElementById('webview-labs'),
+  'bing': document.getElementById('webview-bing')
 };
+
 let controlsHeight;
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
-  const clickedElement = e.target.closest('a');
-  const id = clickedElement.getAttribute('id');
+  const url = e.target.closest('a').dataset.value;
+  document.getElementById('selectedImage').src = e.target.closest('a').querySelector('img').src;
+  serviceName.textContent = e.target.closest('a').textContent.trim();
 
-  if (id === 'settingsDropdown') {
-    toggleConfigPanel();
-    return;
+  // Hide all webviews
+  for (let id in webviews) {
+    webviews[id].style.display = 'none';
   }
+  const webviewId = e.target.closest('a').dataset.id; // Use the data-id attribute as the webviewId
+  const webview = webviews[webviewId];
 
-  const url = clickedElement.dataset.value;
-  document.getElementById('selectedImage').src = clickedElement.querySelector('img').src;
-  serviceName.textContent = clickedElement.textContent.trim();
 
-// Hide all webviews
-for (let id in webviews) {
-  webviews[id].style.display = 'none'; // Change this line
-}
+  webview.style.display = 'flex';
 
-const webviewId = clickedElement.dataset.id;
-const webview = webviews[webviewId];
-webview.style.display = 'flex'; // Change this line // Add this line
-
+  // Load the URL if it hasn't been loaded yet
   if (!webview.getURL()) {
     webview.loadURL(url);
   }
 
+  // Update the height of the webviews
   resizeWebview();
 });
+// Toggle Config Panel
+document.getElementById('settingsDropdown').addEventListener('click', function() {
+  const configPanel = document.getElementById('configPanel');
+  configPanel.classList.toggle('hidden');
+});
 
-function toggleConfigPanel() {
-  if (configPanel.classList.contains('hidden')) {
-    configPanel.classList.remove('hidden');
-  } else {
-    configPanel.classList.add('hidden');
+// Close Config Panel
+document.getElementById('closeButton').addEventListener('click', function() {
+  const configPanel = document.getElementById('configPanel');
+  configPanel.classList.add('hidden');
+});
+
+// Save Preferences
+document.getElementById('savePreferences').addEventListener('click', function() {
+  const alwaysOn = document.getElementById('alwaysOnToggle').classList.contains('active');
+  const hideDock = document.getElementById('hideDockToggle').classList.contains('active');
+  const chatbots = Array.from(document.querySelectorAll('.checkbox-item input:checked'))
+    .map(input => input.dataset.id);
+
+  const preferences = {
+    alwaysOnTop: alwaysOn,
+    hideDockIcon: hideDock,
+    enabledChatbots: chatbots
+  };
+
+  // Send the updated preferences to the main process
+  window.myIpcRenderer.send('save-preferences', preferences);
+
+  // Update the visibility of webviews
+  updateWebviewVisibility(preferences);
+  // Update the dropdown list
+  updateDropdownList(preferences.enabledChatbots);
+});
+
+// Update Webview Visibility based on Preferences
+function updateWebviewVisibility(preferences) {
+  for (let id in webviews) {
+    const webview = webviews[id];
+    if (preferences.enabledChatbots.includes(id)) {
+      webview.style.display = 'flex';
+    } else {
+      webview.style.display = 'none';
+    }
   }
 }
+
+// Update the dropdown list
+function updateDropdownList(enabledChatbots) {
+  const dropdownContent = document.getElementById('dropdownContent');
+  const allLinks = Array.from(dropdownContent.querySelectorAll('a[data-id]'));
+  
+  allLinks.forEach(link => {
+    const botId = link.getAttribute('data-id');
+    if (enabledChatbots.includes(botId)) {
+      link.style.display = 'block';
+    } else {
+      link.style.display = 'none';
+    }
+  });
+}
+
+// Update the list of chatbots under "Your Chatbots"
+function updateChatbotList(enabledChatbots) {
+  const yourChatbotsContainer = document.getElementById('yourChatbotsContainer'); // Replace with the actual ID
+  yourChatbotsContainer.innerHTML = ''; // Clear the current list
+
+  enabledChatbots.forEach(botId => {
+    // Create new list item
+    const listItem = document.createElement('li');
+    listItem.textContent = botId; // Replace with the actual bot name if needed
+    listItem.classList.add('chatbot-list-item'); // Add any necessary classes
+    // Add click handlers if needed
+    yourChatbotsContainer.appendChild(listItem);
+  });
+}
+// Initialize UI based on loaded preferences
+window.myIpcRenderer.on('load-preferences', (event, preferences) => {
+  if (preferences) {
+    // Update toggle buttons
+    document.getElementById('alwaysOnToggle').classList.toggle('active', preferences.alwaysOnTop);
+    document.getElementById('hideDockToggle').classList.toggle('active', preferences.hideDockIcon);
+
+    // Update chatbot checkboxes and visibility
+    document.querySelectorAll('.checkbox-item input').forEach(input => {
+      const isChecked = preferences.enabledChatbots.includes(input.dataset.id);
+      input.checked = isChecked;
+      
+      // Update the visibility of webviews
+      const webview = webviews[input.dataset.id];
+      webview.style.display = isChecked ? 'flex' : 'none';
+    });
+
+    // Update the dropdown list
+    updateDropdownList(preferences.enabledChatbots);
+    updateWebviewVisibility(preferences);
+  }
+});
+
+// Request stored preferences from the main process
+window.myIpcRenderer.send('request-preferences');
+document.getElementById('alwaysOnToggle').addEventListener('click', function() {
+  this.classList.toggle('active');
+});
+document.getElementById('hideDockToggle').addEventListener('click', function() {
+  this.classList.toggle('active');
+});
+document.getElementById('expandChatbots').addEventListener('click', function() {
+  const panel = document.getElementById('chatbotPanel');
+  panel.classList.toggle('hidden');
+});
+document.getElementById('chatbotPanel').addEventListener('change', function(e) {
+  if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+    savePreferences();
+  }
+});
 
 function resizeWebview() {
   const windowHeight = document.documentElement.clientHeight;
   
-  // Recalculate the controls height
-  controlsHeight = document.getElementById('controls').offsetHeight;
+  // If controlsHeight is not defined, calculate it
+  if (!controlsHeight) {
+    controlsHeight = document.getElementById('controls').offsetHeight;
+  }
   
+  console.log('controlsHeight:', controlsHeight);
+  
+  // Resize all webviews
   for (let id in webviews) {
     webviews[id].style.height = `${windowHeight - controlsHeight}px`;
+    console.log('webview height:', webviews[id].style.height);
   }
-  }
-  
+}
 
 window.addEventListener('resize', () => {
+  // Reset controlsHeight so it can be recalculated
   controlsHeight = null;
   resizeWebview();
 });
 
-// Load settings
-loadSettings();
-// Attach click event to toggle-buttons
-document.querySelectorAll('.toggle-button').forEach(button => {
-  button.addEventListener('click', function() {
-    this.classList.toggle('active');
-    const isActive = this.classList.contains('active');
-
-    if (this.id === 'alwaysOnToggle') {
-      console.log('Always-On Floating Window: ', isActive);
-      myIpcRenderer.send('toggle-always-on-top', isActive);
-    }
-
-    if (this.id === 'hideDockToggle') {
-      console.log('Hide Dock Icon: ', isActive);
-      myIpcRenderer.send('toggle-dock-icon', isActive);
-    }
-
-    saveSettings();
-  });
-});
-
-function saveSettings() {
-  const settings = {
-    alwaysOn: document.getElementById('alwaysOnToggle').classList.contains('active'),
-    hideDock: document.getElementById('hideDockToggle').classList.contains('active')
-  };
-  localStorage.setItem('settings', JSON.stringify(settings));
-}
-
-function loadSettings() {
-  const savedSettings = localStorage.getItem('settings');
-  if (savedSettings) {
-    const settings = JSON.parse(savedSettings);
-    if (settings.alwaysOn) {
-      document.getElementById('alwaysOnToggle').classList.add('active');
-    }
-    if (settings.hideDock) {
-      document.getElementById('hideDockToggle').classList.add('active');
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
+resizeWebview();
 
 
-  const expandButton = document.getElementById('expandChatbots');
-  const chatbotPanel = document.getElementById('chatbotPanel');
-
-  expandButton.addEventListener('click', function() {
-    chatbotPanel.classList.toggle('hidden');
-  });
-});
-$(document).ready(function() {
-  $('#expandChatbots').click(function() {
-    if ($('#chatbotPanel').hasClass('hidden')) {
-      // If the panel is hidden, show the down chevron
-      $('.expand-icon').html('&#9660;');
-    } else {
-      // If the panel is visible, show the up chevron
-      $('.expand-icon').html('&#9650;');
-    }
-  });
-});
-
-$(document).ready(function() {
-  // Add a change event listener to each checkbox
-  $('.checkbox-item input[type="checkbox"]').change(function() {
-    // Get the data-id of the bot
-    var botId = $(this).data('id');
-
-    if ($(this).is(':checked')) {
-      // If the checkbox is checked, show the bot in the dropdown
-      $('#dropdownContent a[data-id="' + botId + '"]').show();
-    } else {
-      // If the checkbox is unchecked, hide the bot from the dropdown
-      $('#dropdownContent a[data-id="' + botId + '"]').hide();
-    }
-  });
-});
-
-$('#closeButton').click(function() {
-  // Close the settings panel
-  $('#configPanel').addClass('hidden');
-});
-
-$('.bot-item').click(function() {
-  $('.bot-item.selected').removeClass('selected');
-  $(this).addClass('selected');
-});

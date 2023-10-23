@@ -1,0 +1,9 @@
+{
+  "alwaysOnTop": true,
+  "hideDockIcon": true,
+  "enabledChatbots": [
+    "openai",
+    "google",
+    "claude"
+  ]
+}

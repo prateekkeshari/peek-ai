@@ -92,7 +92,7 @@ img
   text-decoration: none;
   display: flex; /* Change to flex */
   align-items: center; /* Align items vertically */
-  filter: blur(1.7px); /* Apply a blur */
+  filter: blur(1.2px); /* Apply a blur */
   transition: filter 0.3s ease; /* Smooth out the transition */
 }
 .dropdown-content a img {
@@ -107,6 +107,7 @@ img
   background-color: rgb(235, 234, 235);
   cursor: pointer;
   border-radius: 7px;
+  font-weight:450;
   filter: blur(0);
 }
 

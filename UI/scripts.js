@@ -128,7 +128,7 @@ function updateDropdownList(enabledChatbots) {
   allLinks.forEach(link => {
     const botId = link.getAttribute('data-id');
     if (enabledChatbots.includes(botId)) {
-      link.style.display = 'block';
+      link.style.display = 'flex';
     } else {
       link.style.display = 'none';
     }

@@ -12,6 +12,11 @@ const webviews = {
 
 let controlsHeight;
 
+for (let id in webviews) {
+  webviews[id].style.display = 'none';
+}
+webviews['openai'].style.display = 'flex';
+
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
   const url = e.target.closest('a').dataset.value;
@@ -64,8 +69,12 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   // Send the updated preferences to the main process
   window.myIpcRenderer.send('save-preferences', preferences);
 
-  // Update the visibility of webviews
-  updateWebviewVisibility(preferences);
+  // Hide all webviews and show only 'openai' webview
+  for (let id in webviews) {
+    webviews[id].style.display = 'none';
+  }
+  webviews['openai'].style.display = 'flex';
+
   // Update the dropdown list
   updateDropdownList(preferences.enabledChatbots);
 });
@@ -125,12 +134,12 @@ window.myIpcRenderer.on('load-preferences', (event, preferences) => {
       
       // Update the visibility of webviews
       const webview = webviews[input.dataset.id];
-      webview.style.display = isChecked ? 'flex' : 'none';
+      // Only show 'openai' webview when the app loads
+      webview.style.display = input.dataset.id === 'openai' ? 'flex' : 'none';
     });
 
     // Update the dropdown list
     updateDropdownList(preferences.enabledChatbots);
-    updateWebviewVisibility(preferences);
   }
 });
 
@@ -176,5 +185,4 @@ window.addEventListener('resize', () => {
 });
 
 resizeWebview();
-
 

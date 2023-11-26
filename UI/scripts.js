@@ -161,6 +161,23 @@ document.getElementById('chatbotPanel').addEventListener('change', function(e) {
   }
 });
 
+document.querySelector('.save-button').addEventListener('click', function() {
+  var button = this;
+  button.textContent = 'Saving...';
+  button.disabled = true; // Disable the button
+  button.classList.add('saving'); // Add the 'saving' class
+
+  // Simulate saving preferences
+  setTimeout(function() {
+    button.textContent = 'Saved';
+    setTimeout(function() {
+      button.textContent = 'Save Preferences';
+      button.disabled = false; // Re-enable the button
+      button.classList.remove('saving'); // Remove the 'saving' class
+    }, 2000); // The text will change back after 2 seconds
+  }, 1000); // Simulate a delay for the saving operation
+});
+
 function resizeWebview() {
   const windowHeight = document.documentElement.clientHeight;
   

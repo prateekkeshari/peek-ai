@@ -473,13 +473,27 @@ expand-text
 
 .save-button {
   background-color: #000000; /* Green */
-  border-radius: 10px;
+  border-radius: 7px;
   color: white;
   padding: 10px 24px;
   text-align: center;
+  font-weight: 500;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform to transition */
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Added shadow to the button */
+}
+.save-button:hover {
+  transform: scale(0.98);
+}
+.save-button:active {
+  transform: scale(0.90); /* Increased the scale reduction when button is pressed */
+}
+
+.save-button.saving {
+  background-color: #ff5533; /* Gray */
+  color: #ffffff; /* White */
 }

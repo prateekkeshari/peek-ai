@@ -47,14 +47,44 @@ document.getElementById('settingsDropdown').addEventListener('click', function()
   configPanel.classList.toggle('hidden');
 });
 
-// Close Config Panel
-document.getElementById('closeButton').addEventListener('click', function() {
-  const configPanel = document.getElementById('configPanel');
-  configPanel.classList.add('hidden');
+// Remove duplicate closeButton event listener
+document.getElementById('closeButton').addEventListener('click', function(event) {
+  if (unsavedChanges) {
+    event.preventDefault(); // Prevent the panel from closing
+    if (confirm('Unsaved changes detected. Do you want to save changes before closing?')) {
+      // If 'OK' is clicked
+      // Save changes...
+      document.getElementById('savePreferences').click(); // Trigger the click event of the 'Save Preferences' button
+      // Close the panel after saving changes
+      document.querySelector('#configPanel').classList.add('hidden');
+    } else {
+      // Close the panel without saving changes
+      document.querySelector('#configPanel').classList.add('hidden');
+    }
+  } else {
+    // Close the panel if there are no unsaved changes
+    document.querySelector('#configPanel').classList.add('hidden');
+  }
 });
 
+let unsavedChanges = false;
+
+// Listen for changes in preferences
+document.getElementById('configPanel').addEventListener('change', function(e) {
+  if (e.target.tagName === 'INPUT') {
+    unsavedChanges = true;
+  }
+});
+document.getElementById('alwaysOnToggle').addEventListener('click', function() {
+  unsavedChanges = true;
+});
+document.getElementById('hideDockToggle').addEventListener('click', function() {
+
+  unsavedChanges = true;
+});
 // Save Preferences
 document.getElementById('savePreferences').addEventListener('click', function() {
+  unsavedChanges = false;
   const alwaysOn = document.getElementById('alwaysOnToggle').classList.contains('active');
   const hideDock = document.getElementById('hideDockToggle').classList.contains('active');
   const chatbots = Array.from(document.querySelectorAll('.checkbox-item input:checked'))
@@ -78,7 +108,6 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   // Update the dropdown list
   updateDropdownList(preferences.enabledChatbots);
 });
-
 // Update Webview Visibility based on Preferences
 function updateWebviewVisibility(preferences) {
   for (let id in webviews) {

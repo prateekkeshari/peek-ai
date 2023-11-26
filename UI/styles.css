@@ -28,20 +28,26 @@ body {
 
 @media (prefers-color-scheme: dark) {
   #controls {
-    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.9);
   }
   #serviceName {
-    color: #e4e4e4a4;
+    color: rgba(228, 228, 228, 0.643);
   }
 }
 
 @media (prefers-color-scheme: light) {
   #controls {
-    background: rgb(255, 255, 255);
+    background: rgba(255, 255, 255, 0.9);
   }
   #serviceName {
-    color: #151515a4;
+    color: rgba(21, 21, 21, 0.643);
   }
+}
+
+img
+{
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 #serviceName {
@@ -65,16 +71,16 @@ body {
 
 .dropdown-content {
   -webkit-app-region: no-drag;
-  display: none;
+  display: none; /* Hide dropdown by default */
   position: absolute;
-  top: 0.05px;
-  left: 0.4px;
+  left: 0.4px; /* Adjust as needed */
   background-color: #f8f8f8;
   min-width: 150px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
-  border-radius: 10px;
+  border-radius: 7px;
   opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .dropdown-content a {
@@ -84,21 +90,23 @@ body {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  filter: blur(1.7px);
-  transition: filter 0.3s ease;
+  display: flex; /* Change to flex */
+  align-items: center; /* Align items vertically */
+  filter: blur(1.7px); /* Apply a blur */
+  transition: filter 0.3s ease; /* Smooth out the transition */
 }
-
 .dropdown-content a img {
-  margin-top: 2px;
-  margin-right: 8px;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .dropdown-content a:hover {
   background-color: rgb(235, 234, 235);
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 7px;
   filter: blur(0);
 }
 
@@ -108,6 +116,7 @@ body {
   visibility: visible;
   cursor: pointer;
 }
+
 
 /* Button styles */
 .dropbtn {
@@ -496,4 +505,15 @@ expand-text
 .save-button.saving {
   background-color: #ff5533; /* Gray */
   color: #ffffff; /* White */
+}
+
+@media (prefers-color-scheme: dark) {
+  .save-button {
+    background-color: #ffffff; /* White for dark scheme */
+    color: #000000; /* Black text for dark scheme */
+  }
+  .save-button.saving {
+    background-color: #ff5533; /* Gray for dark scheme */
+    color: #ffffff; /* White text for dark scheme */
+  }
 }

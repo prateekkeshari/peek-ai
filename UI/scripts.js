@@ -3,11 +3,11 @@ const serviceName = document.getElementById('serviceName');
 const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
+  'poe': document.getElementById('webview-poe'),
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
   'labs': document.getElementById('webview-labs'),
-  'bing': document.getElementById('webview-bing')
 };
 
 let controlsHeight;

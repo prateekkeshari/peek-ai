@@ -4,6 +4,10 @@
   "enabledChatbots": [
     "openai",
     "google",
-    "pi"
+    "poe",
+    "pi",
+    "perplexity",
+    "claude",
+    "labs"
   ]
 }

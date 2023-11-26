@@ -1,4 +1,5 @@
 const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
+const {is} = require('electron-util');
 const path = require('path');
 const log = require('electron-log');
 const url = require('url');
@@ -156,7 +157,7 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:false,
+      devTools:true,
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });
@@ -298,7 +299,15 @@ if (preferences.hideDockIcon) {
       { role: 'cut' },
       { role: 'copy' },
       { role: 'paste' },
-      { role: 'selectall' }
+      { role: 'selectall' },
+      { type: 'separator' },
+      {
+        label: 'Toggle Dev Tools',
+        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click: () => {
+          mainWindow.webContents.toggleDevTools();
+        }
+      }
     ]
   }));
 
@@ -356,7 +365,7 @@ if (preferences.hideDockIcon) {
       {
         label: 'Share feedback',
         click: async () => {
-          await shell.openExternal('mailto:hi@prateek.de');
+          await shell.openExternal('mailto:prateekkeshari7@gmail.com?subject=Peek%20Feedback');
         }
       },
       {
@@ -405,6 +414,23 @@ let updateInterval;
 
 app.whenReady().then(() => {
   createWindow();
+
+  if (is.macos && !app.isInApplicationsFolder()) {
+    const choice = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: ['Move to Applications Folder', 'Do Not Move'],
+      defaultId: 0,
+      message: 'To receive future updates, move this to the Applications folder. You can safely delete the file from the downloaded folder after moving.'
+    });
+    if (choice === 0) {
+      try {
+        app.moveToApplicationsFolder();
+      } catch {
+        console.error('Failed to move app to Applications folder.');
+      }
+    }
+  }
+
   autoUpdater.checkForUpdates();
 
   // Set autoInstallOnAppQuit to true to apply updates silently
@@ -517,7 +543,7 @@ app.on('before-quit', () => {
 });
 
 function loadPreferences() {
-  const filePath = path.join(__dirname, 'preferences.json');
+  const filePath = path.join(app.getPath('userData'), 'preferences.json');
   try {
     const data = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(data);
@@ -532,7 +558,7 @@ function loadPreferences() {
 }
 
 function savePreferences(preferences) {
-  const filePath = path.join(__dirname, 'preferences.json');
+  const filePath = path.join(app.getPath('userData'), 'preferences.json');
   try {
     fs.writeFileSync(filePath, JSON.stringify(preferences, null, 2), 'utf8');
   } catch (err) {

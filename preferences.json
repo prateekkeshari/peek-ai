@@ -1,0 +1,13 @@
+{
+  "alwaysOnTop": false,
+  "hideDockIcon": false,
+  "enabledChatbots": [
+    "openai",
+    "google",
+    "poe",
+    "pi",
+    "perplexity",
+    "claude",
+    "labs"
+  ]
+}

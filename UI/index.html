@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <title>Peek</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
   </head>
   <body>
     <div id="controls">
@@ -13,32 +17,138 @@
         </button>
         <div class="dropdown-content" id="dropdownContent">
           <a href="#" data-value="https://chat.openai.com" data-id="openai">
-            <img src="openai-logo.png" alt="OpenAI" width="20" height="20">
+            <img src="openai-logo.png" alt="OpenAI">
             ChatGPT
           </a>
           <a href="#" data-value="https://bard.google.com" data-id="google">
-            <img src="google-logo.png" alt="Google" width="20" height="20">
+            <img src="google-logo.png" alt="Google">
             Bard
           </a>
+          <a href="#" data-value="https:/poe.com" data-id="poe">
+            <img src="poe.png" alt="Poe">
+            Poe
+          </a>
           <a href="#" data-value="https://heypi.com/talk" data-id="pi">
-            <img src="pi-logo.jpeg" alt="Pi by Inflection AI" width="20" height="20">
+            <img src="pi-logo.jpeg" alt="Pi by Inflection AI">
             Pi
           </a>
           <a href="#" data-value="https://www.perplexity.ai/" data-id="perplexity">
-            <img src="perplexity-logo.png" alt="Perplexity" width="20" height="20">
-            Perplexity AI
-          </a>          
+            <img src="perplexity-logo.png" alt="Perplexity">
+            Perplexity
+          </a>
+
+          <a href="#" data-value="https://claude.ai/" data-id="claude">
+            <img src="claude-logo.png" alt="Claude">
+            Claude
+          </a>
+
+          <a href="#" data-value="https://labs.perplexity.ai/" data-id="labs">
+            <img src="labs.png" alt="labs">
+            Labs
+          </a>
+
+          <div class="divider-drop"></div>
+            <a href="#" id="settingsDropdown">
+              <span class="settingsWrapper">
+                <i class="fas fa-cog"></i> <!-- Font Awesome Cog Icon -->
+                Settings
+              </span>
+            </a>
+            
         </div>
       </div>      
       <span id="serviceName">ChatGPT</span>
-    </div>    
+    </div>
+
+    <div id="configPanel" class="hidden">
+      <div class="settings-main">
+      <div class="settingsPanel">
+        <span class="settingsLabel">Settings</span>
+        <span class="settingsSublabel">Change the configuration of Peek</span>
+    </div>
+    <button id="closeButton">
+      <i class="fas fa-times"></i> <!-- Font Awesome Close Icon -->
+    </button>
+    </div>
+      <div class="divider"></div>
+
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Floating window</span>
+          <span class="config-sublabel">Disable to prevent Peek from staying on top</span>
+        </div>
+        <div class="toggle-button active" id="alwaysOnToggle"></div>
       </div>
-      <div id="webviews">
-        <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>
-        <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>
-        <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
-        <webview id="webview-perplexity" src="https://www.perplexity.ai/" useragent="Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1" allowpopups style="display: none;"></webview>
+      
+    
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Hide dock icon</span>
+          <span class="config-sublabel">Toggle to remove Peek's icon from the dock</span>
+        </div>
+        <div class="toggle-button" id="hideDockToggle"></div>
       </div>
+      <div class="divider"></div>
+      
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Chatbots</span>
+          <span class="config-sublabel">Select to add or remove a chatbot</span>
+        </div>
+        <div class="expand-container">
+          <button class="expand-button" id="expandChatbots">
+            <span class="expand-text">Your bots</span>
+            <span class="expand-icon">&#9660;</span>
+          </button>
+          <div class="expansion-panel hidden" id="chatbotPanel">
+            <div class="checkbox-item">
+              <input type="checkbox" id="ChatGPT" name="ChatGPT" data-id="openai" checked>
+              <label for="ChatGPT">ChatGPT</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Bard" name="Bard" data-id="google" checked>
+              <label for="Bard">Bard</label>
+           </div>
+           <div class="checkbox-item">
+            <input type="checkbox" id="Poe" name="Poe" data-id="poe" checked>
+            <label for="Poe">Poe</label>
+         </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
+              <label for="Pi">Pi</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Perplexity" name="Perplexity" data-id="perplexity" checked>
+              <label for="Perplexity">Perplexity</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Claude" name="Claude" data-id="claude" checked>
+              <label for="Claude">Claude</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
+              <label for="Labs">Labs</label>
+              </div>
+        </div>
+      </div>     
+     
+    </div> 
+    <div class="config-item">
+      <button id="savePreferences" class="save-button">
+        Save Preferences
+      </button>
+    </div>   
+   </div>
+
+    <div id="webviews">
+      <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>
+      <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>
+      <webview id="webview-poe" src="https://poe.com" allowpopups style="display: none;"></webview>
+      <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
+      <webview id="webview-perplexity" src="https://www.perplexity.ai/" allowpopups style="display: none;"></webview>
+      <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
+      <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
+    </div>
       
     <script src="scripts.js"></script>
   </body>

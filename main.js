@@ -1,4 +1,5 @@
 const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
+const {is} = require('electron-util');
 const path = require('path');
 const log = require('electron-log');
 const url = require('url');
@@ -20,7 +21,6 @@ function toggleWindow() {
     mainWindow.show();
   }
 }
-
 
 function processImage(image, callback) {
   const dimensions = image.getSize();
@@ -140,6 +140,8 @@ function saveScreenshot() {
 
 
 function createWindow() {
+  const preferences = loadPreferences();
+
   mainWindow = new BrowserWindow({
     width: 400,
     height: 650,
@@ -155,9 +157,9 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:false,
+      devTools:true,
     },
-    alwaysOnTop: true, // floating window
+    alwaysOnTop: preferences.alwaysOnTop,
   });
    // Wait for the window to be ready
    mainWindow.once('ready-to-show', () => {
@@ -230,7 +232,11 @@ app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
 app.on('ready', () => {
   // Set the app name
   app.setName('Peek');
-  
+  const preferences = loadPreferences();
+if (preferences.hideDockIcon) {
+  app.dock.hide();
+}
+
   // Set the Dock icon
   const iconPath = path.join(__dirname, '/icons/peek-dock.png');
   icon = nativeImage.createFromPath(iconPath);
@@ -293,7 +299,15 @@ app.on('ready', () => {
       { role: 'cut' },
       { role: 'copy' },
       { role: 'paste' },
-      { role: 'selectall' }
+      { role: 'selectall' },
+      { type: 'separator' },
+      {
+        label: 'Toggle Dev Tools',
+        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click: () => {
+          mainWindow.webContents.toggleDevTools();
+        }
+      }
     ]
   }));
 
@@ -351,7 +365,7 @@ app.on('ready', () => {
       {
         label: 'Share feedback',
         click: async () => {
-          await shell.openExternal('mailto:hi@prateek.de');
+          await shell.openExternal('mailto:prateekkeshari7@gmail.com?subject=Peek%20Feedback');
         }
       },
       {
@@ -371,11 +385,52 @@ ipcMain.on('check_for_update', () => {
   autoUpdater.checkForUpdates();
 });
 });
+ipcMain.on('request-preferences', (event) => {
+  // Load preferences from a file or default values
+  const preferences = loadPreferences();
+  event.sender.send('load-preferences', preferences);
+});
+ipcMain.on('save-preferences', (event, preferences) => {
+  // Save preferences to a file
+  savePreferences(preferences);
+
+  // Update "Always On Top" setting
+  if(preferences.alwaysOnTop !== undefined) {
+    mainWindow.setAlwaysOnTop(preferences.alwaysOnTop);
+  }
+
+  // Update "Hide Dock Icon" setting (macOS only)
+  if(preferences.hideDockIcon !== undefined) {
+    if(preferences.hideDockIcon) {
+      app.dock.hide();
+    } else {
+      app.dock.show();
+    }
+  }
+});
+
 
 let updateInterval;
 
 app.whenReady().then(() => {
   createWindow();
+
+  if (is.macos && !app.isInApplicationsFolder()) {
+    const choice = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: ['Move to Applications Folder', 'Do Not Move'],
+      defaultId: 0,
+      message: 'To receive future updates, move this to the Applications folder. You can safely delete the file from the downloaded folder after moving.'
+    });
+    if (choice === 0) {
+      try {
+        app.moveToApplicationsFolder();
+      } catch {
+        console.error('Failed to move app to Applications folder.');
+      }
+    }
+  }
+
   autoUpdater.checkForUpdates();
 
   // Set autoInstallOnAppQuit to true to apply updates silently
@@ -486,3 +541,27 @@ autoUpdater.on('update-downloaded', () => {
 app.on('before-quit', () => {
   clearInterval(updateInterval);
 });
+
+function loadPreferences() {
+  const filePath = path.join(app.getPath('userData'), 'preferences.json');
+  try {
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    // Provide default values if file doesn't exist or can't be read
+    return {
+      alwaysOnTop: true,
+      hideDockIcon: false,
+      enabledChatbots: ['openai', 'google']
+    };
+  }
+}
+
+function savePreferences(preferences) {
+  const filePath = path.join(app.getPath('userData'), 'preferences.json');
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(preferences, null, 2), 'utf8');
+  } catch (err) {
+    console.error("Couldn't save preferences: ", err);
+  }
+}

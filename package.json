@@ -37,15 +37,20 @@
     },
     "mac": {
       "hardenedRuntime": true,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "./build/entitlements.mac.plist",
+      "entitlementsInherit": "./build/entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.developer-tools",
       "icon": "icons/peek-dock.icns",
-      "target": "zip"
-    },
-    "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,

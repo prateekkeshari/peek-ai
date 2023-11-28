@@ -150,7 +150,7 @@ function createWindow() {
     show: false,
     frame:false,
     transparent:true,
-    fullscreenable: false,
+    fullscreenable: true,
     resizable: true,
     webPreferences: {
       nodeIntegration: false,

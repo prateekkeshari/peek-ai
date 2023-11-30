@@ -4,6 +4,7 @@ const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
   'poe': document.getElementById('webview-poe'),
+  'bing': document.getElementById('webview-bing'),
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
@@ -69,7 +70,6 @@ document.getElementById('closeButton').addEventListener('click', function(event)
 
 let unsavedChanges = false;
 
-// Listen for changes in preferences
 document.getElementById('configPanel').addEventListener('change', function(e) {
   if (e.target.tagName === 'INPUT') {
     unsavedChanges = true;
@@ -79,7 +79,9 @@ document.getElementById('alwaysOnToggle').addEventListener('click', function() {
   unsavedChanges = true;
 });
 document.getElementById('hideDockToggle').addEventListener('click', function() {
-
+  unsavedChanges = true;
+});
+document.getElementById('launchAtLoginToggle').addEventListener('click', function() { // New line
   unsavedChanges = true;
 });
 // Save Preferences
@@ -87,12 +89,14 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   unsavedChanges = false;
   const alwaysOn = document.getElementById('alwaysOnToggle').classList.contains('active');
   const hideDock = document.getElementById('hideDockToggle').classList.contains('active');
+  const launchAtLogin = document.getElementById('launchAtLoginToggle').classList.contains('active'); // New line
   const chatbots = Array.from(document.querySelectorAll('.checkbox-item input:checked'))
     .map(input => input.dataset.id);
 
   const preferences = {
     alwaysOnTop: alwaysOn,
     hideDockIcon: hideDock,
+    launchAtLogin: launchAtLogin, // New line
     enabledChatbots: chatbots
   };
 
@@ -149,12 +153,14 @@ function updateChatbotList(enabledChatbots) {
     yourChatbotsContainer.appendChild(listItem);
   });
 }
+
 // Initialize UI based on loaded preferences
 window.myIpcRenderer.on('load-preferences', (event, preferences) => {
   if (preferences) {
     // Update toggle buttons
     document.getElementById('alwaysOnToggle').classList.toggle('active', preferences.alwaysOnTop);
     document.getElementById('hideDockToggle').classList.toggle('active', preferences.hideDockIcon);
+    document.getElementById('launchAtLoginToggle').classList.toggle('active', preferences.launchAtLogin);
 
     // Update chatbot checkboxes and visibility
     document.querySelectorAll('.checkbox-item input').forEach(input => {
@@ -178,6 +184,10 @@ document.getElementById('alwaysOnToggle').addEventListener('click', function() {
   this.classList.toggle('active');
 });
 document.getElementById('hideDockToggle').addEventListener('click', function() {
+  this.classList.toggle('active');
+});
+
+document.getElementById('launchAtLoginToggle').addEventListener('click', function() {
   this.classList.toggle('active');
 });
 document.getElementById('expandChatbots').addEventListener('click', function() {
@@ -231,4 +241,3 @@ window.addEventListener('resize', () => {
 });
 
 resizeWebview();
-

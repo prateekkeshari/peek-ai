@@ -157,7 +157,7 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:true,
+      devTools:false,
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });
@@ -300,14 +300,6 @@ if (preferences.hideDockIcon) {
       { role: 'copy' },
       { role: 'paste' },
       { role: 'selectall' },
-      { type: 'separator' },
-      {
-        label: 'Toggle Dev Tools',
-        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-        click: () => {
-          mainWindow.webContents.toggleDevTools();
-        }
-      }
     ]
   }));
 
@@ -546,13 +538,15 @@ function loadPreferences() {
   const filePath = path.join(app.getPath('userData'), 'preferences.json');
   try {
     const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
+    const preferences = JSON.parse(data);
+    app.setLoginItemSettings({ openAtLogin: preferences.launchAtLogin });
+    return preferences;
   } catch (err) {
-    // Provide default values if file doesn't exist or can't be read
     return {
       alwaysOnTop: true,
       hideDockIcon: false,
-      enabledChatbots: ['openai', 'google']
+      enabledChatbots: ['openai', 'google'],
+      launchAtLogin: false
     };
   }
 }

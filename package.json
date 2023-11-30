@@ -1,13 +1,15 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "pack": "build --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "rebuild": "electron-rebuild -f -w sharp"
   },
   "keywords": [
     "ChatGPT",
@@ -23,11 +25,12 @@
     "electron-store": "^8.1.0",
     "electron-updater": "^4.6.5",
     "electron-util": "^0.17.2",
-    "sharp": "^0.32.1"
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
     "electron": "^25.0.1",
-    "electron-builder": "^24.4.0"
+    "electron-builder": "^24.4.0",
+    "electron-rebuild": "^3.2.9"
   },
   "build": {
     "appId": "de.prateek.peek",
@@ -51,6 +54,9 @@
           ]
         }
       ]
+    },
+    "win": {
+      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,

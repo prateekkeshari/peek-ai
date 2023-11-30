@@ -24,10 +24,6 @@
             <img src="google-logo.png" alt="Google">
             Bard
           </a>
-          <a href="#" data-value="https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx" data-id="bing">
-            <img src="bing.png" alt="Bing">
-            Bing
-          </a>
           <a href="#" data-value="https:/poe.com" data-id="poe">
             <img src="poe.png" alt="Poe">
             Poe
@@ -93,14 +89,6 @@
         <div class="toggle-button" id="hideDockToggle"></div>
       </div>
       <div class="divider"></div>
-      <div class="config-item">
-        <div class="config-text">
-          <span class="config-label">Launch at Login</span>
-          <span class="config-sublabel">Toggle to launch Peek at login</span>
-        </div>
-        <div class="toggle-button" id="launchAtLoginToggle"></div>
-      </div>
-      <div class="divider"></div>
       
       <div class="config-item">
         <div class="config-text">
@@ -125,11 +113,6 @@
             <input type="checkbox" id="Poe" name="Poe" data-id="poe" checked>
             <label for="Poe">Poe</label>
          </div>
-         <div class="checkbox-item">
-          <input type="checkbox" id="Bing" name="Bing" data-id="bing" checked>
-          <label for="Bing">Bing</label>
-       </div>
-
             <div class="checkbox-item">
               <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
               <label for="Pi">Pi</label>
@@ -162,12 +145,11 @@
       <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>
       <webview id="webview-poe" src="https://poe.com" allowpopups style="display: none;"></webview>
       <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
-      <webview id="webview-bing" src="https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx" useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.48" allowpopups style="display: none;"></webview>
       <webview id="webview-perplexity" src="https://www.perplexity.ai/" allowpopups style="display: none;"></webview>
       <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
       <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
     </div>
-      
+
     <script src="scripts.js"></script>
   </body>
 </html>

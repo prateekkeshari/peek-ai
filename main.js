@@ -5,7 +5,7 @@ const log = require('electron-log');
 const url = require('url');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
-const sharp = require('sharp');
+const Jimp = require('jimp');
 const { dialog } = require('electron');
 const { clipboard } = require('electron');
 let mainWindow;
@@ -28,62 +28,55 @@ function processImage(image, callback) {
   const outerWidth = dimensions.width + 2 * padding;
   const outerHeight = dimensions.height + 2 * padding;
 
-  // Create a new image with the background color
-  const background = Buffer.from(
-    `<svg width="${outerWidth}" height="${outerHeight}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="Gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="10%" stop-color="#CE9FFC"/>
-          <stop offset="100%" stop-color="#7367F0"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" fill="url(#Gradient1)"/>
-    </svg>`
-  );
+  // Create a new image with the desired background color
+  new Jimp(outerWidth, outerHeight, '#E76256', (err, background) => {
+    if (err) {
+      console.error("Error creating background:", err);
+      return;
+    }
 
-  // Create a mask for rounding the corners of the screenshot
-  const mask = Buffer.from(
-    `<svg><rect x="0" y="0" width="${dimensions.width}" height="${dimensions.height}" rx="15" ry="15"/></svg>`
-  );
+    // Read the image from the buffer
+    Jimp.read(image.toPNG(), (err, img) => {
+      if (err) {
+        console.error("Error reading image:", err);
+        return;
+      }
 
-  // Create a mask for rounding the corners of the border
-  const borderMask = Buffer.from(
-    `<svg><rect x="0" y="0" width="${outerWidth}" height="${outerHeight}" rx="12" ry="12"/></svg>`
-  );
+      // Resize the image
+      img.resize(dimensions.width, dimensions.height);
 
-  // After saving the screenshot, round the corners and composite it on the background
-  sharp(image.toPNG())
-    .flatten({ background: { r: 255, g: 255, b: 255 } }) // replace transparency with white
-    .composite([{
-      input: mask,
-      blend: 'dest-in'
-    }])
-    .toBuffer()
-    .then(roundedImageBuffer => {
-      sharp(background)
-        .composite([{
-          input: borderMask,
-          blend: 'dest-in'
-        }, {
-          input: roundedImageBuffer,
-          top: padding,
-          left: padding,
-          blend: 'over'
-        }])
-        .toBuffer()
-        .then(finalImageBuffer => {
-          callback(finalImageBuffer);
-        });
+      // Composite the image over the background
+      background.composite(img, padding, padding);
+
+      // Get the buffer of the final image
+      background.getBuffer(Jimp.MIME_PNG, (err, finalImageBuffer) => {
+        if (err) {
+          console.error("Error getting image buffer:", err);
+          return;
+        }
+
+        callback(finalImageBuffer);
+      });
     });
+  });
+}
+async function captureAndProcessImage() {
+  try {
+    const image = await mainWindow.webContents.capturePage();
+    const finalImageBuffer = await new Promise((resolve, reject) => {
+      processImage(image, resolve);
+    });
+    return finalImageBuffer;
+  } catch (err) {
+    console.error("Error capturing page:", err);
+  }
 }
 
-function screenshotToClipboard() {
-  // When the user presses Command+S, capture a screenshot of the webview
-  mainWindow.webContents.capturePage().then(image => {
-    processImage(image, finalImageBuffer => {
-      // Copy the image to the clipboard
+async function screenshotToClipboard() {
+  try {
+    const finalImageBuffer = await captureAndProcessImage();
+    if (finalImageBuffer) {
       clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
-      // Show a dialog box to confirm that the image has been copied
       const detail = [
         'The question is: where do you paste it?',
         'I think the screenshot looks beautiful!',
@@ -110,16 +103,16 @@ function screenshotToClipboard() {
         buttons: ['OK'],
         icon: icon
       });
-      console.log('Clipboard saved.');
-    });
-  });
+    } else {
+      console.error("Failed to capture and process image");
+    }
+  } catch (err) {
+    console.error("Error copying to clipboard:", err);
+  }
 }
-
 function saveScreenshot() {
-  // When the user presses Command+S, capture a screenshot of the webview
   mainWindow.webContents.capturePage().then(image => {
     processImage(image, finalImageBuffer => {
-      // Save the image
       dialog.showSaveDialog(mainWindow, {
         title: 'Save screenshot',
         defaultPath: 'screenshot.png',
@@ -127,15 +120,13 @@ function saveScreenshot() {
       }).then(result => {
         if (!result.canceled) {
           fs.writeFile(result.filePath, finalImageBuffer, err => {
-            if (err) throw err;
-            console.log('Screenshot saved.');
+            if (err) console.error("Error saving file:", err);
+            else console.log('Screenshot saved.');
           });
         }
-      }).catch(err => {
-        console.log(err);
-      });
+      }).catch(err => console.error("Error in save dialog:", err));
     });
-  });
+  }).catch(err => console.error("Error capturing page:", err));
 }
 
 

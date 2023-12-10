@@ -1,5 +1,6 @@
 const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
 const {is} = require('electron-util');
+const ProgressBar = require('electron-progressbar');
 const path = require('path');
 const log = require('electron-log');
 const url = require('url');
@@ -491,7 +492,8 @@ autoUpdater.on('update-not-available', () => {
 });
 
 
-let updateDownloaded = false;
+let progressBar;
+
 autoUpdater.on('update-available', (info) => {
   dialog.showMessageBox({
     type: 'info',
@@ -501,6 +503,40 @@ autoUpdater.on('update-available', (info) => {
   }).then((result) => {
     if (result.response === 1) {
       userChoseToDownloadUpdate = true;
+
+      progressBar = new ProgressBar({
+        indeterminate: false,
+        title: 'Downloading Update',
+        text: 'Please wait...',
+        detail: 'Download in progress...',
+        browserWindow: {
+          webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+          }
+        },
+        style: {
+          text: {},
+          detail: {},
+          bar: {},
+          value: { 'background-color': '#E76256' }
+        }
+      });
+
+      progressBar
+        .on('completed', () => {
+          progressBar.detail = 'Download completed. Restarting...';
+        })
+        .on('aborted', (value) => {
+          console.info(`Update download aborted, value ${value}`);
+        })
+        .on('progress', (value) => {
+          progressBar.detail = `Download progress... ${Math.round(value)}%`;
+        })
+        .on('error', (error) => {
+          dialog.showErrorBox('Update Download Error', `An error occurred while downloading the update: ${error.message}`);
+        });
+
       autoUpdater.downloadUpdate();
     } else {
       // If "Remind me later" was clicked, set a reminder to check for updates
@@ -514,13 +550,27 @@ autoUpdater.on('update-available', (info) => {
   });
 });
 
-autoUpdater.on('update-downloaded', () => {
-  updateDownloaded = true;
-  if (updateDownloaded && userChoseToDownloadUpdate) {
-    setImmediate(() => autoUpdater.quitAndInstall());
+autoUpdater.on('download-progress', (progressObj) => {
+  if (progressBar) {
+    progressBar.value = progressObj.percent;
   }
 });
 
+autoUpdater.on('update-downloaded', () => {
+  if (progressBar) {
+    progressBar.setCompleted();
+  }
+  // Quit and install the update immediately
+  setImmediate(() => autoUpdater.quitAndInstall());
+});
+
+autoUpdater.on('error', (error) => {
+  console.error('There was a problem updating the application');
+  console.error(error);
+  if (progressBar) {
+    progressBar.close();
+  }
+});
 app.on('before-quit', () => {
   clearInterval(updateInterval);
 });

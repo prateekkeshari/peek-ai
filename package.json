@@ -1,7 +1,7 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "electron-context-menu": "^3.6.1",
     "electron-localshortcut": "^3.2.1",
     "electron-log": "^4.4.8",
+    "electron-progressbar": "^2.1.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^4.6.5",
     "electron-util": "^0.17.2",

@@ -81,7 +81,6 @@
         </div>
         <div class="toggle-button active" id="alwaysOnToggle"></div>
       </div>
-      
     
       <div class="config-item">
         <div class="config-text">
@@ -91,6 +90,7 @@
         <div class="toggle-button" id="hideDockToggle"></div>
       </div>
       <div class="divider"></div>
+
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Launch at Login</span>
@@ -105,12 +105,8 @@
           <span class="config-label">Chatbots</span>
           <span class="config-sublabel">Select to add or remove a chatbot</span>
         </div>
-        <div class="expand-container">
-          <button class="expand-button" id="expandChatbots">
-            <span class="expand-text">Your bots</span>
-            <span class="expand-icon">&#9660;</span>
-          </button>
-          <div class="expansion-panel hidden" id="chatbotPanel">
+      </div>
+      <div class="chatbots">
             <div class="checkbox-item">
               <input type="checkbox" id="ChatGPT" name="ChatGPT" data-id="openai" checked>
               <label for="ChatGPT">ChatGPT</label>
@@ -127,7 +123,6 @@
           <input type="checkbox" id="Bing" name="Bing" data-id="bing" checked>
           <label for="Bing">Bing</label>
        </div>
-
             <div class="checkbox-item">
               <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
               <label for="Pi">Pi</label>
@@ -145,16 +140,14 @@
               <label for="Labs">Labs</label>
               </div>
         </div>
-      </div>     
-     
-    </div> 
+      <div class="divider">
+    </div>
     <div class="config-item">
       <button id="savePreferences" class="save-button">
         Save Preferences
       </button>
     </div>   
-   </div>
-
+</div>
     <div id="webviews">
       <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>
       <webview id="webview-google" src="https://bard.google.com" allowpopups style="display: none;"></webview>

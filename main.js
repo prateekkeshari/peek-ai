@@ -560,15 +560,19 @@ autoUpdater.on('update-downloaded', () => {
   if (progressBar) {
     progressBar.setCompleted();
   }
-  // Quit and install the update immediately
-  setImmediate(() => autoUpdater.quitAndInstall());
+  // Quit and install the update only if the user chose to download it
+  if (userChoseToDownloadUpdate) {
+    setImmediate(() => autoUpdater.quitAndInstall());
+  }
 });
 
-autoUpdater.on('error', (error) => {
-  console.error('There was a problem updating the application');
-  console.error(error);
+autoUpdater.on('update-downloaded', () => {
   if (progressBar) {
-    progressBar.close();
+    progressBar.setCompleted();
+  }
+  // Quit and install the update only if the user chose to download it
+  if (userChoseToDownloadUpdate) {
+    setImmediate(() => autoUpdater.quitAndInstall());
   }
 });
 app.on('before-quit', () => {

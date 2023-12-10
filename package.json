@@ -7,9 +7,7 @@
   "scripts": {
     "start": "electron .",
     "pack": "build --dir",
-    "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps",
-    "rebuild": "electron-rebuild -f -w sharp"
+    "dist": "electron-builder"
   },
   "keywords": [
     "ChatGPT",
@@ -25,12 +23,11 @@
     "electron-store": "^8.1.0",
     "electron-updater": "^4.6.5",
     "electron-util": "^0.17.2",
-    "sharp": "^0.32.6"
+    "jimp": "^0.16.1"
   },
   "devDependencies": {
     "electron": "^25.0.1",
-    "electron-builder": "^24.4.0",
-    "electron-rebuild": "^3.2.9"
+    "electron-builder": "^24.4.0"
   },
   "build": {
     "appId": "de.prateek.peek",

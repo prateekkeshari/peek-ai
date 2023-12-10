@@ -190,15 +190,6 @@ document.getElementById('hideDockToggle').addEventListener('click', function() {
 document.getElementById('launchAtLoginToggle').addEventListener('click', function() {
   this.classList.toggle('active');
 });
-document.getElementById('expandChatbots').addEventListener('click', function() {
-  const panel = document.getElementById('chatbotPanel');
-  panel.classList.toggle('hidden');
-});
-document.getElementById('chatbotPanel').addEventListener('change', function(e) {
-  if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
-    savePreferences();
-  }
-});
 
 document.querySelector('.save-button').addEventListener('click', function() {
   var button = this;
@@ -213,8 +204,8 @@ document.querySelector('.save-button').addEventListener('click', function() {
       button.textContent = 'Save Preferences';
       button.disabled = false; // Re-enable the button
       button.classList.remove('saving'); // Remove the 'saving' class
-    }, 2000); // The text will change back after 2 seconds
-  }, 1000); // Simulate a delay for the saving operation
+    }, 1000); // The text will change back after 2 seconds
+  }, 500); // Simulate a delay for the saving operation
 });
 
 function resizeWebview() {
@@ -241,3 +232,39 @@ window.addEventListener('resize', () => {
 });
 
 resizeWebview();
+
+$(document).ready(function(){
+  $(".checkbox-item").click(function(event){
+    if(event.target.type !== 'checkbox' && event.target.tagName.toLowerCase() !== 'label') {
+      $(':checkbox', this).trigger('click');
+    }
+  });
+});
+$(document).ready(function(){
+  $(".checkbox-item").click(function(event){
+    if(event.target.type !== 'checkbox' && event.target.tagName.toLowerCase() !== 'label') {
+      $(':checkbox', this).trigger('click');
+    }
+  });
+
+  $(".checkbox-item :checkbox, .checkbox-item label").click(function(event){
+    event.stopPropagation();
+  });
+
+  $(".checkbox-item :checkbox").change(function(){
+    if(this.checked) {
+      $(this).parent().css({
+        'background-color': '#ff5533', /* Main color when active */
+        'opacity': '1'
+      });
+      $(this).siblings('label').css('color', '#FFFFFF'); /* White color for the label when active */
+    } else {
+      var bgColor = window.matchMedia('(prefers-color-scheme: dark)').matches ? '#838389' : '#D3D3D3';
+      $(this).parent().css({
+        'background-color': bgColor,
+        'opacity': '0.5'
+      });
+      $(this).siblings('label').css('color', '#838389');
+    }
+  }).change();
+});

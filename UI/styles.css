@@ -10,11 +10,97 @@ body {
   body {
     background-color: rgba(0, 0, 0, 0.9); /* Set a dark background color */
   }
+  #controls {
+    background: rgba(0, 0, 0, 0.9);
+  }
+  #serviceName {
+    color: rgba(228, 228, 228, 0.643);
+  }
+  #configPanel {
+    background-color: #0A0A0B; /* Dark background color */
+    color: #FAFAFA; /* Dark text color */
+  }
+  .settingsLabel,
+  .config-label, .expand-button {
+    color: #FAFAFA; /* Label color */
+  }
+  .settingsSublabel,
+  .config-sublabel {
+    color: #83838A; /* Sub-label color */
+  }
+  .toggle-button.active:before {
+    background-color: #000000; /* White color for circle inside the toggle */
+  }
+  .toggle-button {
+    background-color: #27272A;
+  }
+  .toggle-button.active {
+    background-color: #FAFAFA; /* Toggle active background color */
+  }
+  .toggle-button:before {
+    background-color: #0A0A0B; /* Toggle inactive background color */
+  }
+  .expand-button:hover {
+    color: #bcbcbc;
+  }
+  .divider {
+    background-color: #1d1d1d;
+  }
+  #closeButton {
+    color: #FAFAFA;
+  }
+  .save-button {
+    background-color: #ffffff; /* White for dark scheme */
+    color: #000000; /* Black text for dark scheme */
+  }
+  .save-button.saving {
+    background-color: #ff5533; /* Gray for dark scheme */
+    color: #ffffff; /* White text for dark scheme */
+  }
 }
 
 @media (prefers-color-scheme: light) {
   body {
     background-color: rgba(255, 255, 255, 0.9); /* Set a light background color */
+  }
+  #controls {
+    background: rgba(255, 255, 255, 0.9);
+  }
+  #serviceName {
+    color: rgba(21, 21, 21, 0.643);
+  }
+  #configPanel {
+    background-color: #FFFFFF; /* Light background color */
+    color: #0A0A0B; /* Light text color */
+  }
+  .settingsLabel,
+  .config-label {
+    color: #0A0A0B; /* Label color */
+  }
+  .settingsSublabel,
+  .config-sublabel {
+    color: #97979E; /* Sub-label color */
+  }
+  .toggle-button.active:before {
+    background-color: white; /* White color for circle inside the toggle */
+  }
+  .toggle-button {
+    background-color: #FAFAFA;
+  }
+  .toggle-button.active {
+    background-color: #0f0f0f; /* Toggle active background color */
+  }
+  .toggle-button:before {
+    background-color: #f8f8f8; /* Toggle inactive background color */
+  }
+  .expand-button:hover {
+    color: #767676;
+  }
+  .divider {
+    background-color: #e4e4e4;
+  }
+  #closeButton {
+    color: #0A0A0B;
   }
 }
 /* Header styles */
@@ -24,24 +110,6 @@ body {
   align-items: center;
   padding: 10px;
   border: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  #controls {
-    background: rgba(0, 0, 0, 0.9);
-  }
-  #serviceName {
-    color: rgba(228, 228, 228, 0.643);
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  #controls {
-    background: rgba(255, 255, 255, 0.9);
-  }
-  #serviceName {
-    color: rgba(21, 21, 21, 0.643);
-  }
 }
 
 img
@@ -67,6 +135,7 @@ img
   display: inline-block;
   border: none;
   outline: none;
+  z-index: 10;
 }
 
 .dropdown-content {
@@ -80,7 +149,7 @@ img
   z-index: 1;
   border-radius: 7px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, visibility 2s linear 0.5s;
 }
 
 .dropdown-content a {
@@ -113,6 +182,7 @@ img
   display: block;
   opacity: 1;
   visibility: visible;
+  transition-delay: 0s;
   cursor: pointer;
 }
 
@@ -149,65 +219,6 @@ button {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  #configPanel {
-    background-color: #0A0A0B; /* Dark background color */
-    color: #FAFAFA; /* Dark text color */
-  }
-  .settingsLabel,
-  .config-label, .expand-button {
-    color: #FAFAFA; /* Label color */
-  }
-  .settingsSublabel,
-  .config-sublabel {
-    color: #83838A; /* Sub-label color */
-  }
-  .toggle-button.active:before {
-    background-color: #000000; /* White color for circle inside the toggle */
-  }
-  .toggle-button {
-    background-color: #27272A;
-  }
-  .toggle-button.active {
-    background-color: #FAFAFA; /* Toggle active background color */
-  }
-  .toggle-button:before {
-    background-color: #0A0A0B; /* Toggle inactive background color */
-  }
-  .expand-button:hover {
-    color: #bcbcbc;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  #configPanel {
-    background-color: #FFFFFF; /* Light background color */
-    color: #0A0A0B; /* Light text color */
-  }
-  .settingsLabel,
-  .config-label {
-    color: #0A0A0B; /* Label color */
-  }
-  .settingsSublabel,
-  .config-sublabel {
-    color: #97979E; /* Sub-label color */
-  }
-  .toggle-button.active:before {
-    background-color: white; /* White color for circle inside the toggle */
-  }
-  .toggle-button {
-    background-color: #FAFAFA;
-  }
-  .toggle-button.active {
-    background-color: #0f0f0f; /* Toggle active background color */
-  }
-  .toggle-button:before {
-    background-color: #f8f8f8; /* Toggle inactive background color */
-  }
-  .expand-button:hover {
-    color: #767676;
-  }
-}
 
 .settingsPanel {
   display: flex;
@@ -232,18 +243,6 @@ button {
   border: 0;
   height: 1px;
   margin: 15px 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .divider {
-    background-color: #1d1d1d;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .divider {
-    background-color: #e4e4e4;
-  }
 }
 
 
@@ -324,65 +323,6 @@ button {
   left: 20px;
 }
 
-/* Existing styles for expandable panels */
-.expand-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-expand-text
-{
-  font-size: 16px;
-  font-weight: 500;
-}
-.expand-button {
-  padding: 0;
-  cursor: pointer;
-  border: none;
-  font-size: 16px;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-}
-
-.expand-icon {
-  margin-left: 10px;
-}
-
-.expand-button::after {
-  margin-left: 5px;
-  padding-left: 50px;
-}
-
-/* Styles for expansion panels */
-.expansion-panel {
-  display: flex;
-  flex-direction: column;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  width: 100%;
-  margin-top: 20px;
-  white-space: nowrap;
-  overflow: auto;
-}
-
-.expansion-panel input[type="checkbox"],
-.expansion-panel label {
-  margin-bottom: 5px;
-}
-
-.expansion-panel.hidden {
-  max-height: 0;
-}
-
-.expansion-panel:not(.hidden) {
-  max-height: 300px; /* Adjust as needed */
-}
-
 /* Styles for checkboxes */
 .config-text {
   display: flex;
@@ -392,63 +332,59 @@ expand-text
   align-self: flex-start;
 }
 
+.chatbots {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 .checkbox-item {
   display: flex;
   align-items: center;
   justify-content:flex-start;
-  margin-bottom: 5px;
+  background-color: #D3D3D3;
+  margin-bottom: 0.5rem;
+  margin-right: 10px;
+  border-radius: 3px;
+  z-index: 1;
+  overflow: hidden;
+  opacity: 0.5;
+  transition: box-shadow 0.2s ease-in-out;
+}
+.checkbox-item:hover {
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+.checkbox-item,
+.checkbox-item label,
+.checkbox-item input[type="checkbox"] {
+  cursor:pointer;
 }
 
 .checkbox-item input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  position: relative;
-  outline: none;
-  cursor: pointer;
+  display: none;
 }
 
-.checkbox-item input[type="checkbox"]::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ccc;
-}
-
-.checkbox-item input[type="checkbox"]:checked::before {
-  background-color: #f8f8f8;
-}
-
-.checkbox-item input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #EA6153;
+/* Remove the before and after pseudo-elements */
+.checkbox-item input[type="checkbox"]::before,
+.checkbox-item input[type="checkbox"]::after {
+  display: none;
 }
 
 .checkbox-item label {
-  font-size: 16px;
-  font-weight: 500;
-  padding: 5px 0;
-  padding-right: 30px;
-  margin-left: 10px;
-  white-space: nowrap; /* Add this line */
-
+  font-size: 14px;
+  font-weight: 450;
+  padding: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+  .checkbox-item {
+    background-color: #838389; /* Dark grey color for dark theme */
+  }
+}
 #closeButton {
   background-color: transparent;
   border: none;
@@ -456,17 +392,6 @@ expand-text
   margin-left: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  #closeButton {
-    color: #FAFAFA;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  #closeButton {
-    color: #0A0A0B;
-  }
-}
 
 .settings-main{
   display: flex;
@@ -505,15 +430,3 @@ expand-text
   background-color: #ff5533; /* Gray */
   color: #ffffff; /* White */
 }
-
-@media (prefers-color-scheme: dark) {
-  .save-button {
-    background-color: #ffffff; /* White for dark scheme */
-    color: #000000; /* Black text for dark scheme */
-  }
-  .save-button.saving {
-    background-color: #ff5533; /* Gray for dark scheme */
-    color: #ffffff; /* White text for dark scheme */
-  }
-}
-

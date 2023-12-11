@@ -23,6 +23,14 @@ function toggleWindow() {
   }
 }
 
+try {
+  require('electron-reloader')(module, {
+    watchRenderer: true,
+    ignore: ["*.js", "*.map"],
+    watch: ["*.html", "*.css"]
+  });
+} catch (_) {}
+
 function processImage(image, callback) {
   const dimensions = image.getSize();
   const padding = 65; // adjust this to change the size of the border

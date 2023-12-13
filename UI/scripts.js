@@ -240,6 +240,8 @@ $(document).ready(function(){
     }
   });
 });
+
+// UI/scripts.js
 $(document).ready(function(){
   $(".checkbox-item").click(function(event){
     if(event.target.type !== 'checkbox' && event.target.tagName.toLowerCase() !== 'label') {
@@ -247,24 +249,11 @@ $(document).ready(function(){
     }
   });
 
-  $(".checkbox-item :checkbox, .checkbox-item label").click(function(event){
-    event.stopPropagation();
-  });
-
   $(".checkbox-item :checkbox").change(function(){
     if(this.checked) {
-      $(this).parent().css({
-        'background-color': '#ff5533', /* Main color when active */
-        'opacity': '1'
-      });
-      $(this).siblings('label').css('color', '#FFFFFF'); /* White color for the label when active */
+      $(this).parent().addClass('active').removeClass('inactive');
     } else {
-      var bgColor = window.matchMedia('(prefers-color-scheme: dark)').matches ? '#838389' : '#D3D3D3';
-      $(this).parent().css({
-        'background-color': bgColor,
-        'opacity': '0.5'
-      });
-      $(this).siblings('label').css('color', '#838389');
+      $(this).parent().addClass('inactive').removeClass('active');
     }
   }).change();
 });

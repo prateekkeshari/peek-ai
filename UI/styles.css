@@ -342,6 +342,7 @@ button {
   width: 100%;
 }
 
+/* UI/styles.css */
 .checkbox-item {
   display: flex;
   align-items: center;
@@ -353,25 +354,38 @@ button {
   z-index: 1;
   overflow: hidden;
   opacity: 0.5;
-  transition: box-shadow 0.2s ease-in-out;
+  transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
+
 .checkbox-item:hover {
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }
-.checkbox-item,
+
+.checkbox-item.active {
+  color: #000000; /* Black when active */
+  border: 1px solid #000000; /* Black border when active */
+  font-weight: bold; /* Bold font when active */
+  background-color: #ececec;
+}
+
+.checkbox-item.inactive {
+  color: rgba(0, 0, 0, 0.5); /* Half opacity black when inactive */
+  border: 1px dotted rgba(0, 0, 0, 0.5); /* Half opacity black dotted border when inactive */
+  background-color: #ffffff;
+}
+
+.checkbox-item:hover {
+  color: rgba(0, 0, 0, 0.7); /* More than half opacity black when hovered */
+  background-color: rgba(0, 0, 0, 0.1); /* Light black background when hovered */
+}
+
 .checkbox-item label,
 .checkbox-item input[type="checkbox"] {
   cursor:pointer;
 }
 
 .checkbox-item input[type="checkbox"] {
-  display: none;
-}
-
-/* Remove the before and after pseudo-elements */
-.checkbox-item input[type="checkbox"]::before,
-.checkbox-item input[type="checkbox"]::after {
   display: none;
 }
 

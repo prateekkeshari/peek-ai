@@ -440,16 +440,66 @@ app.whenReady().then(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 24 * 60* 60* 1000);
 
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open', 
+      click: () => {
+        if (mainWindow === null) {
+          createWindow();
+        } else {
+          mainWindow.show();
+        }
+      }
+    },
+    {
+      label: 'Take screenshot',
+      accelerator: 'CmdOrCtrl+S',
+      click: screenshotToClipboard
+    },
+    { type: 'separator' },
+    {
+      label: 'Release notes',
+      click: async () => {
+        await shell.openExternal('https://github.com/prateekkeshari/peek-ai/releases');
+      }
+    },
+    {
+      label: 'Follow on X (Twitter)',
+      click: async () => {
+        await shell.openExternal('https://twitter.com/prkeshari');
+      }
+    },
+    {
+      label: 'Share feedback',
+      click: async () => {
+        await shell.openExternal('mailto:prateekkeshari7@gmail.com?subject=Peek%20Feedback');
+      }
+    },
+    { type: 'separator' },
+    {
+      label: `Current version: ${app.getVersion()}`,
+      enabled: false
+    },
+    {
+      label: 'Check for updates...',
+      click: () => {
+        autoUpdater.checkForUpdatesAndNotify();
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit Peek',
+      accelerator: 'CmdOrCtrl+Q',
+      click: () => {
+        app.quit();
+      }
+    }
+  ]);
+  
   tray = new Tray(path.join(__dirname, '/icons/peek-menu-bar.png'));
   tray.on('click', () => {
-    if (mainWindow === null) {
-      createWindow();
-    } else if (mainWindow.isVisible()) {
-      mainWindow.hide();
-    } else {
-      showWindow();
-    }
-  }); 
+    tray.popUpContextMenu(contextMenu);
+  });
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.on('ipc-message', (event, channel) => {

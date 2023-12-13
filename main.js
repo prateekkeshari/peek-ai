@@ -238,7 +238,7 @@ if (preferences.hideDockIcon) {
 }
 
   // Set the Dock icon
-  const iconPath = path.join(__dirname, '/icons/peek-dock.png');
+  const iconPath = path.join(__dirname, '/icons/peek-dock-icon.png');
   icon = nativeImage.createFromPath(iconPath);
   app.dock.setIcon(icon);
 
@@ -440,7 +440,7 @@ app.whenReady().then(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 24 * 60* 60* 1000);
 
-  tray = new Tray(path.join(__dirname, '/icons/peek.png'));
+  tray = new Tray(path.join(__dirname, '/icons/peek-menu-bar.png'));
   tray.on('click', () => {
     if (mainWindow === null) {
       createWindow();

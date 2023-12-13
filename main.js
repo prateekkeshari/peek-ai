@@ -483,7 +483,7 @@ app.whenReady().then(() => {
     {
       label: 'Check for updates...',
       click: () => {
-        autoUpdater.checkForUpdatesAndNotify();
+        ipcMain.emit('check_for_update');
       }
     },
     { type: 'separator' },

@@ -1,4 +1,4 @@
-const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
+const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen } = require('electron');
 const {is} = require('electron-util');
 const ProgressBar = require('electron-progressbar');
 const path = require('path');
@@ -214,9 +214,19 @@ function hideWindow() {
 }
 
 function showWindow() {
-  if (windowPosition) {
-    mainWindow.setBounds(windowPosition);
-  }
+  // Get the current mouse cursor position
+  const cursorPosition = screen.getCursorScreenPoint();
+
+  // Calculate the window position based on the current mouse position
+  const windowPosition = {
+    x: Math.round(cursorPosition.x - (mainWindow.getBounds().width / 2)),
+    y: Math.round(cursorPosition.y)
+  };
+
+  // Set the window position
+  mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+
+  // Show the window
   mainWindow.show();
 }
 
@@ -442,12 +452,13 @@ app.whenReady().then(() => {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Open', 
+      label: 'Open',
+      accelerator: 'CmdOrCtrl+J', 
       click: () => {
         if (mainWindow === null) {
           createWindow();
         } else {
-          mainWindow.show();
+          showWindow();
         }
       }
     },

@@ -508,8 +508,18 @@ app.whenReady().then(() => {
   ]);
   
   tray = new Tray(path.join(__dirname, '/icons/peek-menu-bar.png'));
-  tray.on('click', () => {
+  tray.on('right-click', () => {
     tray.popUpContextMenu(contextMenu);
+  });
+
+  tray.on('click', () => {
+    if (mainWindow === null) {
+      createWindow();
+    } else if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
   });
   
   mainWindow.webContents.on('did-finish-load', () => {

@@ -49,6 +49,11 @@
             <img src="labs.png" alt="labs">
             Labs
           </a>
+          <a href="#" data-value="https://www.threads.net/" data-id="threads">
+            <img src="threads.png" alt="threads">
+            Threads
+          </a>
+
 
           <div class="divider-drop"></div>
             <a href="#" id="settingsDropdown">
@@ -99,7 +104,20 @@
         <div class="toggle-button" id="launchAtLoginToggle"></div>
       </div>
       <div class="divider"></div>
-      
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Add a site</span>
+          <span class="config-sublabel">Input the details below</span>
+        </div>
+      </div>
+      <form id="addChatbotForm">
+        <input type="text" id="chatbotName" placeholder="Chatbot Name">
+        <input type="url" id="chatbotUrl" placeholder="Chatbot URL">
+        <input type="file" id="chatbotFavicon" accept="image/*">
+        <button type="submit">Add site</button>
+      </form>
+
+      <div class="divider"></div>
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Chatbots</span>
@@ -139,6 +157,10 @@
               <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
               <label for="Labs">Labs</label>
               </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
+                <label for="Threads">Threads</label>
+                </div>
         </div>
       <div class="divider">
     </div>
@@ -157,6 +179,7 @@
       <webview id="webview-perplexity" src="https://www.perplexity.ai/" allowpopups style="display: none;"></webview>
       <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
       <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
+      <webview id="webview-threads" src="https://www.threads.net/" useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3" allowpopups style="display: none;"></webview>
     </div>
       
     <script src="scripts.js"></script>

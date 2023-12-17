@@ -9,6 +9,7 @@ const webviews = {
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
   'labs': document.getElementById('webview-labs'),
+  'threads': document.getElementById('webview-threads'),
 };
 
 let controlsHeight;
@@ -256,4 +257,37 @@ $(document).ready(function(){
       $(this).parent().addClass('inactive').removeClass('active');
     }
   }).change();
+});
+
+document.getElementById('addChatbotForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById('chatbotName').value;
+  const url = document.getElementById('chatbotUrl').value;
+  const favicon = document.getElementById('chatbotFavicon').files[0];
+
+  // Create a new webview
+  const webview = document.createElement('webview');
+  webview.id = 'webview-' + name.toLowerCase();
+  webview.src = url;
+  webview.style.display = 'none';
+  document.getElementById('webviews').appendChild(webview);
+
+  // Add the new webview to the webviews object
+  webviews[name.toLowerCase()] = webview;
+
+  // Create a new dropdown item
+  const dropdownItem = document.createElement('a');
+  dropdownItem.href = '#';
+  dropdownItem.dataset.value = url;
+  dropdownItem.dataset.id = name.toLowerCase();
+
+  const img = document.createElement('img');
+  img.src = URL.createObjectURL(favicon);
+  dropdownItem.appendChild(img);
+
+  const text = document.createTextNode(name);
+  dropdownItem.appendChild(text);
+
+  document.getElementById('dropdownContent').appendChild(dropdownItem);
 });

@@ -15,3 +15,7 @@ contextBridge.exposeInMainWorld('myIpcRenderer', {
     ipcRenderer.send(channel, args);
   },
 });
+contextBridge.exposeInMainWorld('myIpcRenderer', {
+  send: (channel, data) => ipcRenderer.send(channel, data),
+  on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
+});

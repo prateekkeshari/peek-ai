@@ -445,36 +445,3 @@ button {
   background-color: #ff5533; /* Gray */
   color: #ffffff; /* White */
 }
-
-/* Add this to your styles.css file */
-
-#addChatbotForm {
-  display: grid 1fr 1fr; /* 1fr 1fr will create two columns of equal width */
-  grid-gap: 2rem;
-  margin-right: 20px;
-}
-
-#addChatbotForm input[type="text"],
-#addChatbotForm input[type="url"],
-#addChatbotForm input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #cacaca;
-  border-radius: 5px;
-}
-
-#addChatbotForm button {
-  padding:10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #000000;
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  grid-column: span 0.5; /* This will make the button span across two columns */
-}
-
-#addChatbotForm button:hover {
-  background-color: #838389;
-}

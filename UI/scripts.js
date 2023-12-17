@@ -1,5 +1,5 @@
 const serviceName = document.getElementById('serviceName');
-
+let activeWebviewId = 'openai';
 const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
@@ -21,7 +21,7 @@ webviews['openai'].style.display = 'flex';
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
-  const url = e.target.closest('a').dataset.value;
+  activeWebviewId = e.target.closest('a').dataset.id; // Use the data-id attribute as the webviewId
   document.getElementById('selectedImage').src = e.target.closest('a').querySelector('img').src;
   serviceName.textContent = e.target.closest('a').textContent.trim();
 
@@ -259,35 +259,29 @@ $(document).ready(function(){
   }).change();
 });
 
-document.getElementById('addChatbotForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+let isOnline = true; // Assume online at start
 
-  const name = document.getElementById('chatbotName').value;
-  const url = document.getElementById('chatbotUrl').value;
-  const favicon = document.getElementById('chatbotFavicon').files[0];
+// Function to check internet connectivity
+function checkInternetConnectivity() {
+  fetch('https://www.google.com')
+    .then(response => {
+      // Internet is accessible
+      if (!isOnline) {
+        isOnline = true;
+        window.myIpcRenderer.send('online-status-changed', 'online');
+        location.reload();
+      }
+    })
+    .catch(error => {
+      // Internet is not accessible
+      if (isOnline) {
+        isOnline = false;
+        window.myIpcRenderer.send('online-status-changed', 'offline');
+      }
+    });
+}
+// Check internet connectivity every 5 seconds
+setInterval(checkInternetConnectivity, 5000);
 
-  // Create a new webview
-  const webview = document.createElement('webview');
-  webview.id = 'webview-' + name.toLowerCase();
-  webview.src = url;
-  webview.style.display = 'none';
-  document.getElementById('webviews').appendChild(webview);
-
-  // Add the new webview to the webviews object
-  webviews[name.toLowerCase()] = webview;
-
-  // Create a new dropdown item
-  const dropdownItem = document.createElement('a');
-  dropdownItem.href = '#';
-  dropdownItem.dataset.value = url;
-  dropdownItem.dataset.id = name.toLowerCase();
-
-  const img = document.createElement('img');
-  img.src = URL.createObjectURL(favicon);
-  dropdownItem.appendChild(img);
-
-  const text = document.createTextNode(name);
-  dropdownItem.appendChild(text);
-
-  document.getElementById('dropdownContent').appendChild(dropdownItem);
-});
+// Initial check
+checkInternetConnectivity();

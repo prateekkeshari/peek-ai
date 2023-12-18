@@ -143,10 +143,10 @@ function createWindow() {
   const preferences = loadPreferences();
 
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 650,
+    width: 450,
+    height: 750,
     minWidth: 450, // Set the minimum width
-    minHeight: 600, // Set the minimum height
+    minHeight: 750, // Set the minimum height
     show: false,
     frame:false,
     transparent:true,

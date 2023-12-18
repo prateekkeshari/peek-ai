@@ -71,7 +71,7 @@
       <div class="settings-main">
       <div class="settingsPanel">
         <span class="settingsLabel">Settings</span>
-        <span class="settingsSublabel">Change the configuration of Peek</span>
+        <span class="settingsSublabel">Customize Peek settings</span>
     </div>
     <button id="closeButton">
       <i class="fas fa-times"></i> <!-- Font Awesome Close Icon -->
@@ -82,7 +82,7 @@
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Floating window</span>
-          <span class="config-sublabel">Disable to prevent Peek from staying on top</span>
+          <span class="config-sublabel">Keep Peek on top of other windows.</span>
         </div>
         <div class="toggle-button active" id="alwaysOnToggle"></div>
       </div>
@@ -90,7 +90,7 @@
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Hide dock icon</span>
-          <span class="config-sublabel">Toggle to remove Peek's icon from the dock</span>
+          <span class="config-sublabel">Simplify your dock by hiding the Peek icon.</span>
         </div>
         <div class="toggle-button" id="hideDockToggle"></div>
       </div>
@@ -99,15 +99,15 @@
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Launch at Login</span>
-          <span class="config-sublabel">Toggle to launch Peek at login</span>
+          <span class="config-sublabel">Toggle to start Peek automatically when you log in.</span>
         </div>
         <div class="toggle-button" id="launchAtLoginToggle"></div>
       </div>
       <div class="divider"></div>
       <div class="config-item">
         <div class="config-text">
-          <span class="config-label">Chatbots</span>
-          <span class="config-sublabel">Select to add or remove a chatbot</span>
+          <span class="config-label">AI</span>
+          <span class="config-sublabel">Select to add or remove an AI.</span>
         </div>
       </div>
       <div class="chatbots">
@@ -143,11 +143,21 @@
               <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
               <label for="Labs">Labs</label>
               </div>
-              <div class="checkbox-item">
-                <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
-                <label for="Threads">Threads</label>
-                </div>
+      </div>
+      <div class="divider">
+    </div>
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Social</span>
+          <span class="config-sublabel">Select to add or remove a social.</span>
         </div>
+      </div>
+      <div class="chatbots">
+            <div class="checkbox-item">
+              <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
+              <label for="Threads">Threads</label>
+            </div>
+      </div>
       <div class="divider">
     </div>
     <div class="config-item">

@@ -3,9 +3,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: white;
 }
 
+webview {
+  background-color: #ffffff; /* or any other color that matches your light theme */
+}
 @media (prefers-color-scheme: dark) {
   #controls {
     background: rgba(0, 0, 0, 0.9);
@@ -41,24 +43,44 @@ body {
     color: #bcbcbc;
   }
   .divider {
-    background-color: #1d1d1d;
+    background-color: #292929;
   }
   #closeButton {
     color: #FAFAFA;
   }
+  .checkbox-item:hover {
+    color: #FAFAFA; /* Light text color for dark scheme */
+    background-color: #1a1a1a; /* Darker background when hovered for dark scheme */
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  .checkbox-item {
+    background-color: #27272A; /* Dark grey color for dark theme */
+  }
   .save-button {
-    background-color: #ffffff; /* White for dark scheme */
-    color: #000000; /* Black text for dark scheme */
+    background-color: #FAFAFA; /* Light grey for dark scheme */
+    color: #0A0A0B; /* Dark text for dark scheme */
   }
   .save-button.saving {
-    background-color: #ff5533; /* Gray for dark scheme */
-    color: #ffffff; /* White text for dark scheme */
+    background-color: #ff5533; /* Orange for dark scheme */
+    color: #FAFAFA; /* Light text for dark scheme */
+  }
+  .checkbox-item.inactive {
+    color: rgba(255, 255, 255, 0.7); /* Half opacity white when inactive for dark scheme */
+    border: 1px dotted rgba(255, 255, 255, 0.5); /* Half opacity white dotted border when inactive for dark scheme */
+    background-color: #2d2d2d; /* Slightly darker grey color for dark theme when inactive */
+  }
+  .checkbox-item.active {
+    color: #ffffff; /* Light text color when active for dark scheme */
+    border: 1px solid #FAFAFA; /* Light border when active for dark scheme */
+    font-weight: bold; /* Bold font when active */
+    background-color: #1d1d1d; /* Darker background when active for dark scheme */
   }
 }
 
 @media (prefers-color-scheme: light) {
   #controls {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 1);
   }
   #serviceName {
     color: rgba(21, 21, 21, 0.643);
@@ -92,6 +114,34 @@ body {
   }
   .divider {
     background-color: #e4e4e4;
+  }
+  .save-button {
+    background-color: #131313; /* White for dark scheme */
+    color: #ffffff; /* Black text for dark scheme */
+  }
+  .checkbox-item:hover {
+    color: #0A0A0B; /* Dark text color for light scheme */
+    background-color: #FAFAFA; /* Lighter background when hovered for light scheme */
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+  .checkbox-item {
+    background-color: #FFFFFF; /* Light color for light theme */
+  }
+  .save-button.saving {
+    background-color: #ff5533; /* Orange for light scheme */
+    color: #0A0A0B; /* Dark text for light scheme */
+  }
+  .checkbox-item.inactive {
+    color: rgba(10, 10, 11, 0.5); /* Half opacity black when inactive for light scheme */
+    border: 1px dotted rgba(10, 10, 11, 0.5); /* Half opacity black dotted border when inactive for light scheme */
+    background-color: #F0F0F0; /* Slightly lighter color for light theme when inactive */
+  }
+  .checkbox-item.active {
+    color: #0A0A0B; /* Dark text color when active for light scheme */
+    border: 1px solid #0A0A0B; /* Dark border when active for light scheme */
+    font-weight: bold; /* Bold font when active */
+    background-color: #FAFAFA; /* Lighter background when active for light scheme */
   }
   #closeButton {
     color: #0A0A0B;
@@ -347,7 +397,6 @@ button {
   display: flex;
   align-items: center;
   justify-content:flex-start;
-  background-color: #D3D3D3;
   margin-bottom: 0.5rem;
   margin-right: 10px;
   border-radius: 3px;
@@ -357,28 +406,6 @@ button {
   transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-.checkbox-item:hover {
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-}
-
-.checkbox-item.active {
-  color: #000000; /* Black when active */
-  border: 1px solid #000000; /* Black border when active */
-  font-weight: bold; /* Bold font when active */
-  background-color: #ececec;
-}
-
-.checkbox-item.inactive {
-  color: rgba(0, 0, 0, 0.5); /* Half opacity black when inactive */
-  border: 1px dotted rgba(0, 0, 0, 0.5); /* Half opacity black dotted border when inactive */
-  background-color: #ffffff;
-}
-
-.checkbox-item:hover {
-  color: rgba(0, 0, 0, 0.7); /* More than half opacity black when hovered */
-  background-color: rgba(0, 0, 0, 0.1); /* Light black background when hovered */
-}
 
 .checkbox-item label,
 .checkbox-item input[type="checkbox"] {
@@ -395,11 +422,6 @@ button {
   padding: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .checkbox-item {
-    background-color: #838389; /* Dark grey color for dark theme */
-  }
-}
 #closeButton {
   background-color: transparent;
   border: none;
@@ -420,9 +442,7 @@ button {
 }
 
 .save-button {
-  background-color: #000000; /* Green */
   border-radius: 7px;
-  color: white;
   padding: 10px 24px;
   text-align: center;
   font-weight: 500;

@@ -464,6 +464,15 @@ app.whenReady().then(() => {
       }
     },
     {
+      label: 'Minimize',
+      accelerator: 'CmdOrCtrl+M', 
+      click: () => {
+        if (mainWindow !== null) {
+          mainWindow.minimize();
+        }
+      }
+    },
+    {
       label: 'Take screenshot',
       accelerator: 'CmdOrCtrl+S',
       click: screenshotToClipboard

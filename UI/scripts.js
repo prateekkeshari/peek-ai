@@ -258,30 +258,3 @@ $(document).ready(function(){
     }
   }).change();
 });
-
-let isOnline = true; // Assume online at start
-
-// Function to check internet connectivity
-function checkInternetConnectivity() {
-  fetch('https://www.google.com')
-    .then(response => {
-      // Internet is accessible
-      if (!isOnline) {
-        isOnline = true;
-        window.myIpcRenderer.send('online-status-changed', 'online');
-        location.reload();
-      }
-    })
-    .catch(error => {
-      // Internet is not accessible
-      if (isOnline) {
-        isOnline = false;
-        window.myIpcRenderer.send('online-status-changed', 'offline');
-      }
-    });
-}
-// Check internet connectivity every 5 seconds
-setInterval(checkInternetConnectivity, 5000);
-
-// Initial check
-checkInternetConnectivity();

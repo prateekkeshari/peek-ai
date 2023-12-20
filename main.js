@@ -757,20 +757,3 @@ function savePreferences(preferences) {
     console.error("Couldn't save preferences: ", err);
   }
 }
-
-ipcMain.on('online-status-changed', (event, status) => {
-  let message;
-
-  if (status === 'online') {
-    message = 'You are back online.';
-  } else {
-    message = 'You are not connected to the internet.';
-  }
-
-  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-    type: 'info',
-    title: 'Network Status',
-    message: message,
-    buttons: ['OK']
-  });
-});

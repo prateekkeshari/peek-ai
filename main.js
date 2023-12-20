@@ -179,6 +179,70 @@ function createWindow() {
     // Show the window
     mainWindow.show();
   });
+
+  // Right-click context menu for webviews
+  mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
+    webContents.on('context-menu', (e, params) => {
+      const contextMenu = new Menu();
+      try {
+
+         // Open Link in Browser
+         contextMenu.append(new MenuItem({ label: 'Open Link in Browser', accelerator: 'CmdOrCtrl+O', click: () => {
+          shell.openExternal(params.linkURL);
+        }}));
+
+        // Separator
+        contextMenu.append(new MenuItem({ type: 'separator' }));
+        // Back
+        contextMenu.append(new MenuItem({ label: 'Back', accelerator: 'CmdOrCtrl+Left', click: () => webContents.goBack() }));
+
+        // Forward
+        contextMenu.append(new MenuItem({ label: 'Forward', accelerator: 'CmdOrCtrl+Right', click: () => webContents.goForward() }));
+
+        // Reload
+        contextMenu.append(new MenuItem({ label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' }));
+
+        // Separator
+        contextMenu.append(new MenuItem({ type: 'separator' }));
+
+        // Text editing features
+        if (params.selectionText) {
+          contextMenu.append(new MenuItem({ label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' }));
+          contextMenu.append(new MenuItem({ label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' }));
+          if (clipboard.readText().length > 0) {
+            contextMenu.append(new MenuItem({ label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' }));
+          }
+          contextMenu.append(new MenuItem({ label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectAll' }));
+        }
+
+        // Separator
+        contextMenu.append(new MenuItem({ type: 'separator' }));
+
+        // Screenshot
+        contextMenu.append(new MenuItem({ label: 'Take Screenshot', accelerator: 'CmdOrCtrl+Shift+S', click: () => screenshotToClipboard() }));
+
+        // Share Feedback
+        contextMenu.append(new MenuItem({ label: 'Share Feedback', click: () => {
+          shell.openExternal('mailto:prateekkeshari7@gmail.com?subject=Peek%20Feedback');
+        }}));
+
+        // Release Notes
+        contextMenu.append(new MenuItem({ label: 'Release Notes', click: () => {
+          shell.openExternal('https://github.com/prateekkeshari/peek-ai/releases');
+        }}));
+      } catch (error) {
+        console.error('Error creating context menu:', error);
+      }
+
+      // Show the context menu
+      try {
+        contextMenu.popup({ window: mainWindow, x: params.x, y: params.y });
+      } catch (error) {
+        console.error('Error showing context menu:', error);
+      }
+    });
+  });
+
   mainWindow.on('focus', () => {
     // saved the screenshot
     globalShortcut.register('CommandOrControl+Shift+S', saveScreenshot);
@@ -693,7 +757,6 @@ function savePreferences(preferences) {
     console.error("Couldn't save preferences: ", err);
   }
 }
-
 
 ipcMain.on('online-status-changed', (event, status) => {
   let message;

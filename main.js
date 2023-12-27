@@ -240,10 +240,24 @@ app.whenReady().then(() => {
   tray.on('click', () => {
     if (mainWindow === null) {
       createWindow();
-    } else if (mainWindow.isVisible()) {
-      mainWindow.hide();
     } else {
-      mainWindow.show();
+      // Get the bounds of the tray icon
+      const trayBounds = tray.getBounds();
+  
+      // Calculate the window position
+      const windowPosition = {
+        x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
+        y: Math.round(trayBounds.y + trayBounds.height)
+      };
+  
+      // Set the window position
+      mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+  
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+      }
     }
   });
   

@@ -42,14 +42,8 @@ function toggleWindow(mainWindow) {
       {
         label: 'Toggle Window',
         accelerator: 'CmdOrCtrl+J',
-        type: 'checkbox',
-        checked: true,
-        click: (item) => {
-          if (item.checked) {
-            globalShortcut.register('CmdOrCtrl+J', () => toggleWindow(mainWindow));
-          } else {
-            globalShortcut.unregister('CmdOrCtrl+J');
-          }
+        click: () => {
+          toggleWindow(mainWindow);
         }
       },
       { 
@@ -121,7 +115,7 @@ function createContextMenu(mainWindow) {
         if (mainWindow === null) {
           createWindow();
         } else {
-          showWindow();
+          mainWindow.show();
         }
       }
     },

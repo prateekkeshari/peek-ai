@@ -10,7 +10,7 @@ function toggleWindow(mainWindow) {
       mainWindow.show();
     }
   }
-  function createAppMenu(mainWindow)  {
+  function createAppMenu(mainWindow, globalShortcut)  {
   const menu = new Menu();
 
   // Add the File menu
@@ -39,10 +39,18 @@ function toggleWindow(mainWindow) {
   menu.append(new MenuItem({
     label: 'Shortcuts',
     submenu: [
-      { 
-        label: 'Toggle Window', 
+      {
+        label: 'Toggle Window',
         accelerator: 'CmdOrCtrl+J',
-        click: () => toggleWindow(mainWindow)
+        type: 'checkbox',
+        checked: true,
+        click: (item) => {
+          if (item.checked) {
+            globalShortcut.register('CmdOrCtrl+J', () => toggleWindow(mainWindow));
+          } else {
+            globalShortcut.unregister('CmdOrCtrl+J');
+          }
+        }
       },
       { 
         label: 'Screenshot to Clipboard', 

@@ -74,6 +74,8 @@ function createWindow() {
      // Use the createAppMenu function to create the application menu
     const appMenu = createAppMenu(mainWindow);
     Menu.setApplicationMenu(appMenu);
+    const menu = createAppMenu(mainWindow, globalShortcut);
+    Menu.setApplicationMenu(menu);
   });
 
  // Pass 'webContents' to 'createWebviewContextMenu' when calling it

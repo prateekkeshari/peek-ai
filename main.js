@@ -1,4 +1,6 @@
-const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell } = require('electron');
+const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen } = require('electron');
+const { processImage, captureAndProcessImage, screenshotToClipboard, saveScreenshot, setMainWindow, setIcon } = require('./screenshot.js');
+const { createAppMenu, createContextMenu, createWebviewContextMenu } = require('./menu.js');
 const {is} = require('electron-util');
 const ProgressBar = require('electron-progressbar');
 const path = require('path');
@@ -6,9 +8,7 @@ const log = require('electron-log');
 const url = require('url');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
-const Jimp = require('jimp');
 const { dialog } = require('electron');
-const { clipboard } = require('electron');
 let mainWindow;
 let tray;
 let icon;
@@ -31,128 +31,22 @@ try {
   });
 } catch (_) {}
 
-function processImage(image, callback) {
-  const dimensions = image.getSize();
-  const padding = 65; // adjust this to change the size of the border
-  const outerWidth = dimensions.width + 2 * padding;
-  const outerHeight = dimensions.height + 2 * padding;
-
-  // Create a new image with the desired background color
-  new Jimp(outerWidth, outerHeight, '#E76256', (err, background) => {
-    if (err) {
-      console.error("Error creating background:", err);
-      return;
-    }
-
-    // Read the image from the buffer
-    Jimp.read(image.toPNG(), (err, img) => {
-      if (err) {
-        console.error("Error reading image:", err);
-        return;
-      }
-
-      // Resize the image
-      img.resize(dimensions.width, dimensions.height);
-
-      // Composite the image over the background
-      background.composite(img, padding, padding);
-
-      // Get the buffer of the final image
-      background.getBuffer(Jimp.MIME_PNG, (err, finalImageBuffer) => {
-        if (err) {
-          console.error("Error getting image buffer:", err);
-          return;
-        }
-
-        callback(finalImageBuffer);
-      });
-    });
-  });
-}
-async function captureAndProcessImage() {
-  try {
-    const image = await mainWindow.webContents.capturePage();
-    const finalImageBuffer = await new Promise((resolve, reject) => {
-      processImage(image, resolve);
-    });
-    return finalImageBuffer;
-  } catch (err) {
-    console.error("Error capturing page:", err);
-  }
-}
-
-async function screenshotToClipboard() {
-  try {
-    const finalImageBuffer = await captureAndProcessImage();
-    if (finalImageBuffer) {
-      clipboard.writeImage(nativeImage.createFromBuffer(finalImageBuffer));
-      const detail = [
-        'The question is: where do you paste it?',
-        'I think the screenshot looks beautiful!',
-        'That is a master shot!',
-        'Totally worth capturing. Paste it away!',
-        'Now, where will this masterpiece end up?',
-        'A moment frozen in time, ready to be pasted!',
-        'Your screenshot is ready for its debut. Paste it!',
-        'That\'s one for the scrapbook!',
-        'A picture is worth a thousand words, and this one\'s on your clipboard!',
-        'Your screenshot is ready to make its mark!',
-        'That\'s a screenshot worth sharing!',
-        'Your screenshot is ready to see the world!',
-        'A moment captured, ready to be pasted!',
-        'Your screenshot is ready for the spotlight!',
-        'Your screenshot is ready to be pasted into fame!'
-      ];    
-      const randomDetail=detail[Math.floor(Math.random() * detail.length)];
-      dialog.showMessageBox(mainWindow, {
-        type: 'info',
-        title: 'Peek',
-        message: 'Screenshot copied to clipboard!',
-        detail: randomDetail,
-        buttons: ['OK'],
-        icon: icon
-      });
-    } else {
-      console.error("Failed to capture and process image");
-    }
-  } catch (err) {
-    console.error("Error copying to clipboard:", err);
-  }
-}
-function saveScreenshot() {
-  mainWindow.webContents.capturePage().then(image => {
-    processImage(image, finalImageBuffer => {
-      dialog.showSaveDialog(mainWindow, {
-        title: 'Save screenshot',
-        defaultPath: 'screenshot.png',
-        filters: [{ name: 'Images', extensions: ['png'] }]
-      }).then(result => {
-        if (!result.canceled) {
-          fs.writeFile(result.filePath, finalImageBuffer, err => {
-            if (err) console.error("Error saving file:", err);
-            else console.log('Screenshot saved.');
-          });
-        }
-      }).catch(err => console.error("Error in save dialog:", err));
-    });
-  }).catch(err => console.error("Error capturing page:", err));
-}
-
 
 function createWindow() {
   const preferences = loadPreferences();
 
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 650,
+    width: 450,
+    height: 700,
     minWidth: 450, // Set the minimum width
-    minHeight: 600, // Set the minimum height
+    minHeight: 500, // Set the minimum height
     show: false,
     frame:false,
     transparent:true,
     fullscreenable: true,
     resizable: true,
     webPreferences: {
+      sandbox: true,
       nodeIntegration: false,
       contextIsolation: true,
       webviewTag: true,
@@ -177,7 +71,21 @@ function createWindow() {
 
     // Show the window
     mainWindow.show();
+     // Use the createAppMenu function to create the application menu
+    const appMenu = createAppMenu(mainWindow);
+    Menu.setApplicationMenu(appMenu);
+    const menu = createAppMenu(mainWindow, globalShortcut);
+    Menu.setApplicationMenu(menu);
   });
+
+ // Pass 'webContents' to 'createWebviewContextMenu' when calling it
+  mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
+  webContents.on('context-menu', (e, params) => {
+    const webviewContextMenu = createWebviewContextMenu(params, webContents);
+      webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
+    });
+  });
+
   mainWindow.on('focus', () => {
     // saved the screenshot
     globalShortcut.register('CommandOrControl+Shift+S', saveScreenshot);
@@ -204,6 +112,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+  setMainWindow(mainWindow);
+  setIcon(icon);
 }
 
 let windowPosition = null;
@@ -214,9 +124,19 @@ function hideWindow() {
 }
 
 function showWindow() {
-  if (windowPosition) {
-    mainWindow.setBounds(windowPosition);
-  }
+  // Get the current mouse cursor position
+  const cursorPosition = screen.getCursorScreenPoint();
+
+  // Calculate the window position based on the current mouse position
+  const windowPosition = {
+    x: Math.round(cursorPosition.x - (mainWindow.getBounds().width / 2)),
+    y: Math.round(cursorPosition.y)
+  };
+
+  // Set the window position
+  mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+
+  // Show the window
   mainWindow.show();
 }
 
@@ -238,140 +158,11 @@ if (preferences.hideDockIcon) {
 }
 
   // Set the Dock icon
-  const iconPath = path.join(__dirname, '/icons/peek-dock.png');
+  const iconPath = path.join(__dirname, '/icons/peek-dock-icon.png');
   icon = nativeImage.createFromPath(iconPath);
   app.dock.setIcon(icon);
 
-  // Create a custom menu
-  const menu = new Menu();
-
-  menu.append(new MenuItem({
-    label: app.getName(),
-    submenu: [
-      {
-        role: 'about'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        label: 'Check for Updates...',
-        click: () => {
-          ipcMain.emit('check_for_update');
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'hide'
-      },
-      {
-        role: 'hideothers'
-      },
-      {
-        role: 'unhide'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'quit'
-      }
-    ]
-  }));
-
-  // Add the File menu
-  menu.append(new MenuItem({
-    label: 'File',
-    submenu: [
-      { role: 'close' }
-    ]
-  }));
-
-  // Add the Edit menu
-  menu.append(new MenuItem({
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'selectall' },
-    ]
-  }));
-
-  // Add the View menu
-  menu.append(new MenuItem({
-    label: 'Shortcuts',
-    submenu: [
-      { 
-        label: 'Toggle Window', 
-        accelerator: 'CmdOrCtrl+J',
-        click: toggleWindow
-      },
-      { 
-        label: 'Screenshot to Clipboard', 
-        accelerator: 'CmdOrCtrl+S',
-        click: screenshotToClipboard
-      },
-      { 
-        label: 'Save Screenshot', 
-        accelerator: 'CmdOrCtrl+Shift+S',
-        click: saveScreenshot
-      },
-      { type: 'separator' },
-      { role: 'reload' },
-      { role: 'forcereload' },
-      { type: 'separator' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
-    ]
-  }));
-
-  // Add the Window menu
-  menu.append(new MenuItem({
-    label: 'Window',
-    submenu: [
-      { role: 'minimize' },
-      { role: 'zoom' },
-      { type: 'separator' },
-      { role: 'front' }
-    ]
-  }));
-
-  // Add the Help menu
-  menu.append(new MenuItem({
-    label: 'Help',
-    submenu: [
-      {
-        label: 'Release Notes',
-        click: async () => {
-          await shell.openExternal('https://github.com/prateekkeshari/peek-ai/releases');
-        }
-      },
-     
-      { type: 'separator' },
-      {
-        label: 'Share feedback',
-        click: async () => {
-          await shell.openExternal('mailto:prateekkeshari7@gmail.com?subject=Peek%20Feedback');
-        }
-      },
-      {
-        label: 'Follow on Twitter',
-        click: async () => {
-          await shell.openExternal('https://twitter.com/prkeshari');
-        }
-      },
-    ]
-  }));
-
-  // Set the custom menu as the application menu
-  Menu.setApplicationMenu(menu);
-
+  createWindow();
 ipcMain.on('check_for_update', () => {
   manualUpdateCheck = true;
   autoUpdater.checkForUpdates();
@@ -440,16 +231,37 @@ app.whenReady().then(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 24 * 60* 60* 1000);
 
-  tray = new Tray(path.join(__dirname, '/icons/peek.png'));
+  // Use the createContextMenu function to create the context menu
+  const contextMenu = createContextMenu(mainWindow);
+  
+  tray = new Tray(path.join(__dirname, '/icons/peek-menu-bar.png'));
+  tray.on('right-click', () => {
+    tray.popUpContextMenu(contextMenu);
+  });
+
   tray.on('click', () => {
     if (mainWindow === null) {
       createWindow();
-    } else if (mainWindow.isVisible()) {
-      mainWindow.hide();
     } else {
-      showWindow();
+      // Get the bounds of the tray icon
+      const trayBounds = tray.getBounds();
+  
+      // Calculate the window position
+      const windowPosition = {
+        x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
+        y: Math.round(trayBounds.y + trayBounds.height)
+      };
+  
+      // Set the window position
+      mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+  
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+      }
     }
-  }); 
+  });
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.on('ipc-message', (event, channel) => {

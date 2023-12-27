@@ -1,5 +1,5 @@
 const serviceName = document.getElementById('serviceName');
-
+let activeWebviewId = 'openai';
 const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
@@ -9,6 +9,7 @@ const webviews = {
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
   'labs': document.getElementById('webview-labs'),
+  'threads': document.getElementById('webview-threads'),
 };
 
 let controlsHeight;
@@ -20,7 +21,7 @@ webviews['openai'].style.display = 'flex';
 
 document.getElementById('dropdownContent').addEventListener('click', function(e) {
   e.preventDefault();
-  const url = e.target.closest('a').dataset.value;
+  activeWebviewId = e.target.closest('a').dataset.id; // Use the data-id attribute as the webviewId
   document.getElementById('selectedImage').src = e.target.closest('a').querySelector('img').src;
   serviceName.textContent = e.target.closest('a').textContent.trim();
 
@@ -240,6 +241,8 @@ $(document).ready(function(){
     }
   });
 });
+
+// UI/scripts.js
 $(document).ready(function(){
   $(".checkbox-item").click(function(event){
     if(event.target.type !== 'checkbox' && event.target.tagName.toLowerCase() !== 'label') {
@@ -247,24 +250,11 @@ $(document).ready(function(){
     }
   });
 
-  $(".checkbox-item :checkbox, .checkbox-item label").click(function(event){
-    event.stopPropagation();
-  });
-
   $(".checkbox-item :checkbox").change(function(){
     if(this.checked) {
-      $(this).parent().css({
-        'background-color': '#ff5533', /* Main color when active */
-        'opacity': '1'
-      });
-      $(this).siblings('label').css('color', '#FFFFFF'); /* White color for the label when active */
+      $(this).parent().addClass('active').removeClass('inactive');
     } else {
-      var bgColor = window.matchMedia('(prefers-color-scheme: dark)').matches ? '#838389' : '#D3D3D3';
-      $(this).parent().css({
-        'background-color': bgColor,
-        'opacity': '0.5'
-      });
-      $(this).siblings('label').css('color', '#838389');
+      $(this).parent().addClass('inactive').removeClass('active');
     }
   }).change();
 });

@@ -1,4 +1,4 @@
-const { Menu, MenuItem, shell, app, ipcMain } = require('electron');
+const { Menu, MenuItem, shell, app, ipcMain, dialog } = require('electron');
 const { screenshotToClipboard, saveScreenshot } = require('./screenshot.js');
 const { clipboard } = require('electron');
 
@@ -178,15 +178,6 @@ function createContextMenu(mainWindow) {
 
 function createWebviewContextMenu(params, webContents)  {
     const contextMenu = new Menu();
-  
-    // Open Link in Browser
-    contextMenu.append(new MenuItem({ label: 'Open Link in Browser', accelerator: 'CmdOrCtrl+O', click: () => {
-      shell.openExternal(params.linkURL);
-    }}));
-  
-    // Separator
-    contextMenu.append(new MenuItem({ type: 'separator' }));
-  
     // Back
     contextMenu.append(new MenuItem({ label: 'Back', accelerator: 'CmdOrCtrl+Left', click: () => webContents.goBack() }));
   
@@ -211,6 +202,23 @@ function createWebviewContextMenu(params, webContents)  {
   
     // Separator
     contextMenu.append(new MenuItem({ type: 'separator' }));
+
+    contextMenu.append(new MenuItem({ 
+      label: 'Open Link in Browser', 
+      accelerator: 'CmdOrCtrl+O', 
+      click: () => {
+        if (params.linkURL) {
+          shell.openExternal(params.linkURL);
+        } else {
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'No Link Selected',
+            message: 'Please right-click on a link to use this option.'
+          });
+        }
+      }
+    }));
+
   
     // Screenshot
     contextMenu.append(new MenuItem({ label: 'Take Screenshot', accelerator: 'CmdOrCtrl+Shift+S', click: () => screenshotToClipboard() }));

@@ -176,7 +176,7 @@ function createContextMenu(mainWindow) {
   return contextMenu;
 }
 
-function createWebviewContextMenu(params, webContents)  {
+function createWebviewContextMenu(params, webContents, mainWindow)  {
     const contextMenu = new Menu();
     // Back
     contextMenu.append(new MenuItem({ label: 'Back', accelerator: 'CmdOrCtrl+Left', click: () => webContents.goBack() }));
@@ -199,10 +199,10 @@ function createWebviewContextMenu(params, webContents)  {
       }
       contextMenu.append(new MenuItem({ label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectAll' }));
     }
-  
+    
     // Separator
     contextMenu.append(new MenuItem({ type: 'separator' }));
-
+    
     contextMenu.append(new MenuItem({ 
       label: 'Open Link in Browser', 
       accelerator: 'CmdOrCtrl+O', 
@@ -232,7 +232,49 @@ function createWebviewContextMenu(params, webContents)  {
     contextMenu.append(new MenuItem({ label: 'Release Notes', click: () => {
       shell.openExternal('https://github.com/prateekkeshari/peek-ai/releases');
     }}));
-  
+    
+    // Separator
+    contextMenu.append(new MenuItem({ type: 'separator' }));
+
+    // Copy Image
+    if (params.mediaType === 'image') {
+      contextMenu.append(new MenuItem({ 
+          label: 'Copy Image', 
+          accelerator: 'CmdOrCtrl+I', 
+          click: () => {
+              webContents.copyImageAt(params.x, params.y);
+          }
+      }));
+
+      // Copy Image Address
+      contextMenu.append(new MenuItem({ 
+          label: 'Copy Image Address', 
+          accelerator: 'CmdOrCtrl+Shift+I', 
+          click: () => {
+              clipboard.writeText(params.srcURL);
+          }
+      }));
+  }
+
+  // Save Video As...
+  if (params.mediaType === 'video') {
+      contextMenu.append(new MenuItem({ 
+          label: 'Save Video As...', 
+          accelerator: 'CmdOrCtrl+Shift+V', 
+          click: () => {
+              webContents.downloadURL(params.srcURL);
+          }
+      }));
+  }
+
+  if (params.selectionText) {
+    contextMenu.append(new MenuItem({
+        label: 'Search Perplexity for "' + params.selectionText + '"',
+        click: () => {
+            mainWindow.webContents.send('search-perplexity', params.selectionText);
+        }
+    }));
+}
     return contextMenu;
   }
   

@@ -79,12 +79,12 @@ function createWindow() {
   });
 
  // Pass 'webContents' to 'createWebviewContextMenu' when calling it
-  mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
+ mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
   webContents.on('context-menu', (e, params) => {
-    const webviewContextMenu = createWebviewContextMenu(params, webContents);
-      webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
-    });
+    const webviewContextMenu = createWebviewContextMenu(params, webContents, mainWindow);
+    webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
   });
+});
 
   mainWindow.on('focus', () => {
     // saved the screenshot

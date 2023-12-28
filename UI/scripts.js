@@ -258,3 +258,16 @@ $(document).ready(function(){
     }
   }).change();
 });
+
+window.myIpcRenderer.on('search-perplexity', (event, text) => {
+    // Hide the current webview
+    webviews[activeWebviewId].style.display = 'none';
+
+    // Switch to the Perplexity webview
+    activeWebviewId = 'perplexity';
+    const perplexityWebview = webviews[activeWebviewId];
+    perplexityWebview.style.display = 'flex';
+
+    // Load the URL in the Perplexity webview
+    perplexityWebview.loadURL('https://www.perplexity.ai/search?q=' + encodeURIComponent(text));
+});

@@ -210,7 +210,7 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
           clipboard.writeText(params.linkURL);
         }
       }));
-    }
+    
     contextMenu.append(new MenuItem({ 
       label: 'Open Link in Browser', 
       accelerator: 'CmdOrCtrl+O', 
@@ -226,8 +226,9 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
         }
       }
     }));
-
-  
+  }
+  // Separator
+  contextMenu.append(new MenuItem({ type: 'separator' }));
     // Screenshot
     contextMenu.append(new MenuItem({ label: 'Take Screenshot', accelerator: 'CmdOrCtrl+Shift+S', click: () => screenshotToClipboard() }));
   
@@ -261,6 +262,13 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
           click: () => {
               clipboard.writeText(params.srcURL);
           }
+      }));
+
+      contextMenu.append(new MenuItem({
+        label: 'Open Image in New Tab',
+        click: () => {
+          shell.openExternal(params.srcURL);
+        }
       }));
 
       // Save Image As...

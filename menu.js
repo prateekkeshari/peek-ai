@@ -203,6 +203,14 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
     // Separator
     contextMenu.append(new MenuItem({ type: 'separator' }));
     
+    if (params.linkURL) {
+      contextMenu.append(new MenuItem({
+        label: 'Copy Link Address',
+        click: () => {
+          clipboard.writeText(params.linkURL);
+        }
+      }));
+    }
     contextMenu.append(new MenuItem({ 
       label: 'Open Link in Browser', 
       accelerator: 'CmdOrCtrl+O', 
@@ -252,6 +260,15 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
           accelerator: 'CmdOrCtrl+Shift+I', 
           click: () => {
               clipboard.writeText(params.srcURL);
+          }
+      }));
+
+      // Save Image As...
+      contextMenu.append(new MenuItem({ 
+          label: 'Save Image As...', 
+          accelerator: 'CmdOrCtrl+Shift+S', 
+          click: () => {
+              webContents.downloadURL(params.srcURL);
           }
       }));
   }

@@ -15,6 +15,10 @@
           <span id="serviceName">ChatGPT</span>
         </button>
         <div class="dropdown-content" id="dropdownContent">
+          <a href="#" data-value="https://todoist.com" data-id="todoist">
+            <img src="todoist.png" alt="Todoist">
+            Todoist
+          </a>
           <a href="#" data-value="https://chat.openai.com" data-id="openai">
             <img src="openai-logo.png" alt="OpenAI">
             ChatGPT
@@ -156,6 +160,10 @@
               <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
               <label for="Threads">Threads</label>
             </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="Todoist" name="Todoist" data-id="todoist" checked>
+              <label for="Todoist">Todoist</label>
+              </div>  
            
       </div>
       <div class="divider">
@@ -176,6 +184,7 @@
       <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
       <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
       <webview id="webview-threads" src="https://www.threads.net/" allowpopups style="display: none;"></webview>
+      <webview id="webview-todoist" src="https://todoist.com" allowpopups style="display: none;"></webview>
     </div>
       
     <script src="scripts.js"></script>

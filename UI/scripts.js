@@ -10,6 +10,7 @@ const webviews = {
   'claude': document.getElementById('webview-claude'),
   'labs': document.getElementById('webview-labs'),
   'threads': document.getElementById('webview-threads'),
+  'todoist': document.getElementById('webview-todoist'),
 };
 
 let controlsHeight;

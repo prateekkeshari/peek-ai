@@ -1,6 +1,6 @@
 # Peek
 
-Peek is a MacOS Menu Bar application that allows you to interact with multiple AI chatbots in one place. It provides a seamless and intuitive user interface for interacting with AI chatbots like OpenAI's ChatGPT, Google's Bard, and Perplexity AI.
+Peek is a MacOS Menu Bar application that allows you to interact with multiple AI chatbots in one place. Update: It now includes a social secion with Threads as well. It provides a seamless and intuitive user interface for interacting with AI chatbots like OpenAI's ChatGPT, Google's Bard, and Perplexity AI.
 
 ## Features
 

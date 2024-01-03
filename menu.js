@@ -320,35 +320,6 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
         }
     }));
 }
-
-if (webContents.getURL().includes('perplexity.ai')) {
-  contextMenu.append(new MenuItem({
-    label: 'Paste Login Link',
-    toolTip: 'Paste the login link from Perplexity.ai',
-    click: () => {
-      let inputWindow = new BrowserWindow({
-        width: 400,
-        height: 300,
-        parent: mainWindow,
-        modal: true,
-        webPreferences: {
-          nodeIntegration: true,
-          contextIsolation: false,
-          alwaysOnTop: true
-        }
-      });
-
-      inputWindow.loadFile('login-dialog.html'); // load a HTML file with a form and input field
-
-      ipcMain.on('submit-input', (event, url) => {
-        if (!webContents.isDestroyed()) {
-          webContents.loadURL(url);
-        }
-        inputWindow.close();
-      });
-    }
-  }));
-}
     return contextMenu;
   }
   

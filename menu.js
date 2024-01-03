@@ -1,7 +1,7 @@
 const { Menu, MenuItem, shell, app, ipcMain, dialog } = require('electron');
 const { screenshotToClipboard, saveScreenshot } = require('./screenshot.js');
 const { clipboard } = require('electron');
-
+const { BrowserWindow } = require('electron');
 
 function toggleWindow(mainWindow) {
     if (mainWindow.isVisible()) {
@@ -51,6 +51,26 @@ function toggleWindow(mainWindow) {
         accelerator: 'CmdOrCtrl+S',
         click: screenshotToClipboard
       },
+      //dev tools
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: 'CmdOrCtrl+Shift+I',
+        click: () => {
+          mainWindow.webContents.toggleDevTools();
+        }
+      },
+      { type: 'separator' },
+      { 
+        label: 'Save Screenshot', 
+        accelerator: 'CmdOrCtrl+Shift+S',
+        click: saveScreenshot
+      },
+      { type: 'separator' },
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { type: 'separator' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
       { 
         label: 'Save Screenshot', 
         accelerator: 'CmdOrCtrl+Shift+S',
@@ -299,6 +319,35 @@ function createWebviewContextMenu(params, webContents, mainWindow)  {
             mainWindow.webContents.send('search-perplexity', params.selectionText);
         }
     }));
+}
+
+if (webContents.getURL().includes('perplexity.ai')) {
+  contextMenu.append(new MenuItem({
+    label: 'Paste Login Link',
+    toolTip: 'Paste the login link from Perplexity.ai',
+    click: () => {
+      let inputWindow = new BrowserWindow({
+        width: 400,
+        height: 300,
+        parent: mainWindow,
+        modal: true,
+        webPreferences: {
+          nodeIntegration: true,
+          contextIsolation: false,
+          alwaysOnTop: true
+        }
+      });
+
+      inputWindow.loadFile('login-dialog.html'); // load a HTML file with a form and input field
+
+      ipcMain.on('submit-input', (event, url) => {
+        if (!webContents.isDestroyed()) {
+          webContents.loadURL(url);
+        }
+        inputWindow.close();
+      });
+    }
+  }));
 }
     return contextMenu;
   }

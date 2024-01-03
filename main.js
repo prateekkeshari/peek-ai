@@ -51,7 +51,7 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:false,
+      devTools:true,
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });
@@ -330,6 +330,15 @@ autoUpdater.on('update-available', (info) => {
         text: 'Please wait...',
         detail: 'Download in progress...',
         browserWindow: {
+          // Use the mainWindow variable here
+          parent: mainWindow,
+          modal: true,
+          closable: false,
+          minimizable: false,
+          maximizable: false,
+          resizable: false,
+          width: 400,
+          height: 200,
           webPreferences: {
             nodeIntegration: true,
             contextIsolation: false

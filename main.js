@@ -433,3 +433,33 @@ function savePreferences(preferences) {
     console.error("Couldn't save preferences: ", err);
   }
 }
+
+ipcMain.on('show-input-window', () => {
+  let inputWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    parent: mainWindow,
+    modal: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      alwaysOnTop: true
+    }
+  });
+
+  const submitInput = (event, url) => {
+    if (!mainWindow.webContents.isDestroyed()) {
+      mainWindow.webContents.loadURL(url);
+    }
+    inputWindow.close();
+  };
+
+  ipcMain.on('submit-input', submitInput);
+
+  inputWindow.on('closed', () => {
+    ipcMain.removeListener('submit-input', submitInput);
+    inputWindow = null;
+  });
+
+  inputWindow.loadFile(path.join(__dirname, 'login-dialog.html')); // load a HTML file with a form and input field
+});

@@ -275,3 +275,15 @@ window.myIpcRenderer.on('search-perplexity', (event, text) => {
 window.myIpcRenderer.on('submit-input', (event, url) => {
   webviews['perplexity'].loadURL(url);
 });
+
+const perplexityWebview = webviews['perplexity'];
+perplexityWebview.addEventListener('will-navigate', (e) => {
+  const url = e.url; // This is the URL the webview is trying to navigate to
+
+  // Check if the URL is the one you want to trigger the modal on
+  if (url.includes('verify-request')) { // Replace 'xyz' with the actual part of the URL you're checking for
+    setTimeout(() => {
+      window.myIpcRenderer.send('show-input-window');
+    }, 3000); // Delay of 1 second
+  }
+});

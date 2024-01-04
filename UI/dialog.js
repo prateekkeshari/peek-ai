@@ -9,9 +9,9 @@ document.getElementById('input-form').addEventListener('submit', (event) => {
     alert('Please enter a valid URL');
   } else {
     ipcRenderer.send('submit-input', url);
+    window.close(); // Close the popup
   }
 });
-
 function isValidURL(string) {
   const res = string.match(/(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
   return (res !== null);

@@ -272,8 +272,11 @@ window.myIpcRenderer.on('search-perplexity', (event, text) => {
     perplexityWebview.loadURL('https://www.perplexity.ai/search?q=' + encodeURIComponent(text));
 });
 
-window.myIpcRenderer.on('submit-input', (event, url) => {
-  webviews['perplexity'].loadURL(url);
+window.myIpcRenderer.on('load-url', (event, data) => {
+  const webview = document.getElementById(data.webviewId);
+  if (webview) {
+    webview.loadURL(data.url);
+  }
 });
 
 const perplexityWebview = webviews['perplexity'];

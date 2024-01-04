@@ -458,12 +458,13 @@ ipcMain.on('show-input-window', () => {
       inputWindow.show();
     }
   });
-  const submitInput = (event, url) => {
-    if (!mainWindow.webContents.isDestroyed()) {
-      mainWindow.webContents.loadURL(url);
-    }
+  submitInput = (event, url) => {
+    // Assuming 'webview-perplexity' is the id of the webview you want to update
+    mainWindow.webContents.send('load-url', {webviewId: 'webview-perplexity', url: url});
     isInputFilled = true; // set the flag to true when input is submitted
-    inputWindow.close();
+    if (inputWindow) {
+      inputWindow.close();
+    }
   };
 
   ipcMain.on('submit-input', submitInput);
@@ -473,6 +474,7 @@ ipcMain.on('show-input-window', () => {
       event.preventDefault();
     } else {
       ipcMain.removeListener('submit-input', submitInput);
+      inputWindow.destroy(); // Destroy the BrowserWindow instance
       inputWindow = null;
     }
   });

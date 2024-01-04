@@ -16,10 +16,15 @@ function toggleWindow(mainWindow) {
   // Add the File menu
   menu.append(new MenuItem({
     label: 'File',
-    submenu: [
-      { role: 'close' }
-    ]
-  }));
+  submenu: [
+    { role: 'close' },
+    {
+      label: 'Quit',
+      accelerator: 'CmdOrCtrl+Q',
+      click: () => { app.quit() }
+    }
+  ]
+}));
 
   // Add the Edit menu
   menu.append(new MenuItem({

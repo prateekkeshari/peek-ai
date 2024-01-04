@@ -1,0 +1,35 @@
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    font-size: 12px;
+    line-height: 1.2rem;
+    background-color: #000000;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 10;
+    bottom: 120%;
+    left: 20%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: visibility 0s linear 1s, opacity 1s linear;
+    width: 300px; /* Increase the width of the tooltip */
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear 0s, opacity 0.3s linear; /* Show immediately on hover */
+  }
+  
+  .tooltip .fas {
+    vertical-align: top;
+    color: #ff5533;
+  }

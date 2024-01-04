@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="dialog.css">
+</head>
+<body class="bg-white text-black">
+  <!-- GIF Image -->
+  <div class="w-full h-80 overflow-hidden">
+    <img src="perplexity.gif" alt="Loading" class="w-full h-full object-cover">
+  </div>
+
+  <!-- Rest of the content with padding -->
+  <div class="p-5">
+    <h2 class="text-2xl mb-2 font-bold">
+      Paste link
+      <span class="tooltip">
+        <i class="fas fa-info-circle text-xs"></i>
+        <span class="tooltiptext">
+          For emails, Perplexity uses a passwordless login, sending a unique link to your email. Normally, this link signs you into Perplexity in your default browser. By pasting the link here, you sign into Perplexity within Peek. Got an idea to do this better? Open an issue on <a href="#" onclick="require('electron').shell.openExternal('https://github.com/prateekkeshari/peek-ai/issues');" class="text-blue-400">GitHub</a>.
+        </span>
+      </span>
+    </h2>
+    <p class="text-m mb-4">Copy the sign in link from your email and paste below to login. </p>
+    <form id="input-form" class="flex flex-col">
+      <input type="text" id="url" placeholder="https://www.perplexity.ai/api/auth/callback..." class="p-2 text-m mb-4 border-2 border-gray-300 rounded transition-colors duration-300">
+      <button type="submit" class="p-3 text-lg bg-black text-white rounded cursor-pointer transition-colors duration-300 hover:bg-gray-900">OK</button>
+    </form>
+  </div>
+
+  <script src="dialog.js"></script>
+</body>
+</html>

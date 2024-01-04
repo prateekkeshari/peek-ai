@@ -434,10 +434,16 @@ function savePreferences(preferences) {
   }
 }
 
+let isInputFilled = false; // flag to check if input is filled
+let inputWindow;
+
+
 ipcMain.on('show-input-window', () => {
-  let inputWindow = new BrowserWindow({
+  inputWindow = new BrowserWindow({
     width: 400,
-    height: 300,
+    height: 600,
+    maxHeight: 600,
+    maxWidth: 400,
     parent: mainWindow,
     modal: true,
     webPreferences: {
@@ -447,19 +453,29 @@ ipcMain.on('show-input-window', () => {
     }
   });
 
+  mainWindow.on('show', () => {
+    if (inputWindow) {
+      inputWindow.show();
+    }
+  });
   const submitInput = (event, url) => {
     if (!mainWindow.webContents.isDestroyed()) {
       mainWindow.webContents.loadURL(url);
     }
+    isInputFilled = true; // set the flag to true when input is submitted
     inputWindow.close();
   };
 
   ipcMain.on('submit-input', submitInput);
 
-  inputWindow.on('closed', () => {
-    ipcMain.removeListener('submit-input', submitInput);
-    inputWindow = null;
+  inputWindow.on('close', (event) => {
+    if (!isInputFilled) { // if input is not filled, prevent window from closing
+      event.preventDefault();
+    } else {
+      ipcMain.removeListener('submit-input', submitInput);
+      inputWindow = null;
+    }
   });
 
-  inputWindow.loadFile(path.join(__dirname, 'login-dialog.html')); // load a HTML file with a form and input field
+  inputWindow.loadURL(`file://${__dirname}/UI/dialog.html`);
 });

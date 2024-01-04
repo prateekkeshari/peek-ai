@@ -287,6 +287,6 @@ perplexityWebview.addEventListener('will-navigate', (e) => {
   if (url.includes('verify-request')) { // Replace 'xyz' with the actual part of the URL you're checking for
     setTimeout(() => {
       window.myIpcRenderer.send('show-input-window');
-    }, 2000);
+    }, 3000);
   }
 });

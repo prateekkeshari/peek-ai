@@ -1,5 +1,5 @@
 const serviceName = document.getElementById('serviceName');
-let activeWebviewId = 'openai';
+let activeWebviewId = null;
 const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
@@ -11,30 +11,23 @@ const webviews = {
   'labs': document.getElementById('webview-labs'),
   'threads': document.getElementById('webview-threads'),
 };
-window.myIpcRenderer.on('switch-webview', (event, index) => {
-  // Get the keys of the webviews object
-  const webviewKeys = Object.keys(webviews);
+window.onbeforeunload = () => {
+  localStorage.setItem('activeWebviewId', activeWebviewId);
+};
+window.myIpcRenderer.on('switch-webview', (event, key) => {
+  // Hide the current webview
+  webviews[activeWebviewId].style.display = 'none';
 
-  // Check if the index is within the range of the webviews
-  if (index < webviewKeys.length) {
-    // Hide the current webview
-    webviews[activeWebviewId].style.display = 'none';
+  // Switch to the new webview
+  activeWebviewId = key;
+  const newWebview = webviews[activeWebviewId];
+  newWebview.style.display = 'flex';
+   // Update the icon
+   document.getElementById('selectedImage').src = document.querySelector(`a[data-id="${key}"] img`).src;
+   serviceName.textContent = document.querySelector(`a[data-id="${key}"]`).textContent.trim();
+   
+  });
 
-    // Switch to the new webview
-    activeWebviewId = webviewKeys[index];
-    const newWebview = webviews[activeWebviewId];
-    newWebview.style.display = 'flex';
-
-    // Load the URL in the new webview if it hasn't been loaded yet
-    if (!newWebview.getURL()) {
-      newWebview.loadURL(url);
-    }
-
-    // Update the height of the webviews
-    resizeWebview();
-  }
-});
-window.myIpcRenderer.send('webviews-length', Object.keys(webviews).length);
 let controlsHeight;
 
 for (let id in webviews) {
@@ -127,14 +120,26 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   // Send the updated preferences to the main process
   window.myIpcRenderer.send('save-preferences', preferences);
 
-  // Hide all webviews and show only 'openai' webview
+  // Hide all webviews and show the first enabled webview
   for (let id in webviews) {
     webviews[id].style.display = 'none';
   }
-  webviews['openai'].style.display = 'flex';
+  activeWebviewId = preferences.enabledChatbots[0]; // Set to the first enabled chatbot
+  webviews[activeWebviewId].style.display = 'flex'; // Show this webview
 
   // Update the dropdown list
   updateDropdownList(preferences.enabledChatbots);
+  // Send the keys of the active webviews to the main process
+  const activeWebviewKeys = Object.keys(webviews).filter(key => preferences.enabledChatbots.includes(key));
+  window.myIpcRenderer.send('active-webview-keys', activeWebviewKeys);
+  // Reload all active webviews
+  for (let id in webviews) {
+    if (preferences.enabledChatbots.includes(id)) {
+      webviews[id].reload();
+    }
+  }
+   // Send the current webview key to the main process
+   window.myIpcRenderer.send('current-webview-key', activeWebviewId);
 });
 // Update Webview Visibility based on Preferences
 function updateWebviewVisibility(preferences) {
@@ -185,21 +190,44 @@ window.myIpcRenderer.on('load-preferences', (event, preferences) => {
     document.getElementById('alwaysOnToggle').classList.toggle('active', preferences.alwaysOnTop);
     document.getElementById('hideDockToggle').classList.toggle('active', preferences.hideDockIcon);
     document.getElementById('launchAtLoginToggle').classList.toggle('active', preferences.launchAtLogin);
+ // Try to get the activeWebviewId from localStorage
+ const savedWebviewId = localStorage.getItem('activeWebviewId');
 
-    // Update chatbot checkboxes and visibility
-    document.querySelectorAll('.checkbox-item input').forEach(input => {
-      const isChecked = preferences.enabledChatbots.includes(input.dataset.id);
-      input.checked = isChecked;
-      
-      // Update the visibility of webviews
-      const webview = webviews[input.dataset.id];
-      // Only show 'openai' webview when the app loads
-      webview.style.display = input.dataset.id === 'openai' ? 'flex' : 'none';
-    });
+ // Update chatbot checkboxes and visibility
+ document.querySelectorAll('.checkbox-item input').forEach(input => {
+   const isChecked = preferences.enabledChatbots.includes(input.dataset.id);
+   input.checked = isChecked;
+   
+   // Update the visibility of webviews
+   const webview = webviews[input.dataset.id];
+   webview.style.display = 'none'; // Hide all webviews initially
+
+   // If this chatbot is enabled and matches the savedWebviewId, make this the active webview
+   if (isChecked && input.dataset.id === savedWebviewId) {
+     activeWebviewId = savedWebviewId;
+     webview.style.display = 'flex'; // Show this webview
+   }
+ });
+
+ // If no activeWebviewId was set (i.e., the savedWebviewId was not enabled), set it to the first enabled chatbot
+ if (!activeWebviewId) {
+   activeWebviewId = preferences.enabledChatbots[0];
+   webviews[activeWebviewId].style.display = 'flex'; // Show this webview
+ }
+
+ // Update the icon
+ document.getElementById('selectedImage').src = document.querySelector(`a[data-id="${activeWebviewId}"] img`).src;
+ serviceName.textContent = document.querySelector(`a[data-id="${activeWebviewId}"]`).textContent.trim();
+
+ // Show the service name and icon
+ document.getElementById('serviceName').style.display = 'block';
+ document.getElementById('selectedImage').style.display = 'block';
 
     // Update the dropdown list
     updateDropdownList(preferences.enabledChatbots);
   }
+  const activeWebviewKeys = Object.keys(webviews).filter(key => preferences.enabledChatbots.includes(key));
+  window.myIpcRenderer.send('active-webview-keys', activeWebviewKeys);
 });
 
 // Request stored preferences from the main process

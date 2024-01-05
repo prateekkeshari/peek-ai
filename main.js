@@ -22,10 +22,19 @@ function toggleWindow() {
     mainWindow.show();
   }
 }
-let currentWebviewIndex = 0;
+let currentWebviewKey = 'openai';
 
-ipcMain.on('webviews-length', (event, length) => {
-  webviewsLength = length;
+ipcMain.on('active-webview-keys', (event, keys) => {
+  activeWebviewKeys = keys;
+
+  // If the current webview key is not in the new keys, reset it to the first key
+  if (!activeWebviewKeys.includes(currentWebviewKey)) {
+    currentWebviewKey = activeWebviewKeys[0];
+  }
+});
+
+ipcMain.on('current-webview-key', (event, key) => {
+  currentWebviewKey = key;
 });
 try {
   require('electron-reloader')(module, {
@@ -96,21 +105,25 @@ function createWindow() {
 
     // copy the screenshot to clipboard 
     globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
-    globalShortcut.register('CmdOrCtrl+Right', () => {
-      // Increment the current webview index
-      currentWebviewIndex = (currentWebviewIndex + 1) % webviewsLength;
-  
-      // Send the new index to the renderer process
-      mainWindow.webContents.send('switch-webview', currentWebviewIndex);
-    });
-  
-    globalShortcut.register('CmdOrCtrl+Left', () => {
-      // Decrement the current webview index
-      currentWebviewIndex = (currentWebviewIndex - 1 + webviewsLength) % webviewsLength;
-  
-      // Send the new index to the renderer process
-      mainWindow.webContents.send('switch-webview', currentWebviewIndex);
-    });
+    let currentWebviewKey = 'openai';
+
+globalShortcut.register('CmdOrCtrl+Right', () => {
+  // Calculate the new key
+  const newIndex = (activeWebviewKeys.indexOf(currentWebviewKey) + 1) % activeWebviewKeys.length;
+  currentWebviewKey = activeWebviewKeys[newIndex];
+
+  // Send the new key to the renderer process
+  mainWindow.webContents.send('switch-webview', currentWebviewKey);
+});
+
+globalShortcut.register('CmdOrCtrl+Left', () => {
+  // Calculate the new key
+  const newIndex = (activeWebviewKeys.indexOf(currentWebviewKey) - 1 + activeWebviewKeys.length) % activeWebviewKeys.length;
+  currentWebviewKey = activeWebviewKeys[newIndex];
+
+  // Send the new key to the renderer process
+  mainWindow.webContents.send('switch-webview', currentWebviewKey);
+});
   });
 
   // unregister the shortcuts

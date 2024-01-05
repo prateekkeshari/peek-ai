@@ -11,59 +11,61 @@
     <div id="controls">
       <div class="dropdown">
         <button class="dropbtn" id="dropbtn">
-          <img id="selectedImage" src="openai-logo.png" alt="OpenAI" width="20" height="20">
-          <span id="serviceName">ChatGPT</span>
+          <img id="selectedImage" src="/Users/prateek.keshari/Downloads/peek/icons/peek-dock-icon.png" alt="Peek" width="20" height="20">
+          <span id="serviceName">Peek</span>
         </button>
         <div class="dropdown-content" id="dropdownContent">
           <a href="#" data-value="https://chat.openai.com" data-id="openai">
             <img src="openai-logo.png" alt="OpenAI">
-            ChatGPT
           </a>
           <a href="#" data-value="https://bard.google.com" data-id="google">
             <img src="google-logo.png" alt="Google">
-            Bard
           </a>
           <a href="#" data-value="https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=hpcodx" data-id="bing">
             <img src="bing.png" alt="Bing">
-            Bing
           </a>
           <a href="#" data-value="https:/poe.com" data-id="poe">
             <img src="poe.png" alt="Poe">
-            Poe
           </a>
           <a href="#" data-value="https://heypi.com/talk" data-id="pi">
             <img src="pi-logo.jpeg" alt="Pi by Inflection AI">
-            Pi
+          
           </a>
           <a href="#" data-value="https://www.perplexity.ai/" data-id="perplexity">
             <img src="perplexity-logo.png" alt="Perplexity">
-            Perplexity
+        
           </a>
 
           <a href="#" data-value="https://claude.ai/" data-id="claude">
             <img src="claude-logo.png" alt="Claude">
-            Claude
+ 
           </a>
 
           <a href="#" data-value="https://labs.perplexity.ai/" data-id="labs">
             <img src="labs.png" alt="labs">
-            Labs
+        
           </a>
           <a href="#" data-value="https://www.threads.net/" data-id="threads">
             <img src="threads.png" alt="threads">
-            Threads
+          
           </a>
 
           <div class="divider-drop"></div>
             <a href="#" id="settingsDropdown">
               <span class="settingsWrapper">
                 <i class="fas fa-cog"></i> <!-- Font Awesome Cog Icon -->
-                Settings
+                
               </span>
             </a>
             
         </div>
-      </div>      
+      </div>  
+      <div id="peekText">
+        Support Peek
+        <a href="#">
+          <i class="fas fa-arrow-up" style="transform: rotate(45deg); color: aliceblue; opacity: 0.5;"></i> <!-- Font Awesome Arrow Icon pointing upwards -->
+        </a>
+      </div>    
     </div>
 
     <div id="configPanel" class="hidden">
@@ -110,38 +112,62 @@
         </div>
       </div>
       <div class="chatbots">
-            <div class="checkbox-item">
-              <input type="checkbox" id="ChatGPT" name="ChatGPT" data-id="openai" checked>
-              <label for="ChatGPT">ChatGPT</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="Bard" name="Bard" data-id="google" checked>
-              <label for="Bard">Bard</label>
-           </div>
-           <div class="checkbox-item">
-            <input type="checkbox" id="Poe" name="Poe" data-id="poe" checked>
-            <label for="Poe">Poe</label>
-         </div>
-         <div class="checkbox-item">
+        <div class="checkbox-item">
+          <input type="checkbox" id="ChatGPT" name="ChatGPT" data-id="openai" checked>
+          <label for="ChatGPT">
+            <img src="openai-logo.png" alt="ChatGPT Icon">
+            ChatGPT
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Bard" name="Bard" data-id="google" checked>
+          <label for="Bard">
+            <img src="google-logo.png" alt="Bard Icon">
+            Bard
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Poe" name="Poe" data-id="poe" checked>
+          <label for="Poe">
+            <img src="poe.png" alt="Poe Icon">
+            Poe
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
+          <label for="Pi">
+            <img src="pi-logo.jpeg" alt="Pi Icon">
+            Pi
+          </label>
+        </div>
+        <div class="checkbox-item">
           <input type="checkbox" id="Bing" name="Bing" data-id="bing" checked>
-          <label for="Bing">Bing</label>
-       </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="Pi" name="Pi" data-id="pi" checked>
-              <label for="Pi">Pi</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="Perplexity" name="Perplexity" data-id="perplexity" checked>
-              <label for="Perplexity">Perplexity</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="Claude" name="Claude" data-id="claude" checked>
-              <label for="Claude">Claude</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
-              <label for="Labs">Labs</label>
-              </div>
+          <label for="Bing">
+            <img src="bing.png" alt="Bing Icon">
+            Bing
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Perplexity" name="Perplexity" data-id="perplexity" checked>
+          <label for="Perplexity">
+            <img src="perplexity-logo.png" alt="Perplexity Icon">
+            Perplexity
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Claude" name="Claude" data-id="claude" checked>
+          <label for="Claude">
+            <img src="claude-logo.png" alt="Claude Icon">
+            Claude
+          </label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Labs" name="Labs" data-id="labs" checked>
+          <label for="Labs">
+            <img src="labs.png" alt="Labs Icon">
+            Labs
+          </label>
+      </div>
       </div>
       <div class="divider">
     </div>
@@ -152,10 +178,13 @@
         </div>
       </div>
       <div class="chatbots">
-            <div class="checkbox-item">
-              <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
-              <label for="Threads">Threads</label>
-            </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="Threads" name="Threads" data-id="threads" checked>
+          <label for="Threads">
+            <img src="threads.png" alt="Threads Icon">
+            Threads
+          </label>
+        </div>
            
       </div>
       <div class="divider">

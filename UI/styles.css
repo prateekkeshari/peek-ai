@@ -3,6 +3,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #ffffff;  
 }
 
 webview {
@@ -11,6 +12,13 @@ webview {
 @media (prefers-color-scheme: dark) {
   #controls {
     background: #1a1a1a;
+  }
+  .dropdown-content {
+    background: #1a1a1a;
+  }
+
+  .dropdown-content a {
+    color: #ffffff;
   }
   #serviceName {
     color: rgba(228, 228, 228, 0.643);
@@ -82,6 +90,12 @@ webview {
   #controls {
     background: rgba(255, 255, 255, 1);
   }
+  .dropdown-content {
+    background: rgba(255, 255, 255, 1);
+  }
+  .dropdown-content a {
+    color: #000000;
+  }
   #serviceName {
     color: rgba(21, 21, 21, 0.643);
   }
@@ -128,6 +142,7 @@ webview {
   .checkbox-item {
     background-color: #FFFFFF; /* Light color for light theme */
   }
+
   .save-button.saving {
     background-color: #ff5533; /* Orange for light scheme */
     color: #0A0A0B; /* Dark text for light scheme */
@@ -153,8 +168,16 @@ webview {
   padding-top:50px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px;
   border: none;
+}
+
+#peekText {
+  font-size: 14px;
+  font-weight: 400;
+  color: #83838A;
+  padding: 5px;
 }
 
 img
@@ -173,6 +196,10 @@ img
   cursor: default;
 }
 
+#serviceName, #selectedImage {
+  display: none;
+}
+
 /* Dropdown styles */
 .dropdown {
   -webkit-app-region: no-drag;
@@ -189,8 +216,7 @@ img
   position: absolute;
   left: 0.4px;
   top: 0px;
-  background-color: #f8f8f8;
-  min-width: 150px;
+  min-width: 50px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   border-radius: 7px;
@@ -202,7 +228,6 @@ img
   font-size:14px;
   font-weight:400;
   -webkit-app-region: no-drag;
-  color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: flex; /* Change to flex */
@@ -221,7 +246,6 @@ img
 .dropdown-content a:hover {
   background-color: rgb(235, 234, 235);
   cursor: pointer;
-  border-radius: 7px;
   font-weight:450;
 }
 
@@ -396,14 +420,15 @@ button {
 /* UI/styles.css */
 .checkbox-item {
   display: flex;
-  align-items: center;
-  justify-content:flex-start;
+  align-items: center; /* Vertically center the items */
+  justify-content: center; /* Horizontally center the items */
   margin-bottom: 0.5rem;
   margin-right: 10px;
   border-radius: 3px;
   z-index: 1;
   overflow: hidden;
   opacity: 1;
+  background-color: #FFFFFF; /* Light color for light theme */
   transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
@@ -411,6 +436,30 @@ button {
 .checkbox-item label,
 .checkbox-item input[type="checkbox"] {
   cursor:pointer;
+}
+
+/* Lower the opacity for images next to unchecked checkboxes */
+.checkbox-item input[type="checkbox"]:not(:checked) + label img {
+  opacity: 0.5;
+}
+
+/* Restore opacity for images when the parent .checkbox-item is hovered */
+.checkbox-item:hover input[type="checkbox"]:not(:checked) + label img {
+  opacity: 1; /* Full opacity on hover */
+}
+
+/* Existing styles for the image */
+.checkbox-item label img {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5rem; /* Adjust space between icon and text */
+}
+
+.checkbox-item label {
+  display: flex;
+  align-items: center; /* Align label contents vertically */
+  justify-content: center; /* Center label contents horizontally */
+  margin: 0; /* Adjust margin as needed */
 }
 
 .checkbox-item input[type="checkbox"] {

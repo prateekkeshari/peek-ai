@@ -11,7 +11,30 @@ const webviews = {
   'labs': document.getElementById('webview-labs'),
   'threads': document.getElementById('webview-threads'),
 };
+window.myIpcRenderer.on('switch-webview', (event, index) => {
+  // Get the keys of the webviews object
+  const webviewKeys = Object.keys(webviews);
 
+  // Check if the index is within the range of the webviews
+  if (index < webviewKeys.length) {
+    // Hide the current webview
+    webviews[activeWebviewId].style.display = 'none';
+
+    // Switch to the new webview
+    activeWebviewId = webviewKeys[index];
+    const newWebview = webviews[activeWebviewId];
+    newWebview.style.display = 'flex';
+
+    // Load the URL in the new webview if it hasn't been loaded yet
+    if (!newWebview.getURL()) {
+      newWebview.loadURL(url);
+    }
+
+    // Update the height of the webviews
+    resizeWebview();
+  }
+});
+window.myIpcRenderer.send('webviews-length', Object.keys(webviews).length);
 let controlsHeight;
 
 for (let id in webviews) {

@@ -22,7 +22,11 @@ function toggleWindow() {
     mainWindow.show();
   }
 }
+let currentWebviewIndex = 0;
 
+ipcMain.on('webviews-length', (event, length) => {
+  webviewsLength = length;
+});
 try {
   require('electron-reloader')(module, {
     watchRenderer: true,
@@ -92,6 +96,21 @@ function createWindow() {
 
     // copy the screenshot to clipboard 
     globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
+    globalShortcut.register('CmdOrCtrl+Right', () => {
+      // Increment the current webview index
+      currentWebviewIndex = (currentWebviewIndex + 1) % webviewsLength;
+  
+      // Send the new index to the renderer process
+      mainWindow.webContents.send('switch-webview', currentWebviewIndex);
+    });
+  
+    globalShortcut.register('CmdOrCtrl+Left', () => {
+      // Decrement the current webview index
+      currentWebviewIndex = (currentWebviewIndex - 1 + webviewsLength) % webviewsLength;
+  
+      // Send the new index to the renderer process
+      mainWindow.webContents.send('switch-webview', currentWebviewIndex);
+    });
   });
 
   // unregister the shortcuts
@@ -99,6 +118,8 @@ function createWindow() {
     // When the window loses focus, unregister the shortcuts
     globalShortcut.unregister('CommandOrControl+Shift+S');
     globalShortcut.unregister('CommandOrControl+S');
+    globalShortcut.unregister('CmdOrCtrl+Right');
+    globalShortcut.unregister('CmdOrCtrl+Left');
   });
 
   mainWindow.loadURL(
@@ -273,6 +294,11 @@ app.whenReady().then(() => {
   // Register the global shortcut
 // Use the toggleWindow function in the globalShortcut.register call
 globalShortcut.register('CmdOrCtrl+J', toggleWindow);
+// Register the global shortcut
+globalShortcut.register('CmdOrCtrl+D', () => {
+  // Send an IPC message to the renderer process to switch to the Perplexity webview
+  mainWindow.webContents.send('switch-to-perplexity');
+});
 
 });
 

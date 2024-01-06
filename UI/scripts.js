@@ -120,13 +120,20 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   // Send the updated preferences to the main process
   window.myIpcRenderer.send('save-preferences', preferences);
 
-  // Hide all webviews and show the first enabled webview
+  // Hide all webviews
   for (let id in webviews) {
     webviews[id].style.display = 'none';
   }
-  activeWebviewId = preferences.enabledChatbots[0]; // Set to the first enabled chatbot
-  webviews[activeWebviewId].style.display = 'flex'; // Show this webview
 
+  // Check if the current activeWebviewId is in the list of enabled chatbots
+  if (preferences.enabledChatbots.includes(activeWebviewId)) {
+    // If it is, keep it as the active webview
+    webviews[activeWebviewId].style.display = 'flex';
+  } else {
+    // If it's not, set the active webview to the first enabled chatbot
+    activeWebviewId = preferences.enabledChatbots[0];
+    webviews[activeWebviewId].style.display = 'flex';
+  }
   // Update the dropdown list
   updateDropdownList(preferences.enabledChatbots);
   // Send the keys of the active webviews to the main process

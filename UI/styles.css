@@ -20,6 +20,9 @@ webview {
   .dropdown-content a {
     color: #ffffff;
   }
+  .dropdown-content a:hover {
+    background-color: #2d2d2d;
+  }
   #serviceName {
     color: rgba(228, 228, 228, 0.643);
   }
@@ -95,6 +98,9 @@ webview {
   }
   .dropdown-content a {
     color: #000000;
+  }
+  .dropdown-content a:hover {
+    background-color: #f2f2f2;
   }
   #serviceName {
     color: rgba(21, 21, 21, 0.643);
@@ -244,8 +250,8 @@ img
 }
 
 .dropdown-content a:hover {
-  background-color: rgb(235, 234, 235);
   cursor: pointer;
+  border-radius: 7px;
   font-weight:450;
 }
 

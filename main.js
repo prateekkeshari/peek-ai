@@ -15,6 +15,7 @@ let icon;
 let manualUpdateCheck = false;
 let reminderTimeout;
 let userChoseToDownloadUpdate = false;
+
 function toggleWindow() {
   if (mainWindow.isVisible()) {
     mainWindow.hide();
@@ -85,6 +86,8 @@ function createWindow() {
     // Show the window
     mainWindow.show();
      // Use the createAppMenu function to create the application menu
+     // Check if it's the first run
+    mainWindow.loadURL(`file://${__dirname}/UI/onboarding.html`);
     const appMenu = createAppMenu(mainWindow);
     Menu.setApplicationMenu(appMenu);
     const menu = createAppMenu(mainWindow, globalShortcut);

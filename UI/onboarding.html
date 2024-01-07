@@ -5,42 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Onboarding</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-    body {
-      background: none;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
+      .fa-arrow-right:hover {
+        transform: scale(0.9); /* Scale down to create a "pressing" effect */
+        transition: transform 0.2s ease-in-out;
+      }
+
+      /* Ensure the arrow icon is always on top */
+      .fa-arrow-right {
+        z-index: 2;
+        position: relative;
+      }
+  
+    /* Custom gradient border style */
+    #infoBox {
+    position: relative;
+    border-radius: 1000px;
+    overflow: hidden; /* This is needed to make the pseudo-element conform to the border-radius */
+    z-index: 1;
+    transition: transform 0.2s ease-in-out; /* Add transition for the transform property */
+    box-shadow: 0 0 6px 0 rgb(255, 255, 255) inset;
+  }
+    #infoBox::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(-120deg, #ff5533 10%, #000000 30%);
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      z-index: -1; /* This is needed to put the border behind the content of the info box */
+      border-radius: inherit; /* Inherit the border-radius from the #infoBox */
+      box-shadow: 0 0 0 3px;
+    }
+    /* Animated gradient border */
+    #infoBox.gradient-border-active::before {
       opacity: 1;
     }
-    .card {
-      background: linear-gradient(rgb(0, 0, 0), rgba(252, 0, 0, 0.5)), url('onboarding.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      width: 100%;
-      height: 100%;
-      max-width: 500px;
-      border-radius: 15px;
-      cursor: pointer;
-      border: 1px solid #585858;
-      user-select: none; /* disable text selection */
-      box-shadow: inset 0 0 10px #ffffff inset; /* add inner shadow */
-    }
+    #infoBox.gradient-border-active {
+    transform: scale(0.96); /* Scale up when the button is hovered */
+  }
+
+
   </style>
 </head>
-<body class="bg-black flex items-center justify-center h-screen">
-  <div class="card p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
-
-    <div class="text-center p-4">
-        <img src="peek-dock-icon.png" alt="Dock Icon" width="100px" height="100px" class="mx-auto mb-5">
-      <div class="text-2xl font-bold text-gray-200 mb-2">Welcome to Peek!</div>
-      <p class="text-gray-200">We're thrilled you're here. Design with love in Berlin by Prateek Keshari.</p>
+<body class="h-screen m-0 font-sans bg-cover bg-center" style="background-image: url('ada.png');">
+  <div class="flex h-full items-end justify-center">
+    <div id="infoBox" class="bg-black pl-10 pr-10 pt-6 pb-6 flex items-center justify-between w-full max-w-lg mb-10 mr-5 ml-5 shadow-xl">
+      <div class="flex items-center select-none">
+        <img src="peek-dock-icon.png" alt="Application Icon" class="rounded-full w-12 h-12">
+        <div class="ml-4">
+          <p class="text-md font-bold text-gray-200 pb-0.5">Get ready for Peek</p>
+          <p class="text-xs text-gray-600">Built with 🩶 by Prateek Keshari</p>
+        </div>
+      </div>
+      <i class="fas fa-arrow-right cursor-pointer text-white text-xl" onclick="window.location.href='index.html';"></i>
+    </div>
+    <div class="absolute top-3 left-3 text-white p-2 rounded-lg select-none">
+      <p class="text-sm font-bold">Ada Lovelace</p>
+      <p class="text-xs">1815-1852</p>
     </div>
   </div>
-</body>
-  <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
+
+  <script>
+    // Get the arrow icon and info box elements
+    var arrowIcon = document.querySelector('.fa-arrow-right');
+    var infoBox = document.getElementById('infoBox');
+  
+    // Function to add the gradient border on the info box
+    function addGradientBorder() {
+      infoBox.classList.add('gradient-border-active');
+    }
+  
+    // Function to remove the gradient border from the info box
+    function removeGradientBorder() {
+      infoBox.classList.remove('gradient-border-active');
+    }
+  
+    // Add event listeners to the arrow icon for mouse enter and mouse leave
+    arrowIcon.addEventListener('mouseenter', addGradientBorder);
+    arrowIcon.addEventListener('mouseleave', removeGradientBorder);
+  
+    // Function to navigate to index.html
+    arrowIcon.addEventListener('click', function() {
+      setTimeout(function() {
+        window.location.href = 'index.html';
+      }, 200);
+    });
+</script>
 </body>
 </html>
-

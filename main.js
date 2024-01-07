@@ -140,7 +140,7 @@ globalShortcut.register('CmdOrCtrl+Left', () => {
 
   mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, '/UI/index.html'),
+      pathname: path.join(__dirname, '/UI/onboarding.html'),
       protocol: 'file:',
       slashes: true,
     })
@@ -522,4 +522,8 @@ ipcMain.on('show-input-window', () => {
   });
 
   inputWindow.loadURL(`file://${__dirname}/UI/dialog.html`);
+});
+
+ipcMain.on('open-external', (event, url) => {
+  shell.openExternal(url);
 });

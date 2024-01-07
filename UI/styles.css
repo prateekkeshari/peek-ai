@@ -177,13 +177,7 @@ webview {
   justify-content: space-between;
   padding: 10px;
   border: none;
-}
-
-#peekText {
-  font-size: 14px;
-  font-weight: 400;
-  color: #83838A;
-  padding: 5px;
+  z-index: 1;
 }
 
 img
@@ -518,4 +512,19 @@ button {
 .save-button:focus {
   outline: none;
   box-shadow: 0 0 0 2px #ff5533;
+}
+
+#peekText a {
+  -webkit-app-region: no-drag;
+  font-size: 14px;
+  font-weight: 450;
+  color: white;
+  opacity: 0.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+#peekText a:hover {
+  opacity: 0.4;
 }

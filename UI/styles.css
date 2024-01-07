@@ -23,6 +23,15 @@ webview {
   .dropdown-content a:hover {
     background-color: #2d2d2d;
   }
+
+  #peekText a {
+    color: #717171;
+  }
+
+  .fa-arrow-up {
+    color: #4c4c4c;
+  }
+
   #serviceName {
     color: rgba(228, 228, 228, 0.643);
   }
@@ -102,6 +111,14 @@ webview {
   .dropdown-content a:hover {
     background-color: #f2f2f2;
   }
+  #peekText a {
+    color: #9d9d9d;
+  }
+
+  .fa-arrow-up {
+    color: #a6a6a6;
+  }
+
   #serviceName {
     color: rgba(21, 21, 21, 0.643);
   }
@@ -177,7 +194,13 @@ webview {
   justify-content: space-between;
   padding: 10px;
   border: none;
-  z-index: 1;
+}
+
+#peekText {
+  font-size: 14px;
+  font-weight: 400;
+  color: #83838A;
+  padding: 5px;
 }
 
 img
@@ -514,17 +537,38 @@ button {
   box-shadow: 0 0 0 2px #ff5533;
 }
 
-#peekText a {
-  -webkit-app-region: no-drag;
-  font-size: 14px;
-  font-weight: 450;
-  color: white;
-  opacity: 0.2;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.3s ease;
+.save-button.saving {
+  background-color: #ff5533;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) inset;
+  transition: all 0.3s ease-in-out;
 }
 
-#peekText a:hover {
-  opacity: 0.4;
+#peekText:hover
+{
+  background-color: #f2f2f2;
+  border-radius: 7px;
+  transform: scale(1.05); /* added scale */
+  transition: all 0.3s ease-in-out; /* added smooth transition */
+}
+
+#peekText a
+{
+  -webkit-app-region: no-drag;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease-in-out; /* added smooth transition */
+}
+
+#peekText a:hover
+{
+  transition: all 0.3s ease-in-out; /* added smooth transition */
+}
+.fa-arrow-up
+{
+  transform: rotate(45deg);
 }

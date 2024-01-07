@@ -49,6 +49,37 @@
     transform: scale(0.96); /* Scale up when the button is hovered */
   }
 
+  .whatsnew
+  {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #whatsNewButton
+  {
+    color: #ffffff;
+    font-size: 14px;
+    padding: 10px 20px;
+    user-select: none;
+    cursor: pointer;
+  }
+  .fa-arrow-up
+  {
+    transform: rotate(45deg);
+  }
+  
+  #whatsNewButton:hover
+  {
+    color: rgb(226, 226, 226);
+    transform: scale(0.99);
+  }
 
   </style>
 </head>
@@ -69,7 +100,14 @@
       <p class="text-xs">1815-1852</p>
     </div>
   </div>
-
+  <div class="whatsnew">
+    <button id="whatsNewButton" onclick="myIpcRenderer.send('open-external', 'https://github.com/prateekkeshari/peek-ai/releases');">
+      Release notes
+    <a href="#">
+      <i class="fas fa-arrow-up"></i> <!-- Font Awesome Arrow Icon pointing upwards -->
+    </a>
+  </button>
+  </div>
   <script>
     // Get the arrow icon and info box elements
     var arrowIcon = document.querySelector('.fa-arrow-right');

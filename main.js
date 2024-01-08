@@ -2,6 +2,8 @@ const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, i
 const { processImage, captureAndProcessImage, screenshotToClipboard, saveScreenshot, setMainWindow, setIcon } = require('./screenshot.js');
 const { createAppMenu, createContextMenu, createWebviewContextMenu } = require('./menu.js');
 const {is} = require('electron-util');
+const Store = require('electron-store');
+const store = new Store();
 const ProgressBar = require('electron-progressbar');
 const path = require('path');
 const log = require('electron-log');
@@ -15,6 +17,16 @@ let icon;
 let manualUpdateCheck = false;
 let reminderTimeout;
 let userChoseToDownloadUpdate = false;
+let lastVersion = store.get('version');
+const currentVersion = app.getVersion();
+
+if (!lastVersion || lastVersion !== currentVersion) {
+  // This is either a first-time user or the app was updated
+  store.set('version', currentVersion);
+}
+
+console.log('Current version:', currentVersion);
+console.log('Last version:', store.get('version'));
 
 function toggleWindow() {
   if (mainWindow.isVisible()) {
@@ -69,38 +81,36 @@ function createWindow() {
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });
-   // Wait for the window to be ready
+
+  mainWindow.loadURL('about:blank');
    mainWindow.once('ready-to-show', () => {
-    // Get the bounds of the tray icon
-    const trayBounds = tray.getBounds();
-
-    // Calculate the window position
-    const windowPosition = {
-      x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
-      y: Math.round(trayBounds.y + trayBounds.height)
-    };
-
-    // Set the window position
-    mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-
-    // Show the window
+     // Get the bounds of the tray icon
+     const trayBounds = tray.getBounds();
+   
+     // Calculate the window position
+     const windowPosition = {
+       x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
+       y: Math.round(trayBounds.y + trayBounds.height)
+     };
+   
+     // Set the window position
+     mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+   
+     const appMenu = createAppMenu(mainWindow);
+     Menu.setApplicationMenu(appMenu);
+     const menu = createAppMenu(mainWindow, globalShortcut);
+     Menu.setApplicationMenu(menu);
+    
+    
     mainWindow.show();
-     // Use the createAppMenu function to create the application menu
-     // Check if it's the first run
-    mainWindow.loadURL(`file://${__dirname}/UI/onboarding.html`);
-    const appMenu = createAppMenu(mainWindow);
-    Menu.setApplicationMenu(appMenu);
-    const menu = createAppMenu(mainWindow, globalShortcut);
-    Menu.setApplicationMenu(menu);
   });
-
- // Pass 'webContents' to 'createWebviewContextMenu' when calling it
- mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
-  webContents.on('context-menu', (e, params) => {
-    const webviewContextMenu = createWebviewContextMenu(params, webContents, mainWindow);
-    webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
+  // Pass 'webContents' to 'createWebviewContextMenu' when calling it
+  mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
+    webContents.on('context-menu', (e, params) => {
+      const webviewContextMenu = createWebviewContextMenu(params, webContents, mainWindow);
+      webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
+    });
   });
-});
 
   mainWindow.on('focus', () => {
     // saved the screenshot
@@ -137,14 +147,6 @@ globalShortcut.register('CmdOrCtrl+Left', () => {
     globalShortcut.unregister('CmdOrCtrl+Right');
     globalShortcut.unregister('CmdOrCtrl+Left');
   });
-
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, '/UI/onboarding.html'),
-      protocol: 'file:',
-      slashes: true,
-    })
-  );
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -234,7 +236,25 @@ let updateInterval;
 
 app.whenReady().then(() => {
   createWindow();
+  const currentVersion = app.getVersion();
 
+  let lastVersion = store.get('version');
+
+  let hasRunBefore = store.get('hasRunBefore');
+
+  let pageToLoad;
+
+  if (!hasRunBefore || !lastVersion || lastVersion !== currentVersion) {
+    // This is either a first-time user or the app was updated
+    store.set('hasRunBefore', true);
+    store.set('version', currentVersion);
+    // Show the onboarding screen
+    pageToLoad = `file://${__dirname}/UI/onboarding.html`;
+  } else {
+    pageToLoad = `file://${__dirname}/UI/index.html`;
+  }
+
+  mainWindow.loadURL(pageToLoad);
   if (is.macos && !app.isInApplicationsFolder()) {
     const choice = dialog.showMessageBoxSync({
       type: 'question',

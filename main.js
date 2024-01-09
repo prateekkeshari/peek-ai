@@ -77,7 +77,6 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools:true,
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });

@@ -16,15 +16,20 @@ function toggleWindow(mainWindow) {
   // Add the File menu
   menu.append(new MenuItem({
     label: 'File',
-  submenu: [
-    { role: 'close' },
-    {
-      label: 'Quit',
-      accelerator: 'CmdOrCtrl+Q',
-      click: () => { app.quit() }
-    }
-  ]
-}));
+    submenu: [
+      { role: 'close' },
+      {
+        label: 'Quit',
+        accelerator: 'CmdOrCtrl+Q',
+        click: () => { app.quit() }
+      },
+      { type: 'separator' },
+      {
+        label: 'Check for Updates',
+        click: () => { ipcMain.emit('check-for-updates') }
+      }
+    ]
+  }));
 
   // Add the Edit menu
   menu.append(new MenuItem({
@@ -56,26 +61,7 @@ function toggleWindow(mainWindow) {
         accelerator: 'CmdOrCtrl+S',
         click: screenshotToClipboard
       },
-      //dev tools
-      {
-        label: 'Toggle Developer Tools',
-        accelerator: 'CmdOrCtrl+Shift+I',
-        click: () => {
-          mainWindow.webContents.toggleDevTools();
-        }
-      },
       { type: 'separator' },
-      { 
-        label: 'Save Screenshot', 
-        accelerator: 'CmdOrCtrl+Shift+S',
-        click: saveScreenshot
-      },
-      { type: 'separator' },
-      { role: 'reload' },
-      { role: 'forcereload' },
-      { type: 'separator' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
       { 
         label: 'Save Screenshot', 
         accelerator: 'CmdOrCtrl+Shift+S',

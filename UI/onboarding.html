@@ -81,7 +81,47 @@
     color: rgb(226, 226, 226);
     transform: scale(0.99);
   }
+  .custom-list {
+  list-style-type: '-';
+}
 
+/* The Close Button */
+.close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  cursor: pointer;
+}
+.highlight
+{
+  background: #ffffff;
+  padding: 2px;
+  color:rgb(0, 0, 0);
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 15px;
+  border-radius: 20px;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+  margin-right: 0.3rem;
+}
+.divider
+{
+  width: 100%;
+  height: 1px;
+  background: rgb(0, 0, 0, 0.2 );
+}
+.modal-content
+{
+  background: rgb(20, 20, 20);
+  color: rgb(255, 255, 255);
+}
   </style>
 </head>
 <body class="h-screen m-0 font-sans bg-cover bg-center" style="background-image: url('ada.png');">
@@ -101,9 +141,24 @@
       <p class="text-xs">1815-1852</p>
     </div>
   </div>
+  <div id="myModal" class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto bg-black bg-opacity-60">
+    <div class="modal-content relative p-6 my-8 mx-auto w-4/5 md:w-/5 rounded-lg shadow-lg">
+      <span class="close absolute top-0 right-2 cursor-pointer p-4">
+        &times;
+      </span>
+      <h2 class="text-xl font-bold mb-3">Bug fixes v 4.0.1</h2>
+      <ul class="custom-list list-inside">
+        <li class="text-md mb-2"> App switching has now been fixed to <span class="highlight">command+control+right/left</span>arrow keys.</li>
+        <li class="text-md"> Fixed bug that stopped the shortcut <span class="highlight">command + D</span>from working.</li>
+      </ul>
+      <div class="divider mb-4"></div>
+      <h3 class="text-xl font-bold mb-2">Coming soon</h3>
+      <p class="text-md mb-2">Custom shortcuts ✨</p>
+    </div>
+  </div>
   <div class="whatsnew">
     <button id="whatsNewButton" onclick="myIpcRenderer.send('open-external', 'https://github.com/prateekkeshari/peek-ai/releases');">
-      Release notes
+      Release notes for 4.0.1
     <a href="#">
       <i class="fas fa-arrow-up"></i> <!-- Font Awesome Arrow Icon pointing upwards -->
     </a>
@@ -134,6 +189,17 @@
         window.location.href = 'index.html';
       }, 1000);
     });
+
+    // Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
     
 </script>
 </body>

@@ -119,7 +119,7 @@ function createWindow() {
     globalShortcut.register('CommandOrControl+S', screenshotToClipboard);
     let currentWebviewKey = 'openai';
 
-globalShortcut.register('CmdOrCtrl+Right', () => {
+globalShortcut.register('Cmd+Ctrl+Right', () => {
   // Calculate the new key
   const newIndex = (activeWebviewKeys.indexOf(currentWebviewKey) + 1) % activeWebviewKeys.length;
   currentWebviewKey = activeWebviewKeys[newIndex];
@@ -128,7 +128,7 @@ globalShortcut.register('CmdOrCtrl+Right', () => {
   mainWindow.webContents.send('switch-webview', currentWebviewKey);
 });
 
-globalShortcut.register('CmdOrCtrl+Left', () => {
+globalShortcut.register('Cmd+Ctrl+Left', () => {
   // Calculate the new key
   const newIndex = (activeWebviewKeys.indexOf(currentWebviewKey) - 1 + activeWebviewKeys.length) % activeWebviewKeys.length;
   currentWebviewKey = activeWebviewKeys[newIndex];
@@ -143,8 +143,8 @@ globalShortcut.register('CmdOrCtrl+Left', () => {
     // When the window loses focus, unregister the shortcuts
     globalShortcut.unregister('CommandOrControl+Shift+S');
     globalShortcut.unregister('CommandOrControl+S');
-    globalShortcut.unregister('CmdOrCtrl+Right');
-    globalShortcut.unregister('CmdOrCtrl+Left');
+    globalShortcut.unregister('Cmd+Ctrl+Right');
+    globalShortcut.unregister('Cmd+Ctrl+Left');
   });
 
   mainWindow.on('closed', () => {
@@ -330,11 +330,6 @@ app.whenReady().then(() => {
 // Use the toggleWindow function in the globalShortcut.register call
 globalShortcut.register('CmdOrCtrl+J', toggleWindow);
 // Register the global shortcut
-globalShortcut.register('CmdOrCtrl+D', () => {
-  // Send an IPC message to the renderer process to switch to the Perplexity webview
-  mainWindow.webContents.send('switch-to-perplexity');
-});
-
 });
 
 app.on('window-all-closed', () => {

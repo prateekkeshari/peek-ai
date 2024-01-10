@@ -5,6 +5,8 @@
     <title>Peek</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   </head>
   <body>
@@ -94,6 +96,19 @@
           <span class="config-sublabel">Simplify your dock by hiding the Peek icon.</span>
         </div>
         <div class="toggle-button" id="hideDockToggle"></div>
+      </div>
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Custom Shortcut</span>
+          <span class="config-sublabel">Select your preferred shortcut.</span>
+        </div>
+        <select id="modifierKey">
+          <option value="CmdOrCtrl">Cmd/Ctrl</option>
+          <option value="Alt">Alt</option>
+          <!-- Add more options as needed -->
+        </select>
+        +
+        <input type="text" id="key" placeholder="Key">
       </div>
       <div class="divider"></div>
 

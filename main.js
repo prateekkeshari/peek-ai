@@ -59,7 +59,7 @@ try {
 
 
 function createWindow() {
-  const preferences = loadPreferences();
+  let preferences = loadPreferences();
 
   mainWindow = new BrowserWindow({
     width: 450,
@@ -80,7 +80,9 @@ function createWindow() {
     },
     alwaysOnTop: preferences.alwaysOnTop,
   });
-
+  
+  preferences = store.get('preferences');
+  mainWindow.webContents.send('load-preferences', preferences);
   mainWindow.loadURL('about:blank');
    mainWindow.once('ready-to-show', () => {
      // Get the bounds of the tray icon
@@ -187,13 +189,28 @@ app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
   }
 });
 
+
+function registerShortcut(preferences) {
+  if (preferences.selectedKey && preferences.selectedModifier) {
+    const shortcut = `${preferences.selectedModifier}+${preferences.selectedKey}`;
+    const success = globalShortcut.register(shortcut, toggleWindow);
+    if (!success) {
+      console.error(`Failed to register shortcut: ${shortcut}`);
+    }
+  }
+}
+
+
 app.on('ready', () => {
   // Set the app name
   app.setName('Peek');
-  const preferences = loadPreferences();
-if (preferences.hideDockIcon) {
-  app.dock.hide();
-}
+  let preferences = loadPreferences();
+  if (preferences.hideDockIcon) {
+    app.dock.hide();
+  }
+
+  // Register the shortcut
+  registerShortcut(preferences);
 
   // Set the Dock icon
   const iconPath = path.join(__dirname, '/icons/peek-dock-icon.png');
@@ -201,35 +218,38 @@ if (preferences.hideDockIcon) {
   app.dock.setIcon(icon);
 
   createWindow();
-ipcMain.on('check_for_update', () => {
-  manualUpdateCheck = true;
-  autoUpdater.checkForUpdates();
+  ipcMain.on('check_for_update', () => {
+    manualUpdateCheck = true;
+    autoUpdater.checkForUpdates();
+  });
 });
-});
+
 ipcMain.on('request-preferences', (event) => {
-  // Load preferences from a file or default values
-  const preferences = loadPreferences();
-  event.sender.send('load-preferences', preferences);
-});
-ipcMain.on('save-preferences', (event, preferences) => {
-  // Save preferences to a file
-  savePreferences(preferences);
-
-  // Update "Always On Top" setting
-  if(preferences.alwaysOnTop !== undefined) {
-    mainWindow.setAlwaysOnTop(preferences.alwaysOnTop);
-  }
-
-  // Update "Hide Dock Icon" setting (macOS only)
-  if(preferences.hideDockIcon !== undefined) {
-    if(preferences.hideDockIcon) {
-      app.dock.hide();
-    } else {
-      app.dock.show();
-    }
-  }
+  const preferences = store.get('preferences');
+  mainWindow.webContents.send('load-preferences', preferences);
 });
 
+let oldPreferences = loadPreferences();
+ipcMain.on('save-preferences', (event, updatedPreferences) => {
+  const newShortcut = `${updatedPreferences.selectedModifier}+${updatedPreferences.selectedKey}`;
+  console.log(`Attempting to register shortcut: ${newShortcut}`);
+
+  // Unregister the old shortcut
+  if (oldPreferences && oldPreferences.selectedKey && oldPreferences.selectedModifier) {
+    const oldShortcut = `${oldPreferences.selectedModifier}+${oldPreferences.selectedKey}`;
+    globalShortcut.unregister(oldShortcut);
+    console.log(`Unregistered old shortcut: ${oldShortcut}`);
+  }
+
+  // Register the new shortcut
+  registerShortcut(updatedPreferences);
+
+  // Save the new preferences as the old preferences for the next time
+  oldPreferences = updatedPreferences;
+
+  // Save the updated preferences
+  savePreferences(updatedPreferences);
+});
 
 let updateInterval;
 
@@ -326,10 +346,6 @@ app.whenReady().then(() => {
       }
     });
   });
-  // Register the global shortcut
-// Use the toggleWindow function in the globalShortcut.register call
-globalShortcut.register('CmdOrCtrl+J', toggleWindow);
-// Register the global shortcut
 });
 
 app.on('window-all-closed', () => {
@@ -476,7 +492,9 @@ function loadPreferences() {
       alwaysOnTop: true,
       hideDockIcon: false,
       enabledChatbots: ['openai', 'google'],
-      launchAtLogin: false
+      launchAtLogin: false,
+      selectedKey: 'J', // Default key
+      selectedModifier: 'CmdOrCtrl' // Default modifier
     };
   }
 }

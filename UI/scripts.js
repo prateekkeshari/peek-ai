@@ -101,12 +101,18 @@ document.getElementById('hideDockToggle').addEventListener('click', function() {
 document.getElementById('launchAtLoginToggle').addEventListener('click', function() { // New line
   unsavedChanges = true;
 });
+
+document.getElementById('key').addEventListener('change', function() {
+  unsavedChanges = true;
+});
 // Save Preferences
 document.getElementById('savePreferences').addEventListener('click', function() {
   unsavedChanges = false;
   const alwaysOn = document.getElementById('alwaysOnToggle').classList.contains('active');
   const hideDock = document.getElementById('hideDockToggle').classList.contains('active');
-  const launchAtLogin = document.getElementById('launchAtLoginToggle').classList.contains('active'); // New line
+  const launchAtLogin = document.getElementById('launchAtLoginToggle').classList.contains('active');
+  const selectedKey = document.getElementById('key').value; // New line
+  const selectedModifier = document.getElementById('modifierKey').value; // Corrected line
   const chatbots = Array.from(document.querySelectorAll('.checkbox-item input:checked'))
     .map(input => input.dataset.id);
 
@@ -114,7 +120,9 @@ document.getElementById('savePreferences').addEventListener('click', function() 
     alwaysOnTop: alwaysOn,
     hideDockIcon: hideDock,
     launchAtLogin: launchAtLogin, // New line
-    enabledChatbots: chatbots
+    enabledChatbots: chatbots,
+    selectedKey: selectedKey,
+    selectedModifier: selectedModifier
   };
 
   // Send the updated preferences to the main process
@@ -197,6 +205,11 @@ window.myIpcRenderer.on('load-preferences', (event, preferences) => {
     document.getElementById('alwaysOnToggle').classList.toggle('active', preferences.alwaysOnTop);
     document.getElementById('hideDockToggle').classList.toggle('active', preferences.hideDockIcon);
     document.getElementById('launchAtLoginToggle').classList.toggle('active', preferences.launchAtLogin);
+    document.getElementById('modifierKey').value = preferences.selectedModifier;
+    document.getElementById('key').value = preferences.selectedKey;
+    if (preferences.selectedKey) {
+      document.getElementById('key').value = preferences.selectedKey;
+    }
  // Try to get the activeWebviewId from localStorage
  const savedWebviewId = localStorage.getItem('activeWebviewId');
 
@@ -346,5 +359,21 @@ perplexityWebview.addEventListener('will-navigate', (e) => {
     setTimeout(() => {
       window.myIpcRenderer.send('show-input-window');
     }, 3000);
+  }
+});
+
+document.getElementById('key').addEventListener('keydown', function(event) {
+  // Prevent any default action
+  event.preventDefault();
+
+  // Only allow letters to be used in the shortcut
+  if (event.key.length === 1 && /[a-zA-Z]/.test(event.key)) {
+    const key = event.key.toUpperCase(); // Convert the key to uppercase to standardize
+
+    // Set the input field value to just the letter
+    this.value = key;
+
+    // Manually trigger the 'change' event
+    this.dispatchEvent(new Event('change'));
   }
 });

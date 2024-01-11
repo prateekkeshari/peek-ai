@@ -23,8 +23,10 @@ webview {
     background-color: #2d2d2d;
   }
 
+
   #peekText a {
     color: #717171;
+
   }
 
   .fa-arrow-up {
@@ -570,4 +572,36 @@ button {
 .fa-arrow-up
 {
   transform: rotate(45deg);
+}
+
+/* custom shortcut styles */
+#modifierKey, #key {
+  padding: 7px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+#modifierKey:focus, #key:focus {
+  border-color: #FF5533;
+  outline: none;
+}
+
+#key
+{
+  width: 1rem;
+}
+
+.shortcut
+{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
 }

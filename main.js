@@ -497,14 +497,17 @@ function loadPreferences() {
     return preferences;
   } catch (err) {
     console.error("Error in loadPreferences: ", err);
-    return {
+    // Create a default preferences.json file if it doesn't exist
+    const defaultPreferences = {
       alwaysOnTop: true,
       hideDockIcon: false,
       enabledChatbots: ['openai', 'google'],
       launchAtLogin: false,
       selectedKey: 'J', // Default key
-      selectedModifier: 'CmdOrCtrl' // Default modifier
+      selectedModifier: 'Cmd' // Default modifier
     };
+    fs.writeFileSync(filePath, JSON.stringify(defaultPreferences, null, 2), 'utf8');
+    return defaultPreferences;
   }
 }
 

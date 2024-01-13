@@ -105,6 +105,10 @@ document.getElementById('launchAtLoginToggle').addEventListener('click', functio
 document.getElementById('key').addEventListener('change', function() {
   unsavedChanges = true;
 });
+
+document.getElementById('modifierKey').addEventListener('change', function() {
+  unsavedChanges = true;
+});
 // Save Preferences
 document.getElementById('savePreferences').addEventListener('click', function() {
   unsavedChanges = false;

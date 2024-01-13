@@ -366,11 +366,11 @@ document.getElementById('key').addEventListener('keydown', function(event) {
   // Prevent any default action
   event.preventDefault();
 
-  // Only allow letters to be used in the shortcut
-  if (event.key.length === 1 && /[a-zA-Z]/.test(event.key)) {
+  // Only allow letters and numbers 0-9 to be used in the shortcut
+  if ((event.key.length === 1 && /[a-zA-Z0-9]/.test(event.key))) {
     const key = event.key.toUpperCase(); // Convert the key to uppercase to standardize
 
-    // Set the input field value to just the letter
+    // Set the input field value to just the letter or number
     this.value = key;
 
     // Manually trigger the 'change' event

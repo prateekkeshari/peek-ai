@@ -205,6 +205,7 @@ app.on('ready', () => {
   // Set the app name
   app.setName('Peek');
   let preferences = loadPreferences();
+  console.log('Loaded preferences in ready event', preferences);
   if (preferences.hideDockIcon) {
     app.dock.hide();
   }
@@ -225,24 +226,31 @@ app.on('ready', () => {
 });
 
 ipcMain.on('request-preferences', (event) => {
-  const preferences = store.get('preferences');
+  const preferences = loadPreferences();
+  console.log('Loaded preferences in request-preferences event', preferences);
   mainWindow.webContents.send('load-preferences', preferences);
 });
 
 let oldPreferences = loadPreferences();
+
 ipcMain.on('save-preferences', (event, updatedPreferences) => {
   const newShortcut = `${updatedPreferences.selectedModifier}+${updatedPreferences.selectedKey}`;
   console.log(`Attempting to register shortcut: ${newShortcut}`);
 
-  // Unregister the old shortcut
-  if (oldPreferences && oldPreferences.selectedKey && oldPreferences.selectedModifier) {
-    const oldShortcut = `${oldPreferences.selectedModifier}+${oldPreferences.selectedKey}`;
-    globalShortcut.unregister(oldShortcut);
-    console.log(`Unregistered old shortcut: ${oldShortcut}`);
-  }
+  // Check if the new shortcut is the same as the old one
+  if (oldPreferences && oldPreferences.selectedKey === updatedPreferences.selectedKey && oldPreferences.selectedModifier === updatedPreferences.selectedModifier) {
+    console.log('Shortcut is the same, no need to re-register');
+  } else {
+    // Unregister the old shortcut
+    if (oldPreferences && oldPreferences.selectedKey && oldPreferences.selectedModifier) {
+      const oldShortcut = `${oldPreferences.selectedModifier}+${oldPreferences.selectedKey}`;
+      globalShortcut.unregister(oldShortcut);
+      console.log(`Unregistered old shortcut: ${oldShortcut}`);
+    }
 
-  // Register the new shortcut
-  registerShortcut(updatedPreferences);
+    // Register the new shortcut
+    registerShortcut(updatedPreferences);
+  }
 
   // Save the new preferences as the old preferences for the next time
   oldPreferences = updatedPreferences;
@@ -488,6 +496,7 @@ function loadPreferences() {
     app.setLoginItemSettings({ openAtLogin: preferences.launchAtLogin });
     return preferences;
   } catch (err) {
+    console.error("Error in loadPreferences: ", err);
     return {
       alwaysOnTop: true,
       hideDockIcon: false,

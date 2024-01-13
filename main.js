@@ -25,9 +25,6 @@ if (!lastVersion || lastVersion !== currentVersion) {
   store.set('version', currentVersion);
 }
 
-console.log('Current version:', currentVersion);
-console.log('Last version:', store.get('version'));
-
 function toggleWindow() {
   if (mainWindow.isVisible()) {
     mainWindow.hide();
@@ -193,10 +190,7 @@ app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
 function registerShortcut(preferences) {
   if (preferences.selectedKey && preferences.selectedModifier) {
     const shortcut = `${preferences.selectedModifier}+${preferences.selectedKey}`;
-    const success = globalShortcut.register(shortcut, toggleWindow);
-    if (!success) {
-      console.error(`Failed to register shortcut: ${shortcut}`);
-    }
+    globalShortcut.register(shortcut, toggleWindow);
   }
 }
 
@@ -205,7 +199,6 @@ app.on('ready', () => {
   // Set the app name
   app.setName('Peek');
   let preferences = loadPreferences();
-  console.log('Loaded preferences in ready event', preferences);
   if (preferences.hideDockIcon) {
     app.dock.hide();
   }
@@ -227,7 +220,6 @@ app.on('ready', () => {
 
 ipcMain.on('request-preferences', (event) => {
   const preferences = loadPreferences();
-  console.log('Loaded preferences in request-preferences event', preferences);
   mainWindow.webContents.send('load-preferences', preferences);
 });
 
@@ -235,7 +227,6 @@ let oldPreferences = loadPreferences();
 
 ipcMain.on('save-preferences', (event, updatedPreferences) => {
   const newShortcut = `${updatedPreferences.selectedModifier}+${updatedPreferences.selectedKey}`;
-  console.log(`Attempting to register shortcut: ${newShortcut}`);
 
   // Check if the new shortcut is the same as the old one
   if (oldPreferences && oldPreferences.selectedKey === updatedPreferences.selectedKey && oldPreferences.selectedModifier === updatedPreferences.selectedModifier) {
@@ -245,7 +236,6 @@ ipcMain.on('save-preferences', (event, updatedPreferences) => {
     if (oldPreferences && oldPreferences.selectedKey && oldPreferences.selectedModifier) {
       const oldShortcut = `${oldPreferences.selectedModifier}+${oldPreferences.selectedKey}`;
       globalShortcut.unregister(oldShortcut);
-      console.log(`Unregistered old shortcut: ${oldShortcut}`);
     }
 
     // Register the new shortcut
@@ -420,8 +410,8 @@ autoUpdater.on('update-available', (info) => {
           width: 400,
           height: 200,
           webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
+            nodeIntegration: false,
+            contextIsolation: true
           }
         },
         style: {
@@ -533,8 +523,9 @@ ipcMain.on('show-input-window', () => {
     parent: mainWindow,
     modal: true,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
       alwaysOnTop: true
     }
   });

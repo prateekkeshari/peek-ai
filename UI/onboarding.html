@@ -65,7 +65,7 @@
 
   #whatsNewButton
   {
-    color: #ffffff;
+    color: #141414;
     font-size: 14px;
     padding: 10px 20px;
     user-select: none;
@@ -78,7 +78,7 @@
   
   #whatsNewButton:hover
   {
-    color: rgb(226, 226, 226);
+    color: rgb(73, 73, 73);
     transform: scale(0.99);
   }
   .custom-list {
@@ -124,7 +124,7 @@
 }
   </style>
 </head>
-<body class="h-screen m-0 font-sans bg-cover bg-center" style="background-image: url('ada.png');">
+<body class="h-screen m-0 font-sans bg-cover bg-center" style="background-image: url('turing.jpeg');">
   <div class="flex h-full items-end justify-center">
     <div id="infoBox" class="bg-black pl-10 pr-10 pt-6 pb-6 flex items-center justify-between w-full max-w-lg mb-10 mr-5 ml-5 shadow-xl">
       <div class="flex items-center select-none">
@@ -136,9 +136,9 @@
       </div>
       <i class="fas fa-arrow-right cursor-pointer text-white text-2xl pl-10 pr-2 pt-2 pb-2" onclick="window.location.href='index.html';"></i>
     </div>
-    <div class="absolute top-3 left-3 text-white p-2 rounded-lg select-none">
-      <p class="text-sm font-bold">Ada Lovelace</p>
-      <p class="text-xs">1815-1852</p>
+    <div class="absolute top-3 left-3 text-black p-2 rounded-lg select-none">
+      <p class="text-sm font-bold">Alan Turing</p>
+      <p class="text-xs">1912-1954</p>
     </div>
   </div>
   <div id="myModal" class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto bg-black bg-opacity-60">
@@ -146,19 +146,16 @@
       <span class="close absolute top-0 right-2 cursor-pointer p-4">
         &times;
       </span>
-      <h2 class="text-xl font-bold mb-3">Bug fixes v 4.0.1</h2>
+      <h2 class="text-xl font-bold mb-3">New in v 4.0.2 ✨</h2>
       <ul class="custom-list list-inside">
-        <li class="text-md mb-2"> App switching has now been fixed to <span class="highlight">command+control+right/left</span>arrow keys.</li>
-        <li class="text-md"> Fixed bug that stopped the shortcut <span class="highlight">command + D</span>from working.</li>
+        <li class="text-md mb-2"> Introducing <span class="highlight"> custom shorcuts</span>to toggle window. Use Command, Ctrl, Option, or Shift in combination with A-Z or 0-9.</li>
+        <li class="text-md mb-2"> Bug fixes and performance improvement. </li>
       </ul>
-      <div class="divider mb-4"></div>
-      <h3 class="text-xl font-bold mb-2">Coming soon</h3>
-      <p class="text-md mb-2">Custom shortcuts ✨</p>
     </div>
   </div>
   <div class="whatsnew">
     <button id="whatsNewButton" onclick="myIpcRenderer.send('open-external', 'https://github.com/prateekkeshari/peek-ai/releases');">
-      Release notes for 4.0.1
+      Release notes for 4.0.2
     <a href="#">
       <i class="fas fa-arrow-up"></i> <!-- Font Awesome Arrow Icon pointing upwards -->
     </a>

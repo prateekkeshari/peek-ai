@@ -23,8 +23,10 @@ webview {
     background-color: #2d2d2d;
   }
 
+
   #peekText a {
     color: #717171;
+
   }
 
   .fa-arrow-up {
@@ -570,4 +572,68 @@ button {
 .fa-arrow-up
 {
   transform: rotate(45deg);
+}
+/* custom shortcut styles */
+#modifierKey, #key {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: transform 0.3s ease; /* animate scale change */
+}
+
+#modifierKey {
+  appearance: none; /* Remove default styles */
+  -webkit-appearance: none; /* For Safari and Chrome */
+  -moz-appearance: none; /* For Firefox */
+}
+
+#modifierKey:focus, #key:focus {
+  outline: none;
+}
+
+#key {
+  width: 20px;
+  text-align: center;
+  border: 0.5px solid #7b7b7b;
+  transition: width 0.3s ease; /* animate width change */
+}
+
+.shortcut {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+/* Add hover effect */
+#modifierKey:hover, #key:hover {
+  transform: scale(0.98); /* added scale */
+  transition: all 0.3s ease-in-out; /* added smooth transition */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ff5533;
+}
+
+/* Styles for light theme */
+@media (prefers-color-scheme: light) {
+  #modifierKey, #key {
+    background-color: #f9f9f9;
+    color: #000;
+  }
+  #modifierKey {
+    border-color: #5b5b5b;
+  }
+}
+
+/* Styles for dark theme */
+@media (prefers-color-scheme: dark) {
+  #modifierKey, #key {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+  #modifierKey {
+    border-color: #717171;
+  }
 }

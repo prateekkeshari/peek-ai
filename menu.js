@@ -51,7 +51,6 @@ function toggleWindow(mainWindow) {
     submenu: [
       {
         label: 'Toggle Window',
-        accelerator: 'CmdOrCtrl+J',
         click: () => {
           toggleWindow(mainWindow);
         }
@@ -121,7 +120,6 @@ function createContextMenu(mainWindow) {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Open',
-      accelerator: 'CmdOrCtrl+J', 
       click: () => {
         if (mainWindow === null) {
           createWindow();

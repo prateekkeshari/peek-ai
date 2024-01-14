@@ -25,8 +25,10 @@ function toggleWindow(mainWindow) {
       },
       { type: 'separator' },
       {
-        label: 'Check for Updates',
-        click: () => { ipcMain.emit('check-for-updates') }
+        label: 'Check for updates...',
+      click: () => {
+        ipcMain.emit('check_for_update');
+      }
       }
     ]
   }));

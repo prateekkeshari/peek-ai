@@ -478,6 +478,25 @@ app.on('before-quit', () => {
   clearInterval(updateInterval);
 });
 
+// dialog box to confirm quit
+const beforeQuitListener = (e) => {
+  e.preventDefault();
+  const choice = dialog.showMessageBoxSync({
+    type: 'question',
+    buttons: ['Quit', 'Cancel'],
+    defaultId: 0, // Set 'Cancel' as the default button
+    title: 'Confirm',
+    message: 'Are you sure you want to quit Peek?',
+  });
+  if (choice === 0) {
+    app.removeListener('before-quit', beforeQuitListener);
+    app.exit();
+  }
+};
+
+app.on('before-quit', beforeQuitListener);
+// dialog box to confirm quit
+
 function loadPreferences() {
   const filePath = path.join(app.getPath('userData'), 'preferences.json');
   try {

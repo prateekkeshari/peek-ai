@@ -21,10 +21,10 @@ To install Peek, download the latest release from the [Releases](https://github.
 ## Usage
 
 After installing Peek, you can launch the app from your Applications folder on MacOS. 
-To switch between different chatbots, click on the dropdown menu at the top of the app and select the chatbot you want to use.
-To take a screenshot of your chat, press `⌘+Shift+S`. The screenshot will be saved to your local machine.
-To copy a screenshot to your clipboard, press `⌘+S`.
-To customize the behavior of Peek, navigate to settings.
+- To switch between different chatbots, click on the dropdown menu at the top of the app and select the chatbot you want to use.
+- To take a screenshot of your chat, press `⌘+Shift+S`. The screenshot will be saved to your local machine.
+- To copy a screenshot to your clipboard, press `⌘+S`.
+- To customize the behavior of Peek, navigate to settings.
 
 ## Use Cases
 

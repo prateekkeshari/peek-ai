@@ -4,7 +4,7 @@ const webviews = {
   'openai': document.getElementById('webview-openai'),
   'google': document.getElementById('webview-google'),
   'poe': document.getElementById('webview-poe'),
-  'bing': document.getElementById('webview-bing'),
+  'copilot': document.getElementById('webview-copilot'),
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),

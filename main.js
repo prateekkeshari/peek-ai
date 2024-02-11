@@ -226,27 +226,40 @@ ipcMain.on('request-preferences', (event) => {
 let oldPreferences = loadPreferences();
 
 ipcMain.on('save-preferences', (event, updatedPreferences) => {
-  const newShortcut = `${updatedPreferences.selectedModifier}+${updatedPreferences.selectedKey}`;
-
-  // Check if the new shortcut is the same as the old one
-  if (oldPreferences && oldPreferences.selectedKey === updatedPreferences.selectedKey && oldPreferences.selectedModifier === updatedPreferences.selectedModifier) {
-    console.log('Shortcut is the same, no need to re-register');
-  } else {
-    // Unregister the old shortcut
-    if (oldPreferences && oldPreferences.selectedKey && oldPreferences.selectedModifier) {
-      const oldShortcut = `${oldPreferences.selectedModifier}+${oldPreferences.selectedKey}`;
-      globalShortcut.unregister(oldShortcut);
-    }
-
-    // Register the new shortcut
-    registerShortcut(updatedPreferences);
-  }
-
-  // Save the new preferences as the old preferences for the next time
-  oldPreferences = updatedPreferences;
-
   // Save the updated preferences
   savePreferences(updatedPreferences);
+
+  // Apply the 'alwaysOnTop' preference
+  if (updatedPreferences.alwaysOnTop !== undefined) {
+    mainWindow.setAlwaysOnTop(updatedPreferences.alwaysOnTop);
+  }
+
+  // Apply the 'hideDockIcon' preference
+  if (updatedPreferences.hideDockIcon !== undefined) {
+    if (updatedPreferences.hideDockIcon) {
+      app.dock.hide();
+    } else {
+      app.dock.show();
+    }
+  }
+
+  // Apply the 'launchAtLogin' preference
+  if (updatedPreferences.launchAtLogin !== undefined) {
+    app.setLoginItemSettings({ openAtLogin: updatedPreferences.launchAtLogin });
+  }
+
+  // Apply the 'selectedKey' and 'selectedModifier' preferences
+  if (updatedPreferences.selectedKey !== undefined && updatedPreferences.selectedModifier !== undefined) {
+    const newShortcut = `${updatedPreferences.selectedModifier}+${updatedPreferences.selectedKey}`;
+    globalShortcut.unregisterAll();
+    globalShortcut.register(newShortcut, toggleWindow);
+  }
+
+  // Apply the 'enabledChatbots' preference
+  // This is just an example. You need to replace it with the actual code that applies this preference.
+  if (updatedPreferences.enabledChatbots !== undefined) {
+    // Apply the 'enabledChatbots' preference
+  }
 });
 
 let updateInterval;

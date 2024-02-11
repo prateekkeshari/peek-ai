@@ -5,7 +5,7 @@
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron . > app.log 2>&1",
     "pack": "build --dir",
     "dist": "electron-builder"
   },
@@ -27,7 +27,7 @@
     "jimp": "^0.16.1"
   },
   "devDependencies": {
-    "electron": "^25.0.1",
+    "electron": "^28.2.2",
     "electron-builder": "^24.4.0",
     "electron-reloader": "^1.2.3"
   },

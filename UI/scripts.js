@@ -10,6 +10,7 @@ const webviews = {
   'claude': document.getElementById('webview-claude'),
   'labs': document.getElementById('webview-labs'),
   'threads': document.getElementById('webview-threads'),
+  'langdock':document.getElementById('webview-langdock'),
 };
 window.onbeforeunload = () => {
   localStorage.setItem('activeWebviewId', activeWebviewId);

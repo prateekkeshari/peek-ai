@@ -423,8 +423,8 @@ autoUpdater.on('update-available', (info) => {
           width: 400,
           height: 200,
           webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true
+            nodeIntegration: true,
+            contextIsolation: false,
           }
         },
         style: {
@@ -555,7 +555,7 @@ ipcMain.on('show-input-window', () => {
     parent: mainWindow,
     modal: true,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
       alwaysOnTop: true

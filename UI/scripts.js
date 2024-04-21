@@ -8,6 +8,7 @@ const webviews = {
   'pi': document.getElementById('webview-pi'),
   'perplexity': document.getElementById('webview-perplexity'),
   'claude': document.getElementById('webview-claude'),
+  'meta': document.getElementById('webview-meta'),
   'labs': document.getElementById('webview-labs'),
   'threads': document.getElementById('webview-threads'),
 };

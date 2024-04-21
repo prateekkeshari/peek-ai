@@ -86,18 +86,33 @@ function createWindow() {
     const setTrayIcon = () => {
       const iconFileName = 'IconTemplate.png';
       const iconPath = path.join(__dirname, 'icons', iconFileName);
-      console.log('Attempting to set tray icon:', iconPath);
       if (!tray) {
-        tray = new Tray(iconPath);
-        console.log('Tray created with icon:', iconPath);
+        try {
+          tray = new Tray(iconPath);
+        } catch (error) {
+          console.error('Error creating tray icon:', error);
+        }
       } else {
-        tray.setImage(iconPath);
-        console.log('Tray icon updated to:', iconPath);
+        try {
+          tray.setImage(iconPath);
+        } catch (error) {
+          console.error('Error updating tray icon:', error);
+        }
       }
     };
-
+  
+    const contextMenu = createContextMenu(mainWindow);
+  
+    if (tray) {
+      tray.on('right-click', () => {
+        tray.popUpContextMenu(contextMenu);
+      });
+    } else {
+      console.warn('Tray icon not found. Right-click event listener not set.');
+    }
+  
     setTrayIcon(); // Set the initial icon based on the current theme
-
+  
     nativeTheme.on('updated', () => {
       setTrayIcon(); // Update the icon when the system theme changes
     });

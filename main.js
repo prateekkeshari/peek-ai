@@ -1,4 +1,4 @@
-const { app, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen } = require('electron');
+const { app, nativeTheme, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen } = require('electron');
 const { processImage, captureAndProcessImage, screenshotToClipboard, saveScreenshot, setMainWindow, setIcon } = require('./screenshot.js');
 const { createAppMenu, createContextMenu, createWebviewContextMenu } = require('./menu.js');
 const {is} = require('electron-util');
@@ -81,26 +81,47 @@ function createWindow() {
   preferences = store.get('preferences');
   mainWindow.webContents.send('load-preferences', preferences);
   mainWindow.loadURL('about:blank');
-   mainWindow.once('ready-to-show', () => {
-     // Get the bounds of the tray icon
-     const trayBounds = tray.getBounds();
-   
-     // Calculate the window position
-     const windowPosition = {
-       x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
-       y: Math.round(trayBounds.y + trayBounds.height)
-     };
-   
-     // Set the window position
-     mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-   
-     const appMenu = createAppMenu(mainWindow);
-     Menu.setApplicationMenu(appMenu);
-     const menu = createAppMenu(mainWindow, globalShortcut);
-     Menu.setApplicationMenu(menu);
+  
+  app.whenReady().then(() => {
+    const setTrayIcon = () => {
+      const iconFileName = 'IconTemplate.png';
+      const iconPath = path.join(__dirname, 'icons', iconFileName);
+      console.log('Attempting to set tray icon:', iconPath);
+      if (!tray) {
+        tray = new Tray(iconPath);
+        console.log('Tray created with icon:', iconPath);
+      } else {
+        tray.setImage(iconPath);
+        console.log('Tray icon updated to:', iconPath);
+      }
+    };
+
+    setTrayIcon(); // Set the initial icon based on the current theme
+
+    nativeTheme.on('updated', () => {
+      setTrayIcon(); // Update the icon when the system theme changes
+    });
     
+    mainWindow.once('ready-to-show', () => {
+      // Get the bounds of the tray icon
+      const trayBounds = tray.getBounds();
     
-    mainWindow.show();
+      // Calculate the window position
+      const windowPosition = {
+        x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
+        y: Math.round(trayBounds.y + trayBounds.height)
+      };
+    
+      // Set the window position
+      mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+    
+      const appMenu = createAppMenu(mainWindow);
+      Menu.setApplicationMenu(appMenu);
+      const menu = createAppMenu(mainWindow, globalShortcut);
+      Menu.setApplicationMenu(menu);
+      
+      mainWindow.show();
+    });
   });
   // Pass 'webContents' to 'createWebviewContextMenu' when calling it
   mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
@@ -320,8 +341,8 @@ app.whenReady().then(() => {
 
   // Use the createContextMenu function to create the context menu
   const contextMenu = createContextMenu(mainWindow);
-  
-  tray = new Tray(path.join(__dirname, '/icons/peek-menu-bar.png'));
+
+
   tray.on('right-click', () => {
     tray.popUpContextMenu(contextMenu);
   });

@@ -5,3 +5,4 @@ build/
 notarize.txt
 .electron-main.js
 app.log
+.DS_Store

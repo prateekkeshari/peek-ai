@@ -81,63 +81,70 @@ function createWindow() {
   preferences = store.get('preferences');
   mainWindow.webContents.send('load-preferences', preferences);
   mainWindow.loadURL('about:blank');
-  
-  app.whenReady().then(() => {
-    const setTrayIcon = () => {
-      const iconFileName = 'IconTemplate.png';
-      const iconPath = path.join(__dirname, 'icons', iconFileName);
-      if (!tray) {
-        try {
-          tray = new Tray(iconPath);
-        } catch (error) {
-          console.error('Error creating tray icon:', error);
-        }
-      } else {
-        try {
-          tray.setImage(iconPath);
-        } catch (error) {
-          console.error('Error updating tray icon:', error);
-        }
+  mainWindow.show();
+
+  let windowPosition = null;
+
+function hideWindow() {
+  windowPosition = mainWindow.getBounds();
+  mainWindow.hide();
+}
+
+function showWindow() {
+  if (windowPosition) {
+    mainWindow.setBounds(windowPosition);
+  }
+  mainWindow.show();
+}
+
+app.whenReady().then(() => {
+  const setTrayIcon = () => {
+    const iconFileName = 'IconTemplate.png';
+    const iconPath = path.join(__dirname, 'icons', iconFileName);
+    if (!tray) {
+      try {
+        tray = new Tray(iconPath);
+      } catch (error) {
+        console.error('Error creating tray icon:', error);
       }
-    };
-  
-    const contextMenu = createContextMenu(mainWindow);
-  
-    if (tray) {
-      tray.on('right-click', () => {
-        tray.popUpContextMenu(contextMenu);
-      });
     } else {
-      console.warn('Tray icon not found. Right-click event listener not set.');
+      try {
+        tray.setImage(iconPath);
+      } catch (error) {
+        console.error('Error updating tray icon:', error);
+      }
     }
-  
-    setTrayIcon(); // Set the initial icon based on the current theme
-  
-    nativeTheme.on('updated', () => {
-      setTrayIcon(); // Update the icon when the system theme changes
+  };
+
+  const contextMenu = createContextMenu(mainWindow);
+
+  if (tray) {
+    tray.on('right-click', () => {
+      tray.popUpContextMenu(contextMenu);
     });
     
-    mainWindow.once('ready-to-show', () => {
-      // Get the bounds of the tray icon
-      const trayBounds = tray.getBounds();
-    
-      // Calculate the window position
-      const windowPosition = {
-        x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
-        y: Math.round(trayBounds.y + trayBounds.height)
-      };
-    
-      // Set the window position
-      mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-    
-      const appMenu = createAppMenu(mainWindow);
-      Menu.setApplicationMenu(appMenu);
-      const menu = createAppMenu(mainWindow, globalShortcut);
-      Menu.setApplicationMenu(menu);
-      
-      mainWindow.show();
+    let isWindowVisible = true;
+
+    // Add a click event listener to the tray icon
+    tray.on('click', () => {
+      if (isWindowVisible) {
+        hideWindow();
+        isWindowVisible = false;
+      } else {
+        showWindow();
+        isWindowVisible = true;
+      }
     });
+  } else {
+    console.warn('Tray icon not found. Right-click event listener not set.');
+  }
+
+  setTrayIcon(); // Set the initial icon based on the current theme
+
+  nativeTheme.on('updated', () => {
+    setTrayIcon(); // Update the icon when the system theme changes
   });
+});
   // Pass 'webContents' to 'createWebviewContextMenu' when calling it
   mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
     webContents.on('context-menu', (e, params) => {
@@ -353,38 +360,6 @@ app.whenReady().then(() => {
   updateInterval = setInterval(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 24 * 60* 60* 1000);
-
-  // Use the createContextMenu function to create the context menu
-  const contextMenu = createContextMenu(mainWindow);
-
-
-  tray.on('right-click', () => {
-    tray.popUpContextMenu(contextMenu);
-  });
-
-  tray.on('click', () => {
-    if (mainWindow === null) {
-      createWindow();
-    } else {
-      // Get the bounds of the tray icon
-      const trayBounds = tray.getBounds();
-  
-      // Calculate the window position
-      const windowPosition = {
-        x: Math.round(trayBounds.x + (trayBounds.width / 2) - (mainWindow.getBounds().width / 2)),
-        y: Math.round(trayBounds.y + trayBounds.height)
-      };
-  
-      // Set the window position
-      mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
-  
-      if (mainWindow.isVisible()) {
-        mainWindow.hide();
-      } else {
-        mainWindow.show();
-      }
-    }
-  });
   
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.on('ipc-message', (event, channel) => {

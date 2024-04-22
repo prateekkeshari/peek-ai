@@ -81,70 +81,64 @@ function createWindow() {
   preferences = store.get('preferences');
   mainWindow.webContents.send('load-preferences', preferences);
   mainWindow.loadURL('about:blank');
-  mainWindow.show();
 
-  let windowPosition = null;
-
-function hideWindow() {
-  windowPosition = mainWindow.getBounds();
-  mainWindow.hide();
-}
-
-function showWindow() {
-  if (windowPosition) {
-    mainWindow.setBounds(windowPosition);
-  }
-  mainWindow.show();
-}
-
-app.whenReady().then(() => {
-  const setTrayIcon = () => {
-    const iconFileName = 'IconTemplate.png';
-    const iconPath = path.join(__dirname, 'icons', iconFileName);
-    if (!tray) {
-      try {
-        tray = new Tray(iconPath);
-      } catch (error) {
-        console.error('Error creating tray icon:', error);
-      }
-    } else {
-      try {
-        tray.setImage(iconPath);
-      } catch (error) {
-        console.error('Error updating tray icon:', error);
-      }
-    }
-  };
-
-  const contextMenu = createContextMenu(mainWindow);
-
-  if (tray) {
-    tray.on('right-click', () => {
-      tray.popUpContextMenu(contextMenu);
-    });
-    
-    let isWindowVisible = true;
-
-    // Add a click event listener to the tray icon
-    tray.on('click', () => {
-      if (isWindowVisible) {
-        hideWindow();
-        isWindowVisible = false;
+  app.whenReady().then(() => {
+    const setTrayIcon = () => {
+      const iconFileName = 'IconTemplate.png';
+      const iconPath = path.join(__dirname, 'icons', iconFileName);
+      if (!tray) {
+        try {
+          tray = new Tray(iconPath);
+        } catch (error) {
+          console.error('Error creating tray icon:', error);
+        }
       } else {
-        showWindow();
-        isWindowVisible = true;
+        try {
+          tray.setImage(iconPath);
+        } catch (error) {
+          console.error('Error updating tray icon:', error);
+        }
       }
+    };
+  
+    const contextMenu = createContextMenu(mainWindow);
+  
+    if (tray) {
+      tray.on('right-click', () => {
+        tray.popUpContextMenu(contextMenu);
+      });
+      
+      let isWindowVisible = true;
+  
+      // Add a click event listener to the tray icon
+      tray.on('click', () => {
+        if (isWindowVisible) {
+          hideWindow();
+          isWindowVisible = false;
+        } else {
+          showWindow();
+          isWindowVisible = true;
+        }
+      });
+    } else {
+      console.warn('Tray icon not found. Right-click event listener not set.');
+    }
+  
+    setTrayIcon(); // Set the initial icon based on the current theme
+  
+    nativeTheme.on('updated', () => {
+      setTrayIcon(); // Update the icon when the system theme changes
     });
-  } else {
-    console.warn('Tray icon not found. Right-click event listener not set.');
-  }
-
-  setTrayIcon(); // Set the initial icon based on the current theme
-
-  nativeTheme.on('updated', () => {
-    setTrayIcon(); // Update the icon when the system theme changes
   });
-});
+    
+  mainWindow.once('ready-to-show', () => {
+    const appMenu = createAppMenu(mainWindow);
+    Menu.setApplicationMenu(appMenu);
+    const menu = createAppMenu(mainWindow, globalShortcut);
+    Menu.setApplicationMenu(menu);
+    
+    mainWindow.show();
+  });
   // Pass 'webContents' to 'createWebviewContextMenu' when calling it
   mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
     webContents.on('context-menu', (e, params) => {
@@ -204,22 +198,15 @@ function hideWindow() {
 }
 
 function showWindow() {
-  // Get the current mouse cursor position
-  const cursorPosition = screen.getCursorScreenPoint();
-
-  // Calculate the window position based on the current mouse position
-  const windowPosition = {
-    x: Math.round(cursorPosition.x - (mainWindow.getBounds().width / 2)),
-    y: Math.round(cursorPosition.y)
-  };
-
-  // Set the window position
-  mainWindow.setPosition(windowPosition.x, windowPosition.y, false);
+  // Check if windowPosition is not null
+  if (windowPosition) {
+    // Set the window position to the saved position
+    mainWindow.setBounds(windowPosition, false);
+  }
 
   // Show the window
   mainWindow.show();
 }
-
 app.on('web-contents-created', (webContentsCreatedEvent, contents) => {
   if (contents.getType() === 'webview') {
     contents.on('new-window', (newWindowEvent, url) => {

@@ -355,16 +355,26 @@ window.myIpcRenderer.on('load-url', (event, data) => {
 });
 
 const perplexityWebview = webviews['perplexity'];
-perplexityWebview.addEventListener('will-navigate', (e) => {
-  const url = e.url; // This is the URL the webview is trying to navigate to
 
-  // Check if the URL is the one you want to trigger the modal on
-  if (url.includes('verify-request')) { // Replace 'xyz' with the actual part of the URL you're checking for
+function handleNavigation(url) {
+  if (url.includes('verify-request')) {
+    // Set a timeout to delay the modal display
     setTimeout(() => {
       window.myIpcRenderer.send('show-input-window');
-    }, 3000);
+    }, 3000); // Delay modal display by 3 seconds
   }
+}
+
+// Listen for main navigation events
+perplexityWebview.addEventListener('did-navigate', (event) => {
+  handleNavigation(event.url);
 });
+
+// Listen for in-page navigation events (e.g., hash changes)
+perplexityWebview.addEventListener('did-navigate-in-page', (event) => {
+  handleNavigation(event.url);
+});
+
 
 document.getElementById('key').addEventListener('keydown', function(event) {
   // Prevent any default action

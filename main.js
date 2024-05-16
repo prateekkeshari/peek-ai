@@ -553,8 +553,8 @@ ipcMain.on('show-input-window', () => {
     parent: mainWindow,
     modal: true,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: true,
+      contextIsolation: false,
       preload: path.join(__dirname, 'preload.js'),
       alwaysOnTop: true
     }

@@ -3,16 +3,29 @@ const { ipcRenderer } = require('electron');
 document.getElementById('input-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const url = document.getElementById('url').value.trim();
-  if (url === '') { // check if the input field is empty
+  if (url === '') {
     alert('Please enter a URL');
-  } else if (!isValidURL(url)) { // check if the URL is valid
-    alert('Please enter a valid URL');
+  } else if (!isValidPerplexityURL(url)) {
+    alert('Please enter a valid Perplexity login URL.');
   } else {
     ipcRenderer.send('submit-input', url);
     window.close(); // Close the popup
   }
 });
-function isValidURL(string) {
-  const res = string.match(/(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
-  return (res !== null);
-};
+
+function isValidPerplexityURL(string) {
+  const urlPattern = /^https:\/\/www\.perplexity\.ai\/api\/auth\/callback\/email/;
+  if (!urlPattern.test(string)) {
+    return false; // Base URL check
+  }
+
+  try {
+    const url = new URL(string);
+    // Check for required query parameters
+    return url.searchParams.has('callbackUrl') && 
+           url.searchParams.has('token') && 
+           url.searchParams.has('email');
+  } catch (error) {
+    return false; // Not a valid URL
+  }
+}

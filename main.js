@@ -183,9 +183,10 @@ globalShortcut.register('Cmd+Ctrl+Left', () => {
     globalShortcut.unregister('Cmd+Ctrl+Left');
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  mainWindow.on('close', (event) => {
+    event.preventDefault(); // Prevent the close from happening
+    mainWindow.hide(); // Hide the window instead of closing it
+});
   setMainWindow(mainWindow);
   setIcon(icon);
 }

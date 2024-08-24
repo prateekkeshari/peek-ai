@@ -49,6 +49,7 @@
             <img src="threads.png" alt="threads">
           
           </a>
+    
 
           <div class="divider"></div>
             <a href="#" id="settingsDropdown">
@@ -95,6 +96,15 @@
         </div>
         <div class="toggle-button" id="hideDockToggle"></div>
       </div>
+
+      <div class="config-item">
+        <div class="config-text">
+          <span class="config-label">Dark Mode</span>
+          <span class="config-sublabel">Override system theme preference.</span>
+        </div>
+        <div class="toggle-button" id="darkModeToggle"></div>
+      </div>
+
       <div class="config-item">
         <div class="config-text">
           <span class="config-label">Customize window shortcut</span>
@@ -185,7 +195,8 @@
             <img src="labs.png" alt="Labs Icon">
             Labs
           </label>
-      </div>
+        </div>
+    
       </div>
       <div class="divider">
     </div>
@@ -223,6 +234,7 @@
       <webview id="webview-claude" src="https://claude.ai" allowpopups style="display: none;"></webview>
       <webview id="webview-labs" src="https://labs.perplexity.ai/" allowpopups style="display: none;"></webview>
       <webview id="webview-threads" src="https://www.threads.net/" allowpopups style="display: none;"></webview>
+   
     </div>
       
     <script src="scripts.js"></script>

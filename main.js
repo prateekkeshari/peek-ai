@@ -189,6 +189,12 @@ globalShortcut.register('Cmd+Ctrl+Left', () => {
 });
   setMainWindow(mainWindow);
   setIcon(icon);
+
+  // Load saved dark mode preference
+  const savedDarkMode = store.get('darkMode');
+  if (savedDarkMode !== undefined) {
+    nativeTheme.themeSource = savedDarkMode ? 'dark' : 'light';
+  }
 }
 
 let windowPosition = null;
@@ -592,4 +598,17 @@ ipcMain.on('show-input-window', () => {
 
 ipcMain.on('open-external', (event, url) => {
   shell.openExternal(url);
+});
+
+ipcMain.on('toggle-dark-mode', (event, isDarkMode) => {
+  nativeTheme.themeSource = isDarkMode ? 'dark' : 'light';
+  store.set('darkMode', isDarkMode);
+  mainWindow.webContents.send('set-dark-mode', isDarkMode);
+});
+
+ipcMain.on('get-dark-mode', (event) => {
+  const savedDarkMode = store.get('darkMode');
+  const isDarkMode = savedDarkMode !== undefined ? savedDarkMode : nativeTheme.shouldUseDarkColors;
+  nativeTheme.themeSource = isDarkMode ? 'dark' : 'light';
+  event.reply('set-dark-mode', isDarkMode);
 });

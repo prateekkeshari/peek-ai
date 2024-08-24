@@ -391,3 +391,28 @@ document.getElementById('key').addEventListener('keydown', function(event) {
     this.dispatchEvent(new Event('change'));
   }
 });
+
+// Add this near the top of the file, with other DOM-ready code
+document.addEventListener('DOMContentLoaded', () => {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', function() {
+      const isDarkMode = !this.classList.contains('active');
+      this.classList.toggle('active', isDarkMode);
+      document.body.classList.toggle('dark-mode', isDarkMode);
+      window.myIpcRenderer.send('toggle-dark-mode', isDarkMode);
+    });
+  }
+
+  // Initialize dark mode based on saved preference
+  window.myIpcRenderer.send('get-dark-mode');
+});
+
+// Add this with other IPC listeners
+window.myIpcRenderer.on('set-dark-mode', (event, isDarkMode) => {
+  document.body.classList.toggle('dark-mode', isDarkMode);
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.classList.toggle('active', isDarkMode);
+  }
+});

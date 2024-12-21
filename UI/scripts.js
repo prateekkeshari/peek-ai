@@ -117,6 +117,9 @@ document.getElementById('savePreferences').addEventListener('click', function() 
   const launchAtLogin = document.getElementById('launchAtLoginToggle').classList.contains('active');
   const selectedKey = document.getElementById('key').value; // New line
   const selectedModifier = document.getElementById('modifierKey').value; // Corrected line
+  const activeThemeButton = document.querySelector('.theme-button.active');
+  const selectedTheme = activeThemeButton ? activeThemeButton.dataset.theme : 'system';
+  
   const chatbots = Array.from(document.querySelectorAll('.checkbox-item input:checked'))
     .map(input => input.dataset.id);
 
@@ -126,8 +129,12 @@ document.getElementById('savePreferences').addEventListener('click', function() 
     launchAtLogin: launchAtLogin, // New line
     enabledChatbots: chatbots,
     selectedKey: selectedKey,
-    selectedModifier: selectedModifier
+    selectedModifier: selectedModifier,
+    theme: selectedTheme // Add theme to preferences
   };
+
+  // Store theme in localStorage for persistence
+  localStorage.setItem('theme', selectedTheme);
 
   // Send the updated preferences to the main process
   window.myIpcRenderer.send('save-preferences', preferences);
@@ -249,6 +256,13 @@ window.myIpcRenderer.on('load-preferences', (event, preferences) => {
 
     // Update the dropdown list
     updateDropdownList(preferences.enabledChatbots);
+
+    // Set theme button state
+    if (preferences.theme) {
+      document.querySelectorAll('.theme-button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === preferences.theme);
+      });
+    }
   }
   const activeWebviewKeys = Object.keys(webviews).filter(key => preferences.enabledChatbots.includes(key));
   window.myIpcRenderer.send('active-webview-keys', activeWebviewKeys);
@@ -392,28 +406,40 @@ document.getElementById('key').addEventListener('keydown', function(event) {
   }
 });
 
-// Add this near the top of the file, with other DOM-ready code
-document.addEventListener('DOMContentLoaded', () => {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', function() {
-      const isDarkMode = !this.classList.contains('active');
-      this.classList.toggle('active', isDarkMode);
-      document.body.classList.toggle('dark-mode', isDarkMode);
-      window.myIpcRenderer.send('toggle-dark-mode', isDarkMode);
-    });
-  }
+// Add this near the top of the file with other initialization code
+let currentTheme = localStorage.getItem('theme') || 'system';
 
-  // Initialize dark mode based on saved preference
-  window.myIpcRenderer.send('get-dark-mode');
+// Replace the existing theme button event listeners with this simplified version
+document.addEventListener('DOMContentLoaded', () => {
+  const themeButtons = document.querySelectorAll('.theme-button');
+  
+  // Set initial active state
+  themeButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+    
+    btn.addEventListener('click', () => {
+      // Update theme
+      currentTheme = btn.dataset.theme;
+      localStorage.setItem('theme', currentTheme);
+      
+      // Update UI
+      themeButtons.forEach(button => button.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Send to main process
+      window.myIpcRenderer.send('set-theme', currentTheme);
+      
+      // Mark as unsaved
+      unsavedChanges = true;
+    });
+  });
 });
 
-// Add this with other IPC listeners
-window.myIpcRenderer.on('set-dark-mode', (event, isDarkMode) => {
-  document.body.classList.toggle('dark-mode', isDarkMode);
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    darkModeToggle.classList.toggle('active', isDarkMode);
+// Simplify the IPC listener
+window.myIpcRenderer.on('set-theme', (event, theme) => {
+  document.body.classList.remove('light-mode', 'dark-mode');
+  if (theme !== 'system') {
+    document.body.classList.add(`${theme}-mode`);
   }
 });
 

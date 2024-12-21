@@ -260,6 +260,10 @@ globalShortcut.register('Cmd+Ctrl+Left', () => {
   if (savedDarkMode !== undefined) {
     nativeTheme.themeSource = savedDarkMode ? 'dark' : 'light';
   }
+
+  // Initialize theme
+  const savedTheme = store.get('theme', 'system');
+  setTheme(savedTheme);
 }
 
 let windowPosition = null;
@@ -586,20 +590,24 @@ function loadPreferences() {
     const data = fs.readFileSync(filePath, 'utf8');
     const preferences = JSON.parse(data);
     app.setLoginItemSettings({ openAtLogin: preferences.launchAtLogin });
+    
+    // Set theme if it exists
+    if (preferences.theme) {
+      nativeTheme.themeSource = preferences.theme;
+    }
+    
     return preferences;
   } catch (err) {
     console.error("Error in loadPreferences: ", err);
-    // Create a default preferences.json file if it doesn't exist
-    const defaultPreferences = {
+    return {
       alwaysOnTop: true,
       hideDockIcon: false,
       enabledChatbots: ['openai', 'google'],
       launchAtLogin: false,
-      selectedKey: 'J', // Default key
-      selectedModifier: 'Cmd' // Default modifier
+      selectedKey: 'J',
+      selectedModifier: 'Cmd',
+      theme: 'system'
     };
-    fs.writeFileSync(filePath, JSON.stringify(defaultPreferences, null, 2), 'utf8');
-    return defaultPreferences;
   }
 }
 
@@ -665,15 +673,32 @@ ipcMain.on('open-external', (event, url) => {
   shell.openExternal(url);
 });
 
-ipcMain.on('toggle-dark-mode', (event, isDarkMode) => {
-  nativeTheme.themeSource = isDarkMode ? 'dark' : 'light';
-  store.set('darkMode', isDarkMode);
-  mainWindow.webContents.send('set-dark-mode', isDarkMode);
+function setTheme(theme) {
+  nativeTheme.themeSource = theme;
+  
+  // Store theme preference
+  store.set('theme', theme);
+  
+  // Notify renderer
+  if (mainWindow) {
+    mainWindow.webContents.send('set-theme', theme);
+  }
+}
+
+// Simplified IPC handlers
+ipcMain.on('set-theme', (event, theme) => {
+  setTheme(theme);
 });
 
-ipcMain.on('get-dark-mode', (event) => {
-  const savedDarkMode = store.get('darkMode');
-  const isDarkMode = savedDarkMode !== undefined ? savedDarkMode : nativeTheme.shouldUseDarkColors;
-  nativeTheme.themeSource = isDarkMode ? 'dark' : 'light';
-  event.reply('set-dark-mode', isDarkMode);
+ipcMain.on('get-theme', (event) => {
+  const savedTheme = store.get('theme', 'system');
+  setTheme(savedTheme);
+});
+
+// System theme change listener
+nativeTheme.on('updated', () => {
+  const currentTheme = store.get('theme', 'system');
+  if (currentTheme === 'system') {
+    mainWindow.webContents.send('set-theme', 'system');
+  }
 });

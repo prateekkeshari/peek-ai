@@ -637,3 +637,116 @@ button {
     border-color: #717171;
   }
 }
+
+.theme-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #27272A);
+  background: var(--button-bg, transparent);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-color, #FAFAFA);
+}
+
+.theme-button i {
+  font-size: 16px;
+}
+
+.theme-button:hover {
+  background: var(--button-hover-bg, #27272A);
+}
+
+.theme-button.active {
+  background: var(--accent-color, #FAFAFA);
+  color: var(--accent-text, #0A0A0B);
+  border-color: var(--accent-color, #FAFAFA);
+}
+
+/* Dark mode specific styles */
+@media (prefers-color-scheme: dark) {
+  .theme-button {
+    --border-color: #27272A;
+    --button-bg: transparent;
+    --button-hover-bg: #27272A;
+    --text-color: #FAFAFA;
+    --accent-color: #FAFAFA;
+    --accent-text: #0A0A0B;
+  }
+}
+
+/* Light mode specific styles */
+@media (prefers-color-scheme: light) {
+  .theme-button {
+    --border-color: #E5E5E5;
+    --button-bg: transparent;
+    --button-hover-bg: #F5F5F5;
+    --text-color: #0A0A0B;
+    --accent-color: #0A0A0B;
+    --accent-text: #FAFAFA;
+  }
+}
+
+/* Simplify theme-related styles */
+/* Light theme */
+.light-mode {
+  --bg-color: #ffffff;
+  --text-color: #0A0A0B;
+  --border-color: #E5E5E5;
+  --hover-bg: #F5F5F5;
+}
+
+/* Dark theme */
+.dark-mode {
+  --bg-color: #000000;
+  --text-color: #FAFAFA;
+  --border-color: #27272A;
+  --hover-bg: #27272A;
+}
+
+/* System theme will use prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #000000;
+    --text-color: #FAFAFA;
+    --border-color: #27272A;
+    --hover-bg: #27272A;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #0A0A0B;
+    --border-color: #E5E5E5;
+    --hover-bg: #F5F5F5;
+  }
+}
+
+/* Apply theme variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.theme-button {
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.theme-button:hover {
+  background-color: var(--hover-bg);
+}
+
+.theme-button.active {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}

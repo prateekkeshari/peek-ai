@@ -1,4 +1,4 @@
-const { app, nativeTheme, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen } = require('electron');
+const { app, nativeTheme, Menu, MenuItem, BrowserWindow, globalShortcut, Tray, nativeImage, ipcMain, shell, screen, systemPreferences } = require('electron');
 const { processImage, captureAndProcessImage, screenshotToClipboard, saveScreenshot, setMainWindow, setIcon } = require('./screenshot.js');
 const { createAppMenu, createContextMenu, createWebviewContextMenu } = require('./menu.js');
 const {is} = require('electron-util');
@@ -84,20 +84,22 @@ function createWindow() {
 
   app.whenReady().then(() => {
     const setTrayIcon = () => {
-      const iconFileName = 'IconTemplate.png';
+      const iconFileName = process.platform === 'darwin' ? 'IconTemplate.png' : 'icon.png';
       const iconPath = path.join(__dirname, 'icons', iconFileName);
-      if (!tray) {
-        try {
-          tray = new Tray(iconPath);
-        } catch (error) {
-          console.error('Error creating tray icon:', error);
+      
+      try {
+        if (!fs.existsSync(iconPath)) {
+          throw new Error(`Tray icon not found at: ${iconPath}`);
         }
-      } else {
-        try {
-          tray.setImage(iconPath);
-        } catch (error) {
-          console.error('Error updating tray icon:', error);
+        
+        const trayIcon = nativeImage.createFromPath(iconPath);
+        if (!tray) {
+          tray = new Tray(trayIcon);
+        } else {
+          tray.setImage(trayIcon);
         }
+      } catch (error) {
+        console.error('Error with tray icon:', error);
       }
     };
   
@@ -141,10 +143,73 @@ function createWindow() {
   });
   // Pass 'webContents' to 'createWebviewContextMenu' when calling it
   mainWindow.webContents.on('did-attach-webview', (event, webContents) => {
+    // Enable permissions for the webview
+    webContents.session.setPermissionRequestHandler(async (webContents, permission, callback) => {
+      if (permission === 'media') {
+        // Only check system permission when media access is requested
+        if (process.platform === 'darwin') {
+          const status = systemPreferences.getMediaAccessStatus('microphone');
+          
+          if (status === 'not-determined') {
+            // Only ask for permission when first requested by a webview
+            try {
+              const granted = await systemPreferences.askForMediaAccess('microphone');
+              callback(granted);
+            } catch (err) {
+              console.error('Error requesting microphone permission:', err);
+              callback(false);
+            }
+          } else {
+            // Use existing permission status
+            callback(status === 'granted');
+          }
+        } else {
+          callback(true); // Non-macOS platforms
+        }
+      } else {
+        callback(true); // Other permissions
+      }
+    });
+
+    // Set up media device permissions check
+    webContents.session.setPermissionCheckHandler((webContents, permission) => {
+      if (permission === 'media') {
+        return process.platform === 'darwin' 
+          ? systemPreferences.getMediaAccessStatus('microphone') === 'granted'
+          : true;
+      }
+      return true;
+    });
+
+    // For macOS, we need to handle permissions differently
+    if (process.platform === 'darwin') {
+      webContents.on('select-bluetooth-device', (event, devices, callback) => {
+        event.preventDefault();
+        // Handle Bluetooth separately if needed
+      });
+      
+      // Use system level permission check
+      webContents.session.setPermissionCheckHandler((webContents, permission) => {
+        if (permission === 'media') {
+          return systemPreferences.getMediaAccessStatus('microphone') === 'granted';
+        }
+        return true;
+      });
+    }
+
     webContents.on('context-menu', (e, params) => {
       const webviewContextMenu = createWebviewContextMenu(params, webContents, mainWindow);
       webviewContextMenu.popup(webContents.getOwnerBrowserWindow());
     });
+  });
+
+  // Enable screen wake lock
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'media') {
+      callback(true);
+    } else {
+      callback(true);
+    }
   });
 
   mainWindow.on('focus', () => {

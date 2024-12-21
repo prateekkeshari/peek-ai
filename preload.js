@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
   meta.name = 'viewport';
   meta.content = 'width=device-width, initial-scale=1';
   document.head.appendChild(meta);
+  document.body.style.backgroundColor = '#343541';
 });
 
 const { contextBridge, ipcRenderer } = require('electron');
@@ -18,4 +19,10 @@ contextBridge.exposeInMainWorld('myIpcRenderer', {
 contextBridge.exposeInMainWorld('myIpcRenderer', {
   send: (channel, data) => ipcRenderer.send(channel, data),
   on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
+});
+
+window.addEventListener('load', () => {
+  if (window.location.href.includes('auth')) {
+    console.log('On auth page, handling redirect...');
+  }
 });

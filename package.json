@@ -38,21 +38,20 @@
       "buildResources": "build"
     },
     "mac": {
+      "identity": null,
       "hardenedRuntime": true,
-      "entitlements": "./build/entitlements.mac.plist",
-      "entitlementsInherit": "./build/entitlements.mac.plist",
       "gatekeeperAssess": false,
-      "category": "public.app-category.developer-tools",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
       "icon": "icons/peek.icns",
       "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
+        "dmg",
+        "zip"
+      ],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Peek needs access to your microphone for voice chat in web applications like Google Meet and others.",
+        "NSDesktopAudioUsageDescription": "Peek needs access to audio input for voice chat features."
+      }
     },
     "win": {
       "target": "nsis"

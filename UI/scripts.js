@@ -416,3 +416,54 @@ window.myIpcRenderer.on('set-dark-mode', (event, isDarkMode) => {
     darkModeToggle.classList.toggle('active', isDarkMode);
   }
 });
+
+function initializeWebviews() {
+  // Set up ChatGPT webview specifically
+  if (webviews.openai) {
+    // Add these partition and additional preferences
+    webviews.openai.partition = 'persist:chatgpt'; // Add persistent session
+    webviews.openai.setUserAgent(CHATGPT_USER_AGENT);
+    
+    // Add loading state tracking
+    let isLoading = false;
+    
+    webviews.openai.addEventListener('did-start-loading', () => {
+      console.log('ChatGPT starting to load');
+      isLoading = true;
+    });
+
+    webviews.openai.addEventListener('did-stop-loading', () => {
+      console.log('ChatGPT stopped loading');
+      isLoading = false;
+    });
+
+    // Handle loading errors with retry logic
+    webviews.openai.addEventListener('did-fail-load', (event) => {
+      console.log('ChatGPT failed to load:', event);
+      
+      // Only retry if we're not already loading
+      if (!isLoading) {
+        console.log('Retrying ChatGPT load...');
+        setTimeout(() => {
+          webviews.openai.reload();
+        }, 2000);
+      }
+    });
+
+    // Add navigation handling
+    webviews.openai.addEventListener('will-navigate', (event) => {
+      console.log('ChatGPT navigating to:', event.url);
+    });
+
+    // Handle DOM ready
+    webviews.openai.addEventListener('dom-ready', () => {
+      console.log('ChatGPT DOM ready');
+      // Inject custom CSS to prevent grey screen
+      webviews.openai.insertCSS(`
+        body {
+          background: #343541 !important;
+        }
+      `);
+    });
+  }
+}

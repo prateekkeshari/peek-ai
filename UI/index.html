@@ -225,8 +225,21 @@
     </div>   
 </div>
     <div id="webviews">
-      <webview id="webview-openai" src="https://chat.openai.com" allowpopups></webview>
-      <webview id="webview-google" src="https://gemini.google.com" allowpopups style="display: none;"></webview>
+      <webview 
+        id="webview-openai" 
+        src="https://chat.openai.com" 
+        allowpopups 
+        partition="persist:chatgpt"
+        webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
+        useragent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        preload="./preload.js"
+        allowpopups
+        plugins
+        media="true"
+        enableremotemodule="true"
+        allowpermissionrequest="true">
+      </webview>
+      <webview id="webview-google" src="https://gemini.google.com" allowpopups media="true" style="display: none;"></webview>
       <webview id="webview-poe" src="https://poe.com" allowpopups style="display: none;"></webview>
       <webview id="webview-pi" src="https://heypi.com/talk" allowpopups style="display: none;"></webview>
       <webview id="webview-copilot" src="https://copilot.microsoft.com" useragent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.51" allowpopups style="display: none;"></webview>

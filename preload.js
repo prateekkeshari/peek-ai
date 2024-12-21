@@ -20,9 +20,3 @@ contextBridge.exposeInMainWorld('myIpcRenderer', {
   send: (channel, data) => ipcRenderer.send(channel, data),
   on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
 });
-
-window.addEventListener('load', () => {
-  if (window.location.href.includes('auth')) {
-    console.log('On auth page, handling redirect...');
-  }
-});

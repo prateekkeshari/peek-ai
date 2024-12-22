@@ -249,9 +249,12 @@ globalShortcut.register('Cmd+Ctrl+Left', () => {
   });
 
   mainWindow.on('close', (event) => {
-    event.preventDefault(); // Prevent the close from happening
-    mainWindow.hide(); // Hide the window instead of closing it
-});
+    if (!forceQuit) {
+        event.preventDefault(); // Prevent the close from happening
+        mainWindow.hide(); // Hide the window instead of closing it
+    }
+    // If forceQuit is true, the window will close normally
+  });
   setMainWindow(mainWindow);
   setIcon(icon);
 
@@ -498,7 +501,9 @@ autoUpdater.on('update-available', (info) => {
           height: 200,
           webPreferences: {
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
+            alwaysOnTop: true
           }
         },
         style: {
@@ -564,25 +569,6 @@ autoUpdater.on('update-downloaded', () => {
 app.on('before-quit', () => {
   clearInterval(updateInterval);
 });
-
-// dialog box to confirm quit
-const beforeQuitListener = (e) => {
-  e.preventDefault();
-  const choice = dialog.showMessageBoxSync({
-    type: 'question',
-    buttons: ['Quit', 'Cancel'],
-    defaultId: 0, // Set 'Cancel' as the default button
-    title: 'Confirm',
-    message: 'Are you sure you want to quit Peek?',
-  });
-  if (choice === 0) {
-    app.removeListener('before-quit', beforeQuitListener);
-    app.exit();
-  }
-};
-
-app.on('before-quit', beforeQuitListener);
-// dialog box to confirm quit
 
 function loadPreferences() {
   const filePath = path.join(app.getPath('userData'), 'preferences.json');
@@ -701,4 +687,11 @@ nativeTheme.on('updated', () => {
   if (currentTheme === 'system') {
     mainWindow.webContents.send('set-theme', 'system');
   }
+});
+
+let forceQuit = false;
+
+// Add this handler for the 'before-quit' event
+app.on('before-quit', () => {
+    forceQuit = true;
 });

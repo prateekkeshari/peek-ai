@@ -493,3 +493,15 @@ function initializeWebviews() {
     });
   }
 }
+
+// Update handling
+myIpcRenderer.on('update_available', (event, version) => {
+  const indicator = document.getElementById('updateIndicator');
+  indicator.classList.remove('hidden');
+  indicator.title = `Version ${version} available. Click to update.`;
+});
+
+// Click handler for update dot
+document.getElementById('updateIndicator').addEventListener('click', () => {
+  myIpcRenderer.send('start_update');
+});

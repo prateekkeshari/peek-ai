@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
   meta.name = 'viewport';
   meta.content = 'width=device-width, initial-scale=1';
   document.head.appendChild(meta);
+  document.body.style.backgroundColor = '#343541';
 });
 
 const { contextBridge, ipcRenderer } = require('electron');

@@ -1,12 +1,12 @@
 {
   "name": "peek",
   "productName": "Peek",
-  "version": "4.0.6",
+  "version": "4.0.2",
   "description": "Access AI tools like ChatGPT and Bard from your Mac menu bar.",
   "main": "main.js",
   "scripts": {
     "start": "electron . > app.log 2>&1",
-    "pack": "build --dir",
+    "pack": "build --dir",  
     "dist": "electron-builder"
   },
   "keywords": [
@@ -39,10 +39,9 @@
     },
     "mac": {
       "hardenedRuntime": true,
-      "entitlements": "./build/entitlements.mac.plist",
-      "entitlementsInherit": "./build/entitlements.mac.plist",
       "gatekeeperAssess": false,
-      "category": "public.app-category.developer-tools",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
       "icon": "icons/peek.icns",
       "target": [
         {
@@ -52,7 +51,11 @@
             "arm64"
           ]
         }
-      ]
+      ],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Peek needs access to your microphone for voice chat and input in your AI applications.",
+        "NSDesktopAudioUsageDescription": "Peek needs access to audio input for voice chat features."
+      }
     },
     "win": {
       "target": "nsis"

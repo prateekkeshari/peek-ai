@@ -61,6 +61,8 @@ const UPDATE_REMINDER_DELAY = 4 * 60 * 60 * 1000;  // 4 hours
 const MAX_DOWNLOAD_RETRIES = 3;
 const isDev = process.env.NODE_ENV === 'development';
 const UPDATE_RETRY_DELAY = 3000; // 3 seconds
+const MAX_REMINDERS = 4;
+const REMINDER_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 
 autoUpdater.logger = log;
 autoUpdater.autoDownload = false;
@@ -430,26 +432,6 @@ app.whenReady().then(() => {
       });
     }
   });
-
-  // Check for pending updates on app start
-  const pendingUpdate = store.get('pendingUpdate');
-  if (pendingUpdate) {
-    const hoursSinceUpdate = (Date.now() - pendingUpdate.timestamp) / (1000 * 60 * 60);
-    if (hoursSinceUpdate < 24) { // Show reminder if within 24 hours
-      dialog.showMessageBox({
-        type: 'info',
-        message: `A new version (${pendingUpdate.version}) is available`,
-        buttons: ['Install Now', 'Later'],
-        defaultId: 0
-      }).then(({ response }) => {
-        if (response === 0) {
-          autoUpdater.checkForUpdates();
-        }
-      });
-    }
-    // Clear old pending updates
-    store.delete('pendingUpdate');
-  }
 });
 
 /* --------------------------------------------------------------------------------
@@ -544,23 +526,71 @@ app.on('will-quit', () => {
 /* --------------------------------------------------------------------------------
  * autoUpdater - events
  * --------------------------------------------------------------------------------*/
+function resetUpdateState() {
+  store.delete('updateReminderCount');
+  store.delete('pendingUpdate');
+  store.delete('lastUpdateCheck');
+  if (reminderTimeout) {
+    clearTimeout(reminderTimeout);
+    reminderTimeout = null;
+  }
+  updateInProgress = false;
+}
+
+function shouldCheckForUpdate() {
+  const lastCheck = store.get('lastUpdateCheck');
+  if (!lastCheck) return true;
+  
+  const timeSinceLastCheck = Date.now() - lastCheck;
+  return timeSinceLastCheck >= REMINDER_INTERVAL;
+}
+
 autoUpdater.on('update-available', async (info) => {
   log.info('Update available:', info.version);
   
   // Don't show dialog if update is already in progress
-  if (updateInProgress) return;
+  if (updateInProgress) {
+    log.info('Update already in progress, skipping dialog');
+    return;
+  }
+
+  // Only check time restrictions for automatic checks
+  if (!manualUpdateCheck && !shouldCheckForUpdate()) {
+    log.info('Update check too recent, skipping dialog');
+    return;
+  }
+
+  // Reset manual check flag
+  manualUpdateCheck = false;
+
+  // Get stored pending update info
+  const pendingUpdate = store.get('pendingUpdate');
+  
+  // Reset reminder count if this is a new version
+  if (!pendingUpdate || pendingUpdate.version !== info.version) {
+    resetUpdateState();
+  }
+
+  // Check reminder count
+  const reminderCount = store.get('updateReminderCount', 0);
+  if (reminderCount >= MAX_REMINDERS) {
+    log.info('Max reminders reached for version:', info.version);
+    return;
+  }
+  
   updateInProgress = true;
 
-  const result = await dialog.showMessageBox({
-    type: 'info',
-    title: 'Update available ⚡',
-    message: `A new version (${info.version}) of Peek is available.`,
-    buttons: ['Install & Restart', 'Later'],
-    defaultId: 0
-  });
+  try {
+    const result = await dialog.showMessageBox({
+      type: 'info',
+      title: 'Update available ⚡',
+      message: `A new version (${info.version}) of Peek is available.`,
+      detail: 'Would you like to install it now?',
+      buttons: ['Install & Restart', 'Later'],
+      defaultId: 0
+    });
 
-  if (result.response === 0) {
-    try {
+    if (result.response === 0) {
       if (progressBar) progressBar.close();
       
       progressBar = new ProgressBar({
@@ -577,16 +607,29 @@ autoUpdater.on('update-available', async (info) => {
       });
 
       await autoUpdater.downloadUpdate();
-    } catch (error) {
-      log.error('Download error:', error);
+    } else {
+      // User chose Later
       updateInProgress = false;
-      if (progressBar) progressBar.close();
-      dialog.showErrorBox('Update Error', 'Failed to start download. Please try again later.');
+      
+      // Store update info and increment reminder count
+      store.set('pendingUpdate', {
+        version: info.version,
+        timestamp: Date.now()
+      });
+      store.set('updateReminderCount', reminderCount + 1);
+      store.set('lastUpdateCheck', Date.now());
+      
+      // Schedule next reminder
+      if (reminderTimeout) clearTimeout(reminderTimeout);
+      reminderTimeout = setTimeout(() => {
+        autoUpdater.checkForUpdates();
+      }, REMINDER_INTERVAL);
     }
-  } else {
-    // User chose Later
+  } catch (error) {
+    log.error('Update dialog/download error:', error);
     updateInProgress = false;
-    store.set('lastUpdateCheck', Date.now());
+    if (progressBar) progressBar.close();
+    dialog.showErrorBox('Update Error', 'There was a problem with the update. Please try again later.');
   }
 });
 
@@ -656,6 +699,7 @@ autoUpdater.on('error', (error) => {
   
   if (progressBar) progressBar.close();
   updateInProgress = false;
+  store.delete('lastUpdateCheck');
 
   // Don't show error for dev environment missing update config
   if (isDev && error.message.includes('dev-app-update.yml')) return;
@@ -825,4 +869,22 @@ app.on('will-quit', (event) => {
 
 app.on('quit', (event, exitCode) => {
   log.info('quit triggered with exit code:', exitCode);
+});
+
+// Add this near other ipcMain handlers
+ipcMain.on('onboarding-complete', () => {
+  // Mark onboarding as complete in store
+  store.set('hasRunBefore', true);
+  store.set('version', app.getVersion());
+});
+
+// Add near other ipcMain handlers
+ipcMain.on('manual-check-update', () => {
+  log.info('Manual update check requested');
+  // Reset update state for manual check
+  resetUpdateState();
+  // Set flag for manual check
+  manualUpdateCheck = true;
+  // Force check regardless of time
+  autoUpdater.checkForUpdates();
 });

@@ -3,201 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Onboarding</title>
+  <title>Welcome to Peek</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-      .fa-arrow-right:hover {
-        transform: scale(0.99);
-        transform: translateX(10px); /* Move arrow to the right */
-        transition: transform 0.2s ease-in-out;
-      }
+    body {
+      background: linear-gradient(125deg, #000000 0%, #1a1a1a 100%);
+      position: relative;
+      overflow: hidden;
+    }
 
-      /* Ensure the arrow icon is always on top */
-      .fa-arrow-right {
-        z-index: 2;
-        position: relative;
-      }
-  
-    /* Custom gradient border style */
-    #infoBox {
-    position: relative;
-    border-radius: 1000px;
-    overflow: hidden; /* This is needed to make the pseudo-element conform to the border-radius */
-    z-index: 1;
-    transition: transform 0.2s ease-in-out; /* Add transition for the transform property */
-    box-shadow: 0 0 6px 0 rgb(255, 255, 255) inset;
-  }
-    #infoBox::before {
-      content: "";
+    body::before {
+      content: '';
       position: absolute;
-      top: -3px;
-      left: -3px;
-      right: -3px;
-      bottom: -3px;
-      background: linear-gradient(-120deg, #ff5533 10%, #000000 30%);
-      opacity: 0;
-      transition: opacity 0.2s ease-in-out;
-      z-index: -1; /* This is needed to put the border behind the content of the info box */
-      border-radius: inherit; /* Inherit the border-radius from the #infoBox */
-      box-shadow: 0 0 0 3px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 85, 51, 0.15), transparent 70%);
+      pointer-events: none;
     }
-    /* Animated gradient border */
-    #infoBox.gradient-border-active::before {
-      opacity: 1;
+
+    #infoBox {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      z-index: 1;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 0 30px rgba(255, 85, 51, 0.1);
+      backdrop-filter: blur(12px);
     }
-    #infoBox.gradient-border-active {
-    transform: scale(0.96); /* Scale up when the button is hovered */
-  }
 
-  .whatsnew
-  {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    margin: 16px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-  }
+    .fa-arrow-right {
+      transition: transform 0.2s ease-in-out;
+    }
 
-  #whatsNewButton
-  {
-    color: #141414;
-    font-size: 14px;
-    padding: 10px 20px;
-    user-select: none;
-    cursor: pointer;
-  }
-  .fa-arrow-up
-  {
-    transform: rotate(45deg);
-  }
-  
-  #whatsNewButton:hover
-  {
-    color: rgb(73, 73, 73);
-    transform: scale(0.99);
-  }
-  .custom-list {
-  list-style-type: '-';
-}
+    .fa-arrow-right:hover {
+      transform: translateX(6px);
+    }
 
-/* The Close Button */
-.close {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-}
+    .modal {
+      backdrop-filter: blur(12px);
+    }
 
-.close:hover,
-.close:focus {
-  color: rgb(255, 255, 255);
-  text-decoration: none;
-  cursor: pointer;
-}
-.highlight
-{
-  background: #ffffff;
-  padding: 2px;
-  color:rgb(0, 0, 0);
-  font-weight: bold;
-  font-family: monospace;
-  font-size: 15px;
-  border-radius: 20px;
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
-  margin-right: 0.3rem;
-}
-.divider
-{
-  width: 100%;
-  height: 1px;
-  background: rgb(0, 0, 0, 0.2 );
-}
-.modal-content
-{
-  background: rgb(20, 20, 20);
-  color: rgb(255, 255, 255);
-}
+    .modal-content {
+      background: rgba(20, 20, 20, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .keyboard-shortcut {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+
+    #whatsNewButton {
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease-in-out;
+    }
+
+    #whatsNewButton:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
-<body class="h-screen m-0 font-sans bg-cover bg-center" style="background-image: url('grace.jpeg');">
-  <div class="flex h-full items-end justify-center">
-    <div id="infoBox" class="bg-black pl-10 pr-10 pt-6 pb-6 flex items-center justify-between w-full max-w-lg mb-10 mr-5 ml-5 shadow-xl">
-      <div class="flex items-center select-none">
-        <img src="peek-dock-icon.png" alt="Application Icon" class="rounded-full w-12 h-12">
-        <div class="ml-4">
-          <p class="text-md font-bold text-gray-200 pb-0.5">Get ready for Peek</p>
-          <p class="text-xs text-gray-600">Built with 🩶 by Prateek Keshari</p>
+<body class="h-screen m-0 font-sans text-white">
+  <div class="flex flex-col h-full items-center justify-center p-5">
+    <div id="infoBox" class="bg-black bg-opacity-40 p-8 max-w-lg w-full mb-6">
+      <div class="flex flex-col items-center text-center space-y-6">
+        <img src="peek-dock-icon.png" alt="Peek" class="w-20 h-20 rounded-2xl">
+        <div>
+          <h1 class="text-2xl font-bold mb-2">Welcome to Peek 4.0.6</h1>
+          <p class="text-gray-400">Audio fix, theme selection, and more</p>
         </div>
+        <button onclick="window.location.href='index.html'" 
+                class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white px-8 py-3 rounded-full flex items-center space-x-3 transition-all duration-300">
+          <span>Get Started</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
-      <i class="fas fa-arrow-right cursor-pointer text-white text-2xl pl-10 pr-2 pt-2 pb-2" onclick="window.location.href='index.html';"></i>
     </div>
-    <div class="absolute top-3 left-3 text-black p-2 rounded-lg select-none">
-      <p class="text-sm font-bold">Grace Hopper</p>
-      <p class="text-xs">1902-1996</p>
-    </div>
+
+    <button id="whatsNewButton" 
+            onclick="showWhatsNew()"
+            class="text-white px-6 py-3 rounded-full">
+      What's New in 4.0.6
+      <i class="fas fa-sparkles ml-2"></i>
+    </button>
   </div>
-  <div id="myModal" class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto bg-black bg-opacity-60">
-    <div class="modal-content relative p-6 my-8 mx-auto w-4/5 md:w-/5 rounded-lg shadow-lg">
-      <span class="close absolute top-0 right-2 cursor-pointer p-4">
-        &times;
-      </span>
-      <h2 class="text-xl font-bold mb-3">New in v 4.0.5 ✨</h2>
-      <ul class="custom-list list-inside">
-        <li class="text-md mb-2"> Bug fixes</li>
-        <li class="text-md mb-2"> Performance improvements</li>
+
+  <div id="myModal" class="modal fixed w-full h-full top-0 left-0 hidden items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="modal-content p-8 w-11/12 max-w-2xl mx-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold">What's New in 4.0.6 ✨</h2>
+        <button class="close hover:text-gray-400 transition-colors">&times;</button>
+      </div>
+
+      <ul class="space-y-4">
+        <li class="feature-item p-4">
+          <div class="flex items-center space-x-4">
+            
+            <div>
+              <h3 class="font-semibold">Audio fix</h3>
+              <p class="text-gray-400">Fixed audio issues for voice input and AI chat</p>
+            </div>
+          </div>
+        </li>
+        <li class="feature-item p-4">
+          <div class="flex items-center space-x-4">
+         
+            <div>
+              <h3 class="font-semibold">Theme selection</h3>
+              <p class="text-gray-400">Choose between light, dark, and system theme</p>
+            </div>
+          </div>
+        </li>
+        <li class="feature-item p-4">
+          <div class="flex items-center space-x-4">
+            
+            <div>
+              <h3 class="font-semibold">Bug fixes</h3>
+              <p class="text-gray-400">Fixed various bugs and improved stability</p>
+            </div>
+          </div>
+        </li>
       </ul>
+
+      <div class="mt-8 pt-6 border-t border-gray-800">
+        <a href="#" 
+           onclick="myIpcRenderer.send('open-external', 'https://www.buymeacoffee.com/prateekkeshari')" 
+           class="text-orange-500 hover:text-orange-400 text-sm flex items-center justify-center space-x-2">
+          <span>Support Peek's development</span>
+          <i class="fas fa-heart"></i>
+        </a>
+      </div>
     </div>
   </div>
-  <div class="whatsnew">
-    <button id="whatsNewButton" onclick="myIpcRenderer.send('open-external', 'https://github.com/prateekkeshari/peek-ai/releases');">
-      Release notes for 4.0.3
-    <a href="#">
-      <i class="fas fa-arrow-up"></i> <!-- Font Awesome Arrow Icon pointing upwards -->
-    </a>
-  </button>
-  </div>
+
   <script>
-    // Get the arrow icon and info box elements
-    var arrowIcon = document.querySelector('.fa-arrow-right');
-    var infoBox = document.getElementById('infoBox');
-  
-    // Function to add the gradient border on the info box
-    function addGradientBorder() {
-      infoBox.classList.add('gradient-border-active');
+    const modal = document.getElementById("myModal");
+    const span = document.getElementsByClassName("close")[0];
+
+    function showWhatsNew() {
+      modal.style.display = "flex";
     }
-  
-    // Function to remove the gradient border from the info box
-    function removeGradientBorder() {
-      infoBox.classList.remove('gradient-border-active');
+
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => {
+      if (event.target === modal) modal.style.display = "none";
     }
-  
-    // Add event listeners to the arrow icon for mouse enter and mouse leave
-    arrowIcon.addEventListener('mouseenter', addGradientBorder);
-    arrowIcon.addEventListener('mouseleave', removeGradientBorder);
-  
-    // Function to navigate to index.html
-    arrowIcon.addEventListener('click', function() {
-      setTimeout(function() {
-        window.location.href = 'index.html';
-      }, 1000);
-    });
-
-    // Get the modal
-var modal = document.getElementById("myModal");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-    
-</script>
+  </script>
 </body>
 </html>

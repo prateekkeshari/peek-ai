@@ -1,6 +1,6 @@
 # Peek
 
-> ⚠️ **This project is no longer actively maintained.** It works as-is, but I can't guarantee compatibility with future macOS updates or changes to the AI platforms. Feel free to fork.
+## ⚠️ **This project is no longer actively maintained.** It works as-is, but I can't guarantee compatibility with future macOS updates or changes to the AI platforms. Feel free to fork.
 
 Peek is a MacOS menu bar app that lets you interact with multiple AI chatbots — ChatGPT, Gemini, Claude, Perplexity, Poe, and others — from a single floating window. No API keys needed; it's a webview wrapper, so your data goes directly to each platform.
 

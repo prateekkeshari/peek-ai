@@ -1,45 +1,24 @@
 # Peek
 
-Peek is a MacOS Menu Bar application that allows you to interact with multiple AI chatbots in one place. It now includes a social section with Threads as well. It provides a seamless and intuitive user interface for interacting with AI chatbots like OpenAI's ChatGPT, Google's Bard, and Perplexity AI.
+> ⚠️ **This project is no longer actively maintained.** It works as-is, but I can't guarantee compatibility with future macOS updates or changes to the AI platforms. Feel free to fork.
+
+Peek is a MacOS menu bar app that lets you interact with multiple AI chatbots — ChatGPT, Gemini, Claude, Perplexity, Poe, and others — from a single floating window. No API keys needed; it's a webview wrapper, so your data goes directly to each platform.
 
 ## Features
 
-- **Multiple AI Chatbots**: Peek supports multiple AI chatbots. You can easily switch between different chatbots using the dropdown menu.
-- **Floating Window**: Use `⌘+J` or customize the shortcut to toggle the window and it'll always be on top.
-- **Social Section with Threads**: Engage with your audience with Threads.
-- **Beautiful Screenshot**: You can take a screenshot of your chat using the `⌘ +Shift+S` shortcut. The screenshot will be saved to your local machine.
-- **Clipboard Screenshot**: You can copy a screenshot of your current view to your clipboard using the `⌘ +S` shortcut.
-- **Auto-Updater**: Peek automatically checks for updates and notifies you when an update is available.
-- **Custom Menu**: Peek provides a custom menu with options to check for updates, hide the app, quit the app, and more.
-- **Tray Icon**: Peek sits in your system tray for easy access.
-- **Settings**: Customize the behavior of Peek through settings.
+- **Multiple AI Chatbots** — Switch between chatbots via dropdown
+- **Floating Window** — `⌘+J` to summon (always on top, customizable shortcut)
+- **Screenshot** — `⌘+Shift+S` to save, `⌘+S` to copy to clipboard
+- **Menu Bar** — Lives in your system tray
+- **Settings** — Toggle floating window, hide dock icon, select which bots to display
+- **Dark Mode**
+- **Privacy** — Webview-based, no data passes through the app
 
 ## Installation
 
-To install Peek, download the latest release from the [Releases](https://github.com/prateekkeshari/peek-ai/releases) page.
+Download the latest release from the [Releases](https://github.com/prateekkeshari/peek-ai/releases) page. Unzip and move to your Applications folder.
 
-## Usage
-
-After installing Peek, you can launch the app from your Applications folder on MacOS. 
-- To switch between different chatbots, click on the dropdown menu at the top of the app and select the chatbot you want to use.
-- To take a screenshot of your chat, press `⌘+Shift+S`. The screenshot will be saved to your local machine.
-- To copy a screenshot to your clipboard, press `⌘+S`.
-- To customize the behavior of Peek, navigate to settings.
-
-## Use Cases
-
-Peek is great for anyone who uses AI chatbots, whether you're a developer, a writer, a student, or just someone who likes to chat with AI. Here are a few ways you could use Peek:
-
-- **Developers**: Use Peek to test your chatbot's responses and take screenshots for documentation.
-- **Writers**: Use Peek to chat with AI and get ideas for your writing.
-- **Students**: Use Peek to get help with your homework from AI.
-- **Everyone**: Use Peek to have fun chatting with AI, engage in social interactions, and see what kind of funny or interesting responses you can get.
-
-I hope you enjoy using Peek!
-
-## Contributing
-
-Contributions are welcome! Please open an issue if you encounter a bug or have a feature request.
+Also available on [Gumroad](https://prateekkeshari.gumroad.com/l/peek).
 
 ## License
 
